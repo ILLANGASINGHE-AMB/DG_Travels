@@ -287,7 +287,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      animation: preloaderOut 0.45s var(--ease) 1.05s forwards;
+      /* Failsafe only — the script below normally ends it at exactly 3s
+         measured from navigation. This fires if JS never runs. */
+      animation: preloaderOut 0.5s var(--ease) 5s forwards;
     }
 
     #preloader.done {
@@ -355,7 +357,7 @@
       background: var(--accent);
       transform: scaleX(0);
       transform-origin: left;
-      animation: preloaderFill 1.15s var(--ease) forwards;
+      animation: preloaderFill 2.8s var(--ease) forwards;
     }
 
     @keyframes preloaderFill {
@@ -363,6 +365,58 @@
         transform: scaleX(1);
       }
     }
+
+    /* ============================================================
+       MOTION
+       Short, small-distance, opacity-led. Nothing loops, nothing
+       blocks reading. All of it is disabled under reduced-motion.
+       ============================================================ */
+
+    /* Elements start hidden only once JS confirms it can reveal them,
+       so content is never stranded invisible if the script fails. */
+    .js-anim [data-reveal] {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .js-anim [data-reveal].in {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+    }
+    /* Children of a revealed group come in one after another */
+    .js-anim [data-reveal-stagger] > * {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .js-anim [data-reveal-stagger].in > * {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+
+    /* Header gains a hairline + tighter height once you leave the top */
+    .nav { transition: height 0.25s var(--ease), background-color 0.25s var(--ease); }
+    .nav.scrolled { background: rgba(10, 10, 10, 0.94); }
+    .nav.scrolled .wrap { height: 62px; }
+    .nav .wrap { transition: height 0.25s var(--ease); }
+
+    /* Reading-progress hairline under the header */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 100%;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--accent);
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .vehicle-card:active { transform: scale(0.99); }
+    .stat-num { font-variant-numeric: tabular-nums; }
 
     /* ---------- Top bar ---------- */
     .top-bar {
@@ -743,10 +797,13 @@
 
     .route-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1.2fr 0.85fr 0.85fr;
+      grid-template-columns: repeat(6, 1fr);
       gap: 18px;
       margin-bottom: 34px;
     }
+    /* Row 1: pickup + destination. Row 2: name, passengers, date. */
+    .route-grid .form-group:nth-child(-n+2) { grid-column: span 3; }
+    .route-grid .form-group:nth-child(n+3)  { grid-column: span 2; }
 
     .form-group {
       display: flex;
@@ -829,6 +886,77 @@
       background: #141414;
       color: #fff;
     }
+
+    /* ---------- Form validation + summary ---------- */
+    .field-error {
+      display: none;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--danger);
+    }
+    .field-error.show { display: block; }
+    .form-input.invalid,
+    .form-select.invalid { border-color: var(--danger); }
+    .fleet-grid.invalid .vehicle-card { border-color: rgba(255, 123, 114, 0.45); }
+
+    .summary-line { font-size: 14px; color: var(--text); }
+    .summary-line strong { font-weight: 600; }
+    .summary-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 7px;
+    }
+    .distance-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 10px;
+      border: 1px solid rgba(201, 169, 97, 0.35);
+      border-radius: 999px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .distance-chip[hidden] { display: none; }
+    .distance-chip.loading { color: var(--text-3); border-color: var(--line); background: none; }
+    .distance-chip .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: chipPulse 1s ease-in-out infinite;
+    }
+    @keyframes chipPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* Google Places dropdown, restyled to match the site */
+    .pac-container {
+      background: var(--surface-2);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      margin-top: 6px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+      font-family: inherit;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .pac-container::after { display: none; }
+    .pac-item {
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--text-2);
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+    .pac-item:first-child { border-top: none; }
+    .pac-item:hover,
+    .pac-item-selected { background: var(--surface-3); }
+    .pac-item-query { color: var(--text); font-size: 14px; }
+    .pac-matched { color: var(--accent); }
+    .pac-icon { display: none; }
 
     .vehicle-section-head {
       display: flex;
@@ -1795,9 +1923,12 @@
     }
 
     @media (max-width: 860px) {
-      .route-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+      .route-grid { grid-template-columns: 1fr 1fr; }
+      /* Locations full width, then name + passengers paired, date full width */
+      .route-grid .form-group:nth-child(-n+2) { grid-column: span 2; }
+      .route-grid .form-group:nth-child(3),
+      .route-grid .form-group:nth-child(4) { grid-column: span 1; }
+      .route-grid .form-group:nth-child(5) { grid-column: span 2; }
 
       .fleet-grid {
         grid-template-columns: 1fr 1fr;
@@ -1960,10 +2091,8 @@
         width: 100%;
       }
 
-      .route-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
+      .route-grid { grid-template-columns: 1fr; gap: 16px; }
+      .route-grid .form-group { grid-column: span 1 !important; }
 
       /* Fleet becomes app-style rows: emblem column + stacked text.
          Children are placed explicitly — auto-placement scatters them. */
@@ -2233,9 +2362,9 @@
 <body>
 
   <!-- ================= LOADING SCREEN =================
-       Clears itself through a CSS animation, so a JS failure or a blocked
-       script can never leave a visitor staring at a covered page. The
-       script below only shortens it once the page has actually loaded. -->
+       Timed purely in CSS (3s hold, then a 0.5s fade), measured from first
+       style application. No JavaScript is involved, so a script failure or a
+       blocked bundle can never leave a visitor staring at a covered page. -->
   <div id="preloader" aria-hidden="true">
     <div class="preloader-inner">
       <img src="LOGO/DG - 1.png" alt="" class="preloader-logo" width="72" height="72">
@@ -2246,6 +2375,8 @@
       <div class="preloader-bar"><span></span></div>
     </div>
   </div>
+
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <div class="app-root">
     <!-- ================= TOP ANNOUNCEMENT BAR ================= -->
@@ -2334,20 +2465,20 @@
     <!-- ================= HERO SECTION (WITH DYNAMIC SCROLL-ZOOM LOGO) ================= -->
     <section class="hero">
       <div class="wrap">
-        <p class="hero-badge">Premium Private Transport</p>
+        <p class="hero-badge" data-reveal>Premium Private Transport</p>
 
         <!-- Big Scroll-Interactive Hero Logo -->
-        <div class="hero-logo-container">
+        <div class="hero-logo-container" data-reveal>
           <img src="LOGO/DG - 1.png" alt="DG Travels Emblem" class="hero-logo-center" id="heroLogo">
         </div>
 
-        <h1>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
-        <p class="lede">
+        <h1 data-reveal>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
+        <p class="lede" data-reveal>
           Personalized, safe, and luxurious private transport for foreign tourists, surf travelers, and local guests.
           Operating from Galle across all scenic destinations in Sri Lanka.
         </p>
 
-        <div class="hero-actions">
+        <div class="hero-actions" data-reveal>
           <a href="#booking" class="btn btn-gold">
             Plan Your Ride & Get Quote
           </a>
@@ -2357,7 +2488,7 @@
         </div>
 
         <!-- Trust Stats Bar -->
-        <div class="hero-stats">
+        <div class="hero-stats" data-reveal data-reveal-stagger>
           <div class="stat-box">
             <div class="stat-num">4+</div>
             <div class="stat-label">Years Experience (Est. 2022)</div>
@@ -2385,116 +2516,112 @@
     <!-- ================= BOOKING & FLEET CALCULATOR (CUSTOM QUOTE ON INQUIRY) ================= -->
     <section class="booking" id="booking">
       <div class="wrap">
-        <div class="eyebrow">Flexible Route & Fleet</div>
-        <h2 class="section-title">Where Are You Headed Today?</h2>
-        <p class="section-subtitle">Enter any hotel, villa, airport, or pinpoint on Google Maps. Select your vehicle to
-          receive an instant direct quote tailored to your trip.</p>
+        <div class="eyebrow" data-reveal>Flexible Route & Fleet</div>
+        <h2 class="section-title" data-reveal>Where Are You Headed Today?</h2>
+        <p class="section-subtitle" data-reveal>Start typing a hotel, villa or airport and pick it from the Google Maps suggestions.
+          We work out the distance for you and send it straight to WhatsApp.</p>
 
-        <div class="steps-pill">
+        <div class="steps-pill" data-reveal data-reveal-stagger>
           <div class="step-item"><span class="num">01</span> Enter Pickup & Destination</div>
           <div class="step-item"><span class="num">02</span> Choose Vehicle</div>
           <div class="step-item"><span class="num">03</span> Instant Quote & Confirm</div>
         </div>
 
-        <div class="booking-card">
+        <div class="booking-card" data-reveal>
           <!-- Route Grid Inputs with Google Map Pinpoint Links -->
+          <!-- Fields are intentionally empty: a prefilled route looked like
+               a real booking and people submitted it unchanged. -->
           <div class="route-grid">
             <div class="form-group">
-              <label for="pickup">
-                <span class="label-text"><i class="fa-solid fa-location-crosshairs"></i> Pickup Location</span>
-                <button type="button" class="map-helper-btn" id="openPickupMapBtn"
-                  title="Search hotel or location on Google Maps">
-                  <i class="fa-solid fa-map-pin"></i> Google Map
-                </button>
-              </label>
-              <input type="text" id="pickup" class="form-input"
-                placeholder="e.g. CMB Airport / Villa / Hotel in Ahangama" value="Bandaranaike Airport (CMB)">
+              <label for="pickup"><span class="label-text">Pickup Location</span></label>
+              <input type="text" id="pickup" class="form-input" autocomplete="off"
+                placeholder="Hotel, villa or airport" required>
+              <p class="field-error" id="errPickup">Please enter your pickup location.</p>
             </div>
 
             <div class="form-group">
-              <label for="dropoff">
-                <span class="label-text"><i class="fa-solid fa-location-dot"></i> Destination</span>
-                <button type="button" class="map-helper-btn" id="openDropoffMapBtn"
-                  title="Search destination on Google Maps">
-                  <i class="fa-solid fa-map-pin"></i> Google Map
-                </button>
-              </label>
-              <input type="text" id="dropoff" class="form-input"
-                placeholder="e.g. Hotel in Galle, Ella, Mirissa, Weligama" value="Ahangama, Galle">
+              <label for="dropoff"><span class="label-text">Destination</span></label>
+              <input type="text" id="dropoff" class="form-input" autocomplete="off"
+                placeholder="Where are you going?" required>
+              <p class="field-error" id="errDropoff">Please enter your destination.</p>
             </div>
 
             <div class="form-group">
-              <label for="rideDate">
-                <span class="label-text"><i class="fa-solid fa-calendar-days"></i> Travel Date</span>
-              </label>
-              <input type="date" id="rideDate" class="form-input">
+              <label for="custName"><span class="label-text">Name</span></label>
+              <input type="text" id="custName" class="form-input" maxlength="80"
+                autocomplete="name" placeholder="Your full name" required>
+              <p class="field-error" id="errName">Please enter your name.</p>
             </div>
 
             <div class="form-group">
-              <label for="passengers">
-                <span class="label-text"><i class="fa-solid fa-users"></i> Travelers</span>
-              </label>
-              <select id="passengers" class="form-select">
-                <option value="1-2">1–2 Passengers</option>
-                <option value="3-4">3–4 Passengers</option>
-                <option value="5-8">5–8 Passengers</option>
-                <option value="Family / Group">Family / Surf Group</option>
+              <label for="passengers"><span class="label-text">No. of Passengers</span></label>
+              <select id="passengers" class="form-select" required>
+                <option value="" selected disabled>Select passengers</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9+">9 or more</option>
               </select>
+              <p class="field-error" id="errPassengers">Please select the number of passengers.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="rideDate"><span class="label-text">Travel Date</span></label>
+              <input type="date" id="rideDate" class="form-input" required>
+              <p class="field-error" id="errDate">Please choose your travel date.</p>
             </div>
           </div>
 
-          <!-- Fleet Grid: Toyota Aqua, Honda Vezel, Toyota Prius, Toyota KDH -->
           <div class="vehicle-section-head">
-            <h3>Choose Your Vehicle</h3>
-            <span>Tap to select category</span>
+            <h3>Vehicle</h3>
+            <span>Select one</span>
           </div>
 
-          <div class="fleet-grid" id="fleetGrid">
-            <!-- 1. Toyota Aqua -->
-            <div class="vehicle-card selected" data-vehicle="Toyota Aqua" data-type="Hatchback">
+          <div class="fleet-grid" id="fleetGrid" role="radiogroup" aria-label="Vehicle">
+            <div class="vehicle-card" data-vehicle="Toyota Aqua" role="radio" aria-checked="false" tabindex="0">
               <div class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
               <span class="vehicle-badge-type">Hatchback</span>
               <div class="vehicle-title">Toyota Aqua</div>
-              <div class="vehicle-specs">1–3 Pax · 2 Bags<br>Hybrid · Full A/C · City & Coast</div>
-              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Best Value Rate</div>
+              <div class="vehicle-specs">1–3 Pax · 2 Bags<br>Hybrid · Full A/C</div>
             </div>
 
-            <!-- 2. Honda Vezel -->
-            <div class="vehicle-card" data-vehicle="Honda Vezel" data-type="Compact SUV">
-              <div class="vehicle-icon"><i class="fa-solid fa-car"></i></div>
-              <span class="vehicle-badge-type">Compact SUV</span>
-              <div class="vehicle-title">Honda Vezel</div>
-              <div class="vehicle-specs">1–4 Pax · 3 Bags<br>High Clearance · Luxury Interior · A/C</div>
-              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Elevated Comfort</div>
-            </div>
-
-            <!-- 3. Toyota Prius -->
-            <div class="vehicle-card" data-vehicle="Toyota Prius" data-type="Premium Sedan">
+            <div class="vehicle-card" data-vehicle="Toyota Prius" role="radio" aria-checked="false" tabindex="0">
               <div class="vehicle-icon"><i class="fa-solid fa-car-rear"></i></div>
               <span class="vehicle-badge-type">Premium Hybrid</span>
               <div class="vehicle-title">Toyota Prius</div>
-              <div class="vehicle-specs">1–3 Pax · 3 Bags<br>Ultra Smooth Ride · Silent · A/C</div>
-              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Premium Smooth</div>
+              <div class="vehicle-specs">1–3 Pax · 3 Bags<br>Ultra smooth · Silent · A/C</div>
             </div>
 
-            <!-- 4. Toyota KDH -->
-            <div class="vehicle-card" data-vehicle="Toyota KDH Van" data-type="Luxury Van">
+            <div class="vehicle-card" data-vehicle="Honda Vezel" role="radio" aria-checked="false" tabindex="0">
+              <div class="vehicle-icon"><i class="fa-solid fa-car"></i></div>
+              <span class="vehicle-badge-type">Compact SUV</span>
+              <div class="vehicle-title">Honda Vezel</div>
+              <div class="vehicle-specs">1–4 Pax · 3 Bags<br>High clearance · A/C</div>
+            </div>
+
+            <div class="vehicle-card" data-vehicle="Toyota HiAce" role="radio" aria-checked="false" tabindex="0">
               <div class="vehicle-icon"><i class="fa-solid fa-van-shuttle"></i></div>
               <span class="vehicle-badge-type">Luxury Van</span>
-              <div class="vehicle-title">Toyota KDH</div>
-              <div class="vehicle-specs">1–8/9 Pax · 6–8 Bags + Surfboards<br>High Roof · Dual A/C · Reclining</div>
-              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Spacious Group & Surf</div>
+              <div class="vehicle-title">Toyota HiAce</div>
+              <div class="vehicle-specs">1–9 Pax · 6–8 Bags + Surfboards<br>High roof · Dual A/C</div>
             </div>
           </div>
+          <p class="field-error" id="errVehicle">Please choose a vehicle.</p>
 
           <!-- Booking Confirmation & WhatsApp Action -->
           <div class="booking-actions">
             <div class="price-estimate-box">
-              Selected: <strong id="selectedVehicleText">Toyota Aqua</strong> &bull;
-              Route: <strong id="selectedRouteText">Airport CMB &rarr; Ahangama, Galle</strong>
-              <div class="price-note-sub">
-                <i class="fa-solid fa-circle-info"></i> Rates are tailored dynamically based on your exact route &
-                schedule.
+              <div class="summary-line">
+                <span id="selectedRouteText">Enter your pickup and destination</span>
+              </div>
+              <div class="summary-meta">
+                <span id="distanceChip" class="distance-chip" hidden></span>
+                <span class="price-note-sub">Rates are tailored to your exact route &amp; schedule.</span>
               </div>
             </div>
             <div class="booking-btn-group">
@@ -2513,12 +2640,12 @@
     <!-- ================= POPULAR TOURS SECTION ================= -->
     <section class="packages" id="tours">
       <div class="wrap">
-        <div class="eyebrow">Island-Wide Excursions</div>
-        <h2 class="section-title">Popular Sri Lanka Tour Routes</h2>
-        <p class="section-subtitle">Tailored scenic road trips and transfers with flexible stops for photography, tea
+        <div class="eyebrow" data-reveal>Island-Wide Excursions</div>
+        <h2 class="section-title" data-reveal>Popular Sri Lanka Tour Routes</h2>
+        <p class="section-subtitle" data-reveal>Tailored scenic road trips and transfers with flexible stops for photography, tea
           factory visits, wildlife safaris, and beach spots.</p>
 
-        <div class="pkg-grid">
+        <div class="pkg-grid" data-reveal data-reveal-stagger>
           <!-- Tour 1 -->
           <div class="pkg-card">
             <div class="pkg-header">
@@ -2592,7 +2719,7 @@
     <!-- ================= ABOUT DRIVER & MULTILINGUAL SECTION ================= -->
     <section class="about-driver" id="about">
       <div class="wrap">
-        <div class="driver-card">
+        <div class="driver-card" data-reveal data-reveal-stagger>
           <div class="driver-badge-card">
             <div class="driver-avatar">
               <i class="fa-solid fa-user-tie"></i>
@@ -2605,7 +2732,7 @@
           </div>
 
           <div class="driver-details">
-            <div class="eyebrow">Meet Your Chauffeur</div>
+            <div class="eyebrow" data-reveal>Meet Your Chauffeur</div>
             <h3>Personalized Island-Wide Travel with DG Travels</h3>
             <p>
               Hello and welcome! Founded in 2022, DG Travels is built on reliability, immaculate vehicles, and
@@ -2648,15 +2775,15 @@
     <!-- ================= QR CODE & DYNAMIC FEEDBACK SECTION ================= -->
     <section class="feedback-section" id="feedback">
       <div class="wrap">
-        <div class="eyebrow">Passenger Reviews & QR Code</div>
-        <h2 class="section-title">We Value Your Feedback</h2>
-        <p class="section-subtitle">Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap
+        <div class="eyebrow" data-reveal>Passenger Reviews & QR Code</div>
+        <h2 class="section-title" data-reveal>We Value Your Feedback</h2>
+        <p class="section-subtitle" data-reveal>Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap
           the button below, to share your experience with us.</p>
 
-        <div class="feedback-container">
+        <div class="feedback-container" data-reveal data-reveal-stagger>
           <!-- In-Vehicle QR Code Standee Card -->
           <div class="qr-standee-card">
-            <div class="eyebrow">In-Vehicle QR Code</div>
+            <div class="eyebrow" data-reveal>In-Vehicle QR Code</div>
             <h3>Scan to Leave a Review</h3>
 
             <div class="qr-box-frame">
@@ -2706,9 +2833,9 @@
 
 
         <div class="reviews-showcase">
-          <div class="reviews-header">
+          <div class="reviews-header" data-reveal>
             <div>
-              <div class="eyebrow">Real Passenger Stories</div>
+              <div class="eyebrow" data-reveal>Real Passenger Stories</div>
               <h3>Verified Customer Reviews</h3>
             </div>
 
@@ -2771,7 +2898,7 @@
     <!-- ================= FOOTER ================= -->
     <footer>
       <div class="wrap">
-        <div class="footer-grid">
+        <div class="footer-grid" data-reveal data-reveal-stagger>
           <div class="footer-about">
             <div class="nav-brand footer-brand">
               <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:40px;">
@@ -2843,19 +2970,117 @@
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       // ================= 1. LOADING SCREEN =================
-      // The CSS animation already guarantees the splash clears. This only
-      // ends it sooner once loading finishes, keeping a short minimum so it
-      // does not flash on a fast connection.
+      // performance.now() is milliseconds since navigation started, so the
+      // splash lasts the same 3s whether the page rendered instantly or the
+      // fonts took a second to arrive. The CSS carries a 5s failsafe in case
+      // this never runs.
       const preloader = document.getElementById('preloader');
       if (preloader) {
-        const shownAt = Date.now();
-        window.addEventListener('load', () => {
-          const wait = Math.max(0, 400 - (Date.now() - shownAt));
-          setTimeout(() => preloader.classList.add('done'), wait);
-        });
+        const SPLASH_MS = 3000;
+        setTimeout(function () {
+          preloader.classList.add('done');
+        }, Math.max(0, SPLASH_MS - performance.now()));
       }
 
-      // ================= 2. MOBILE DRAWER NAVIGATION =================
+      // ================= 2. MOTION =================
+      // Everything here is progressive: the reveal styles only apply once
+      // `js-anim` is on <html>, so if this block never runs the page simply
+      // renders static and fully visible.
+      if (!prefersReducedMotion) {
+        document.documentElement.classList.add('js-anim');
+
+        // --- Scroll reveals ---
+        const revealEls = document.querySelectorAll('[data-reveal]');
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              const el = entry.target;
+              el.classList.add('in');
+
+              // Stagger the children of a group
+              if (el.hasAttribute('data-reveal-stagger')) {
+                Array.prototype.forEach.call(el.children, function (child, i) {
+                  child.style.transitionDelay = (i * 70) + 'ms';
+                });
+              }
+              io.unobserve(el);
+            });
+          }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+          revealEls.forEach(function (el) {
+            // Overlays are display:none until opened, so they never
+            // intersect — reveal their contents immediately instead.
+            if (el.closest('.modal-overlay') || el.closest('.mobile-drawer')) {
+              el.classList.add('in');
+              return;
+            }
+            io.observe(el);
+          });
+        } else {
+          revealEls.forEach(function (el) { el.classList.add('in'); });
+        }
+
+        // Groups that are staggered but not themselves reveal targets
+        document.querySelectorAll('[data-reveal-stagger]:not([data-reveal])').forEach(function (el) {
+          el.classList.add('in');
+        });
+
+        // --- Header state + reading progress, coalesced into one frame ---
+        const nav = document.querySelector('.nav');
+        const progress = document.getElementById('scrollProgress');
+        let ticking = false;
+
+        function onScrollFrame() {
+          ticking = false;
+          const y = window.scrollY || window.pageYOffset;
+          if (nav) nav.classList.toggle('scrolled', y > 40);
+          if (progress) {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            progress.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+          }
+        }
+        window.addEventListener('scroll', function () {
+          if (!ticking) { ticking = true; requestAnimationFrame(onScrollFrame); }
+        }, { passive: true });
+        onScrollFrame();
+
+        // --- Stat numbers count up the first time they are seen ---
+        if ('IntersectionObserver' in window) {
+          const statObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              const el = entry.target;
+              statObserver.unobserve(el);
+
+              // Only animate a plain leading number; "24/7" and "4 Languages"
+              // keep their exact text.
+              const raw = el.textContent.trim();
+              const m = raw.match(/^(\d+)(\D*)$/);
+              if (!m) return;
+
+              const target = parseInt(m[1], 10);
+              const suffix = m[2] || '';
+              if (!target || target > 999) return;
+
+              const duration = 900;
+              const start = performance.now();
+              (function step(now) {
+                const t = Math.min((now - start) / duration, 1);
+                // ease-out so it settles rather than stopping dead
+                const eased = 1 - Math.pow(1 - t, 3);
+                el.textContent = Math.round(target * eased) + suffix;
+                if (t < 1) requestAnimationFrame(step);
+                else el.textContent = raw;
+              })(start);
+            });
+          }, { threshold: 0.5 });
+
+          document.querySelectorAll('.stat-num').forEach(function (el) { statObserver.observe(el); });
+        }
+      }
+
+      // ================= 3. MOBILE DRAWER NAVIGATION =================
 
       // iOS Safari keeps scrolling the page behind an overlay when only
       // `overflow: hidden` is set, so pin the body and restore the offset.
@@ -2913,87 +3138,246 @@
       // Set current year in footer
       document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-      // Set default date to today
+      // Block past dates, but leave the field empty — a prefilled date
+      // was being submitted unchanged.
       const today = new Date();
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
       const dateInput = document.getElementById('rideDate');
-      if (dateInput) {
-        dateInput.min = `${yyyy}-${mm}-${dd}`;
-        dateInput.value = `${yyyy}-${mm}-${dd}`;
-      }
+      if (dateInput) dateInput.min = `${yyyy}-${mm}-${dd}`;
 
-      // ================= 3. GOOGLE MAP HELPER BUTTONS =================
-      const openPickupMapBtn = document.getElementById('openPickupMapBtn');
-      const openDropoffMapBtn = document.getElementById('openDropoffMapBtn');
+      // ================= 4. GOOGLE MAPS: PLACES + DISTANCE =================
       const pickupInput = document.getElementById('pickup');
       const dropoffInput = document.getElementById('dropoff');
+      const distanceChip = document.getElementById('distanceChip');
 
-      if (openPickupMapBtn) {
-        openPickupMapBtn.addEventListener('click', () => {
-          const val = encodeURIComponent(pickupInput.value.trim() || 'Bandaranaike International Airport Sri Lanka');
-          window.open(`https://www.google.com/maps/search/?api=1&query=${val}`, '_blank');
-        });
+      // Distance is a nice-to-have on the booking message, never a blocker:
+      // if Maps is unconfigured or a lookup fails, this stays null and the
+      // WhatsApp message simply says it will be confirmed.
+      let currentDistance = null;
+      let distanceSeq = 0;
+
+      function setChip(state, text) {
+        if (!distanceChip) return;
+        if (!state) { distanceChip.hidden = true; distanceChip.innerHTML = ''; return; }
+        distanceChip.hidden = false;
+        distanceChip.classList.toggle('loading', state === 'loading');
+        distanceChip.innerHTML = state === 'loading'
+          ? '<span class="dot"></span>Calculating distance…'
+          : escapeHtml(text);
       }
 
-      if (openDropoffMapBtn) {
-        openDropoffMapBtn.addEventListener('click', () => {
-          const val = encodeURIComponent(dropoffInput.value.trim() || 'Galle Sri Lanka');
-          window.open(`https://www.google.com/maps/search/?api=1&query=${val}`, '_blank');
-        });
+      function fetchDistance() {
+        const origin = pickupInput.value.trim();
+        const destination = dropoffInput.value.trim();
+        currentDistance = null;
+
+        if (origin.length < 3 || destination.length < 3) { setChip(null); return; }
+
+        const seq = ++distanceSeq;
+        setChip('loading');
+
+        fetch('/api/distance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ origin: origin, destination: destination })
+        })
+          .then(function (res) { return res.json().then(function (b) { return { ok: res.ok, body: b }; }); })
+          .then(function (r) {
+            if (seq !== distanceSeq) return; // a newer lookup already started
+            if (!r.ok) throw new Error((r.body && r.body.error) || 'lookup failed');
+            currentDistance = r.body;
+            setChip('ok', r.body.durationText
+              ? r.body.text + ' · about ' + r.body.durationText
+              : r.body.text);
+          })
+          .catch(function () {
+            if (seq !== distanceSeq) return;
+            currentDistance = null;
+            setChip(null);
+          });
       }
 
-      // ================= 4. FLEET & BOOKING LOGIC =================
+      // Debounced so typing does not fire a billable lookup per keystroke
+      let distanceTimer;
+      function scheduleDistance() {
+        clearTimeout(distanceTimer);
+        distanceTimer = setTimeout(fetchDistance, 700);
+      }
+
+      // ---- Google Places autocomplete (loaded only if a key is configured) ----
+      function initPlaces() {
+        if (!(window.google && google.maps && google.maps.places)) return;
+        try {
+          const opts = {
+            fields: ['formatted_address', 'name', 'geometry'],
+            componentRestrictions: { country: 'lk' }
+          };
+          [pickupInput, dropoffInput].forEach(function (input) {
+            const ac = new google.maps.places.Autocomplete(input, opts);
+            ac.addListener('place_changed', function () {
+              const place = ac.getPlace();
+              if (place) {
+                const label = place.formatted_address ||
+                  (place.name ? place.name : input.value);
+                if (label) input.value = label;
+              }
+              updateBookingSummary();
+              clearTimeout(distanceTimer);
+              fetchDistance();
+            });
+            // Enter on a suggestion should not submit anything
+            input.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter') e.preventDefault();
+            });
+          });
+        } catch (err) {
+          console.warn('[maps] autocomplete unavailable:', err.message);
+        }
+      }
+
+      fetch('/api/config')
+        .then(function (r) { return r.json(); })
+        .then(function (cfg) {
+          if (!cfg.mapsKey) return; // plain text inputs still work fine
+          const sc = document.createElement('script');
+          sc.src = 'https://maps.googleapis.com/maps/api/js?key=' +
+            encodeURIComponent(cfg.mapsKey) + '&libraries=places&loading=async&callback=dgInitPlaces';
+          sc.async = true;
+          window.dgInitPlaces = initPlaces;
+          sc.onerror = function () { console.warn('[maps] script failed to load'); };
+          document.head.appendChild(sc);
+        })
+        .catch(function () { /* no config endpoint: inputs stay plain */ });
+
+      // ================= 5. BOOKING & WHATSAPP =================
       const vehicleCards = document.querySelectorAll('.vehicle-card');
-      let selectedVehicle = 'Toyota Aqua';
+      const fleetGrid = document.getElementById('fleetGrid');
+      // Nothing is preselected — the traveller chooses.
+      let selectedVehicle = '';
 
-      vehicleCards.forEach(card => {
-        card.addEventListener('click', () => {
-          vehicleCards.forEach(c => c.classList.remove('selected'));
-          card.classList.add('selected');
-          selectedVehicle = card.dataset.vehicle;
-          updateBookingSummary();
+      function selectVehicle(card) {
+        vehicleCards.forEach(function (c) {
+          const on = c === card;
+          c.classList.toggle('selected', on);
+          c.setAttribute('aria-checked', String(on));
+        });
+        selectedVehicle = card.dataset.vehicle;
+        if (fleetGrid) fleetGrid.classList.remove('invalid');
+        setError('errVehicle', false);
+        updateBookingSummary();
+      }
+
+      vehicleCards.forEach(function (card) {
+        card.addEventListener('click', function () { selectVehicle(card); });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectVehicle(card); }
         });
       });
 
-      const selectedVehicleText = document.getElementById('selectedVehicleText');
       const selectedRouteText = document.getElementById('selectedRouteText');
+      const custNameInput = document.getElementById('custName');
+      const passengersSelect = document.getElementById('passengers');
 
       function updateBookingSummary() {
-        const p = pickupInput.value.trim() || 'Pickup Location';
-        const d = dropoffInput.value.trim() || 'Destination';
-        if (selectedVehicleText) selectedVehicleText.textContent = selectedVehicle;
-        if (selectedRouteText) selectedRouteText.innerHTML = `${escapeHtml(p)} &rarr; ${escapeHtml(d)}`;
+        if (!selectedRouteText) return;
+        const p = pickupInput.value.trim();
+        const d = dropoffInput.value.trim();
+        if (!p || !d) {
+          selectedRouteText.textContent = 'Enter your pickup and destination';
+          return;
+        }
+        selectedRouteText.innerHTML =
+          escapeHtml(p) + ' &rarr; ' + escapeHtml(d) +
+          (selectedVehicle ? ' &bull; <strong>' + escapeHtml(selectedVehicle) + '</strong>' : '');
       }
 
-      pickupInput.addEventListener('input', updateBookingSummary);
-      dropoffInput.addEventListener('input', updateBookingSummary);
+      [pickupInput, dropoffInput].forEach(function (el) {
+        el.addEventListener('input', function () {
+          updateBookingSummary();
+          scheduleDistance();
+          markValid(el);
+        });
+      });
+      [custNameInput, passengersSelect, document.getElementById('rideDate')].forEach(function (el) {
+        if (el) el.addEventListener('input', function () { markValid(el); });
+      });
+      if (passengersSelect) passengersSelect.addEventListener('change', function () { markValid(passengersSelect); });
       updateBookingSummary();
 
-      // WhatsApp Booking Button Action
+      // ---- Validation ----
+      function setError(id, show) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('show', show);
+      }
+      function markValid(el) {
+        if (el && el.value.trim()) el.classList.remove('invalid');
+      }
+
+      const FIELDS = [
+        { el: pickupInput,      err: 'errPickup' },
+        { el: dropoffInput,     err: 'errDropoff' },
+        { el: custNameInput,    err: 'errName' },
+        { el: passengersSelect, err: 'errPassengers' },
+        { el: document.getElementById('rideDate'), err: 'errDate' }
+      ];
+
+      function validateBooking() {
+        let firstBad = null;
+
+        FIELDS.forEach(function (f) {
+          const empty = !f.el || !f.el.value.trim();
+          if (f.el) f.el.classList.toggle('invalid', empty);
+          setError(f.err, empty);
+          if (empty && !firstBad) firstBad = f.el;
+        });
+
+        const noVehicle = !selectedVehicle;
+        setError('errVehicle', noVehicle);
+        if (fleetGrid) fleetGrid.classList.toggle('invalid', noVehicle);
+        if (noVehicle && !firstBad) firstBad = fleetGrid;
+
+        if (firstBad) {
+          firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (firstBad.focus) setTimeout(function () { firstBad.focus({ preventScroll: true }); }, 300);
+          return false;
+        }
+        return true;
+      }
+
+      function formatTravelDate(value) {
+        const d = new Date(value + 'T00:00:00');
+        if (isNaN(d)) return value;
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+
       const bookWhatsAppBtn = document.getElementById('bookWhatsAppBtn');
       if (bookWhatsAppBtn) {
-        bookWhatsAppBtn.addEventListener('click', () => {
-          const p = pickupInput.value.trim() || 'Not specified';
-          const d = dropoffInput.value.trim() || 'Not specified';
-          const dt = dateInput ? dateInput.value : 'Flexible';
-          const pax = document.getElementById('passengers').value;
+        bookWhatsAppBtn.addEventListener('click', function () {
+          if (!validateBooking()) return;
 
-          const message = `Hello Isum (DG Travels), I would like to request an instant quote:%0A%0A` +
-            `🚗 *Vehicle:* ${selectedVehicle}%0A` +
-            `📍 *Pickup:* ${p}%0A` +
-            `🏁 *Destination:* ${d}%0A` +
-            `📅 *Date:* ${dt}%0A` +
-            `👥 *Travelers:* ${pax}%0A%0A` +
-            `Please let me know availability and best quote for this ride. Thank you!`;
+          const dateInputEl = document.getElementById('rideDate');
+          const lines = [
+            'Hello DG Travels, I want to book a private ride.',
+            '',
+            'Name: ' + custNameInput.value.trim(),
+            'Pickup Location: ' + pickupInput.value.trim(),
+            'Destination: ' + dropoffInput.value.trim(),
+            'Distance: ' + (currentDistance ? currentDistance.text : 'To be confirmed'),
+            'Vehicle: ' + selectedVehicle,
+            'No of Passengers: ' + passengersSelect.value,
+            'Travel Date: ' + formatTravelDate(dateInputEl.value)
+          ];
 
-          const waUrl = `https://wa.me/94778261901?text=${message}`;
-          window.open(waUrl, '_blank');
+          window.open(
+            'https://wa.me/94778261901?text=' + encodeURIComponent(lines.join('\n')),
+            '_blank'
+          );
         });
       }
 
-      // ================= 5. QR CODE GENERATOR =================
+      // ================= 6. QR CODE GENERATOR =================
       // The printed QR must point at the LIVE feedback page, so that a
       // standee printed today keeps working. Set SITE_URL to the deployed
       // domain before printing; otherwise the QR is built from wherever
@@ -3077,7 +3461,7 @@
         });
       }
 
-      // ================= 6. LIVE PASSENGER REVIEWS (SUPABASE) =================
+      // ================= 7. LIVE PASSENGER REVIEWS (SUPABASE) =================
       // Reviews are submitted on feedback.html and stored in Supabase.
       // This page only reads them, through /api/reviews, which never
       // exposes passenger email addresses.

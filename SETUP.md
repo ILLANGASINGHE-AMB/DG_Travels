@@ -8,6 +8,8 @@ index.html          Main website (reads reviews from /api/reviews)
 feedback.html       The page the QR code opens — name, email, feedback, rating
 api/feedback.js     POST — validates, saves to Supabase, emails you
 api/reviews.js      GET  — public review feed (never returns email addresses)
+api/config.js       GET  — public runtime config (Maps browser key)
+api/distance.js     POST — driving distance for the booking form
 api/_supabase.js    Supabase REST helper
 api/_notify.js      Resend email helper
 supabase/schema.sql The table to create
@@ -51,12 +53,38 @@ address, add your domain under **Domains** and verify it, then set
 
 ---
 
-## Step 3 — Deploy to Vercel
+## Step 3 — Google Maps (booking form)
+
+The booking form suggests addresses as you type and works out the driving
+distance for the WhatsApp message. Both need Google Maps Platform.
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create a project
+   and enable billing (Maps has a monthly free allowance).
+2. Enable these APIs: **Maps JavaScript API**, **Places API**, and **Routes API**
+   (or **Distance Matrix API** — the code tries Routes first and falls back).
+3. Create **two** keys under *APIs & Services → Credentials*:
+
+| Key | Restrict it to | Used by |
+|---|---|---|
+| Browser key | HTTP referrers = your Vercel domain; APIs = Maps JavaScript + Places | The address autocomplete on the page |
+| Server key | APIs = Routes API (+ Distance Matrix) | `/api/distance` only, never sent to the browser |
+
+The browser key is necessarily public — any in-page Maps integration exposes one.
+The referrer restriction is what stops someone else spending your quota, so do not
+skip it. The server key never leaves Vercel.
+
+> **This step is optional.** With no keys set, the address fields stay plain text
+> boxes and the WhatsApp message says `Distance: To be confirmed`. Everything
+> else works exactly the same.
+
+---
+
+## Step 4 — Deploy to Vercel
 
 1. Put this folder in a GitHub repository.
 2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
 3. Framework preset: **Other**. No build command, no output directory.
-4. Before deploying, open **Environment Variables** and add these four:
+4. Before deploying, open **Environment Variables** and add these:
 
 | Name | Value |
 |---|---|
@@ -64,6 +92,8 @@ address, add your domain under **Domains** and verify it, then set
 | `SUPABASE_SERVICE_ROLE_KEY` | your `service_role` key |
 | `RESEND_API_KEY` | `re_...` |
 | `NOTIFY_EMAIL_TO` | the address that should receive alerts |
+| `GOOGLE_MAPS_BROWSER_KEY` | the referrer-restricted browser key (optional) |
+| `GOOGLE_MAPS_SERVER_KEY` | the server key for distance lookups (optional) |
 
 Optionally add `NOTIFY_EMAIL_FROM` once you have verified a domain in Resend.
 
@@ -73,7 +103,7 @@ Optionally add `NOTIFY_EMAIL_FROM` once you have verified a domain in Resend.
 
 ---
 
-## Step 4 — Point the QR code at your live site
+## Step 5 — Point the QR code at your live site
 
 The QR code is generated in the browser, so it currently encodes whatever address the
 page is open at. Before you **print** a standee, pin it to the real domain:
@@ -165,3 +195,6 @@ Create a `.env.local` from `.env.example` first (see that file for the variable 
 | Reviews say "temporarily unavailable" | Same as above — check the function logs in Vercel → Deployments → Functions |
 | Feedback saves but no email arrives | Check spam; confirm `RESEND_API_KEY` and `NOTIFY_EMAIL_TO`. With the default sender, delivery only works to the Resend account owner's address |
 | QR opens the wrong address | `SITE_URL` in `index.html` is unset or stale — update it and reprint |
+| No address suggestions while typing | `GOOGLE_MAPS_BROWSER_KEY` missing, or the key's referrer restriction does not include your domain |
+| Message says "Distance: To be confirmed" | No Maps key set, or Routes API / Distance Matrix API is not enabled on it — check the function logs |
+| Maps billing warnings | Add the referrer restriction to the browser key and the API restriction to the server key |
