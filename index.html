@@ -37,6 +37,14 @@
        No glows, no gradients on text, no ambient decoration.
        ============================================================ */
 
+    /* Registering the angle makes it interpolate; without @property support
+       the wedge simply holds still and the contour stays put. */
+    @property --dg-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
     :root {
       /* Surfaces — flat neutral blacks, no warm cast */
       --bg: #0a0a0a;
@@ -69,6 +77,7 @@
       --nav-h: 72px;
 
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --dg-angle: 0deg;
     }
 
     *,
@@ -633,51 +642,52 @@
       margin-bottom: 36px;
     }
 
-    /* The gold line is a conic gradient rotating behind the mark; the logo
-       itself sits on top and masks all but a 2px rim, so what you see is a
-       highlight travelling around the border. One rotating element, so it
-       composites on the GPU and costs nothing to run. */
-    .logo-frame {
+    /* ---------- Hero mark ----------
+       No frame or plate: the artwork is transparent and sits straight on
+       the page. A gold contour is generated from the art itself (see the
+       #dgContour SVG filter) and a rotating wedge lights a moving section
+       of that contour, so the line appears to travel around the mark. */
+    .logo-mark {
       position: relative;
-      width: 112px;
-      height: 112px;
+      width: 340px;
+      max-width: 78vw;
+      aspect-ratio: 1536 / 1024;
       margin: 0 auto;
-      padding: 2px;
-      border-radius: 18px;
-      background: var(--line);
-      overflow: hidden;
-      isolation: isolate;
     }
-    .logo-frame::before {
-      content: '';
+    .logo-mark img {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 170%;
-      aspect-ratio: 1;
-      translate: -50% -50%;
-      background: conic-gradient(from 0deg,
-          transparent 0 52%,
-          rgba(201, 169, 97, 0.22) 68%,
-          var(--accent) 82%,
-          #f3e2b6 89%,
-          var(--accent) 93%,
-          transparent 100%);
-      animation: logoTrace 4s linear infinite;
-      z-index: 0;
-    }
-    @keyframes logoTrace { to { rotate: 360deg; } }
-
-    .hero-logo-center {
-      position: relative;
-      z-index: 1;
+      inset: 0;
       width: 100%;
       height: 100%;
-      display: block;
       object-fit: contain;
-      border-radius: 16px;
-      background: #000;
+      display: block;
     }
+
+    /* 1 — the standing contour, dim */
+    .logo-contour {
+      filter: url(#dgContour);
+      opacity: 0.45;
+    }
+
+    /* 2 — the travelling highlight: same contour, revealed through a
+       rotating wedge. --dg-angle is registered below so it can animate. */
+    .logo-sweep {
+      position: absolute;
+      inset: 0;
+      -webkit-mask-image: conic-gradient(from var(--dg-angle),
+          transparent 0 8%, #000 20%, #000 26%, transparent 40%, transparent 100%);
+      mask-image: conic-gradient(from var(--dg-angle),
+          transparent 0 8%, #000 20%, #000 26%, transparent 40%, transparent 100%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      animation: dgSweep 4.5s linear infinite;
+    }
+    .logo-sweep img { filter: url(#dgContour) brightness(1.5); }
+
+    /* 3 — the artwork itself, above both contour layers */
+    .logo-art { position: relative; }
+
+    @keyframes dgSweep { to { --dg-angle: 360deg; } }
 
     .hero-badge {
       display: block;
@@ -1546,14 +1556,16 @@
       color: var(--text-3);
     }
 
+    /* Flex rather than the seamless 1px-gap grid used elsewhere: the tour
+       and QR blocks always have a fixed number of children, but the review
+       count is whatever passengers have submitted. A grid left the unused
+       tracks showing as an empty lit panel next to a lone card, so each
+       card now carries its own border and the row simply centres. */
     .reviews-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line);
-      border-radius: var(--r-lg);
-      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
     }
 
     .reviews-grid:empty {
@@ -1561,17 +1573,22 @@
     }
 
     .review-card {
-      background: var(--bg);
-      padding: 28px 26px;
+      flex: 1 1 320px;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 26px 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 22px;
-      transition: background-color 0.2s var(--ease);
+      gap: 20px;
+      transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease);
     }
 
     .review-card:hover {
-      background: var(--surface);
+      background: var(--surface-2);
+      border-color: var(--line-strong);
     }
 
     .review-top {
@@ -2185,12 +2202,10 @@
         gap: 12px;
       }
 
-      .reviews-grid {
-        grid-template-columns: 1fr;
-      }
-
       .review-card {
-        padding: 24px 20px;
+        flex-basis: 100%;
+        max-width: none;
+        padding: 22px 20px;
       }
 
       .footer-grid {
@@ -2235,6 +2250,7 @@
       .brand-logo-img {
         height: 27px;
       }
+
 
       .section-title {
         font-size: 23px;
@@ -2298,9 +2314,13 @@
         min-height: 44px;
       }
 
-      .pkg-card:hover,
-      .review-card:hover {
+      .pkg-card:hover {
         background: var(--bg);
+      }
+
+      .review-card:hover {
+        background: var(--surface);
+        border-color: var(--line);
       }
 
       .float-btn:hover {
@@ -2314,12 +2334,6 @@
         padding: 40px 0 36px;
       }
 
-      .logo-frame {
-        width: 78px;
-        height: 78px;
-        border-radius: 14px;
-      }
-      .hero-logo-center { border-radius: 12px; }
 
       .hero-logo-container {
         margin-bottom: 22px;
@@ -2331,12 +2345,8 @@
         scroll-behavior: auto;
       }
 
-      /* Hold the gold line still rather than removing it */
-      .logo-frame::before {
-        animation: none;
-        background: var(--accent);
-        opacity: 0.5;
-      }
+      /* Hold the travelling highlight still */
+      .logo-sweep { animation: none; }
 
       /* Skip the splash entirely rather than flashing it */
       #preloader {
@@ -2374,6 +2384,27 @@
       <div class="preloader-bar"><span></span></div>
     </div>
   </div>
+
+
+  <!-- Contour filter for the hero mark. Kept out of flow; renders nothing itself. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false"
+       style="position:absolute;pointer-events:none">
+    <defs>
+      <filter id="dgContour" x="-20%" y="-20%" width="140%" height="140%"
+              color-interpolation-filters="sRGB">
+        <!-- 1. Hard-threshold the soft glow into a crisp silhouette -->
+        <feComponentTransfer in="SourceAlpha" result="solid">
+          <feFuncA type="linear" slope="14" intercept="-7"/>
+        </feComponentTransfer>
+        <!-- 2. Grow it, then subtract the original: a ring hugging every stroke -->
+        <feMorphology in="solid" operator="dilate" radius="2.5" result="fat"/>
+        <feComposite in="fat" in2="solid" operator="out" result="ring"/>
+        <!-- 3. Paint the ring gold -->
+        <feFlood flood-color="#c9a961" result="gold"/>
+        <feComposite in="gold" in2="ring" operator="in"/>
+      </filter>
+    </defs>
+  </svg>
 
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
@@ -2458,8 +2489,16 @@
 
         <!-- Big Scroll-Interactive Hero Logo -->
         <div class="hero-logo-container" data-reveal>
-          <div class="logo-frame">
-            <img src="LOGO/DG - 1.png" alt="DG Travels Emblem" class="hero-logo-center" id="heroLogo">
+          <div class="logo-mark" id="heroLogo">
+            <!-- Three stacked copies of the same art:
+                 1. a dim gold contour, always visible
+                 2. the same contour, revealed by a rotating wedge -> the light travels
+                 3. the logo itself, on top -->
+            <img src="LOGO/DG_logo_Tp.png" alt="" aria-hidden="true" class="logo-contour">
+            <div class="logo-sweep" aria-hidden="true">
+              <img src="LOGO/DG_logo_Tp.png" alt="">
+            </div>
+            <img src="LOGO/DG_logo_Tp.png" alt="DG Travels" class="logo-art">
           </div>
         </div>
 
