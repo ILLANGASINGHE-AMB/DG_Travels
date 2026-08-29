@@ -287,6 +287,21 @@
       gap: 11px;
     }
 
+    /* ---------- Splash -> page handoff ----------
+       The page sits dimmed and slightly low while the splash is up, then
+       rises into place as the splash fades: the two cross over rather than
+       one simply vanishing. `splashing` is only ever set by script, so with
+       JS off the page is visible from the start. */
+    .app-root {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+    }
+    html.splashing .app-root {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
     /* ---------- Loading screen ---------- */
     #preloader {
       position: fixed;
@@ -302,7 +317,28 @@
     }
 
     #preloader.done {
-      animation: preloaderOut 0.4s var(--ease) forwards;
+      animation: splashHandoff 0.7s var(--ease) forwards;
+    }
+    @keyframes splashHandoff {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* The mark lifts and softens as it hands over, so the change reads as a
+       transition rather than a panel being switched off. */
+    #preloader.done .preloader-inner {
+      animation: splashLeave 0.55s var(--ease) forwards;
+    }
+    @keyframes splashLeave {
+      to {
+        opacity: 0;
+        transform: translateY(-10px) scale(1.03);
+      }
     }
 
     @keyframes preloaderOut {
@@ -2353,6 +2389,15 @@
         display: none;
       }
 
+      html.splashing .app-root {
+        opacity: 1;
+        transform: none;
+      }
+
+      .app-root {
+        transition: none;
+      }
+
       *,
       *::before,
       *::after {
@@ -2366,6 +2411,34 @@
       }
     }
   </style>
+
+  <script>
+    /* Splash handoff. Adds `splashing` (which dims the page) and schedules
+       its removal together, so the page can never be left hidden. Skipped
+       entirely when the visitor asks for reduced motion. */
+    (function () {
+      var root = document.documentElement;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      root.classList.add('splashing');
+
+      var revealed = false;
+      function reveal() {
+        if (revealed) return;
+        revealed = true;
+        root.classList.remove('splashing');
+        var el = document.getElementById('preloader');
+        if (el) el.classList.add('done');
+      }
+
+      /* performance.now() counts from navigation, so the splash lasts the
+         same 3s regardless of how long the fonts took. */
+      setTimeout(reveal, Math.max(0, 3000 - performance.now()));
+      /* Backstops: never strand the visitor on a dimmed page. */
+      setTimeout(reveal, 6000);
+      window.addEventListener('error', reveal);
+    })();
+  </script>
 </head>
 
 <body>
@@ -2999,20 +3072,7 @@
       // Respect the OS 'reduce motion' setting for the few remaining transitions.
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // ================= 1. LOADING SCREEN =================
-      // performance.now() is milliseconds since navigation started, so the
-      // splash lasts the same 3s whether the page rendered instantly or the
-      // fonts took a second to arrive. The CSS carries a 5s failsafe in case
-      // this never runs.
-      const preloader = document.getElementById('preloader');
-      if (preloader) {
-        const SPLASH_MS = 3000;
-        setTimeout(function () {
-          preloader.classList.add('done');
-        }, Math.max(0, SPLASH_MS - performance.now()));
-      }
-
-      // ================= 2. MOTION =================
+      // ================= 1. MOTION =================
       // Everything here is progressive: the reveal styles only apply once
       // `js-anim` is on <html>, so if this block never runs the page simply
       // renders static and fully visible.
