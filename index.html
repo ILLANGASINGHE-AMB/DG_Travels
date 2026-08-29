@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0d0c0a">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>DG Travels | Private Transport & Island-Wide Tours in Sri Lanka</title>
@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
   <!-- Font Awesome Icons for UI -->
@@ -32,2476 +32,1321 @@
   <script src="assets/qrcode.min.js"></script>
 
   <style>
+    /* ============================================================
+       DG TRAVELS — DESIGN SYSTEM
+       Refined dark. Flat surfaces, hairline rules, one accent.
+       No glows, no gradients on text, no ambient decoration.
+       ============================================================ */
+
     :root {
-      --bg: #080807;
-      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1911 0%, #080807 80%);
-      --surface: #13120f;
-      --surface-2: #191712;
-      --surface-3: #221f18;
-      --surface-glass: rgba(19, 18, 15, 0.92);
-      --field: #0e0d0a;
-      --field-border: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.09);
-      --border-strong: rgba(255, 255, 255, 0.22);
+      /* Surfaces — flat neutral blacks, no warm cast */
+      --bg:          #0a0a0a;
+      --surface:     #111111;
+      --surface-2:   #161616;
+      --surface-3:   #1c1c1c;
+      --field:       #0d0d0d;
 
-      --text: #f7f4ec;
-      --text-muted: #a49d8f;
-      --text-faint: #6c6659;
+      /* Hairlines do the structural work that shadows used to */
+      --line:        rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.17);
 
-      --gold: #d7a84e;
-      --gold-light: #f3c96f;
-      --gold-deep: #a87e32;
-      --gold-glow: rgba(215, 168, 78, 0.35);
-      --gold-wash: rgba(215, 168, 78, 0.10);
+      --text:        #f4f4f4;
+      --text-2:      #a0a0a0;
+      --text-3:      #808080;
 
-      --green: #25D366;
+      /* A single restrained accent, used sparingly */
+      --accent:      #c9a961;
+      --accent-hi:   #dcbe7c;
+      --accent-dim:  rgba(201, 169, 97, 0.10);
 
-      --radius-xl: 22px;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-      --maxw: 1160px;
+      --green:       #25d366;
+      --danger:      #ff7b72;
 
-      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      --r-sm: 4px;
+      --r:    8px;
+      --r-lg: 12px;
+
+      --maxw: 1120px;
+      --nav-h: 72px;
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *,
+    *::before,
+    *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
-      scroll-behavior: smooth;
       -webkit-text-size-adjust: 100%;
       overflow-x: hidden;
-      /* Keep anchor jumps clear of the sticky header on mobile */
-      scroll-padding-top: 76px;
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-h) + 16px);
     }
 
     body {
       background: var(--bg);
-      background-image: var(--bg-gradient);
       color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
-      line-height: 1.55;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
       min-height: 100vh;
-      position: relative;
     }
 
-    /* Ambient Background Rain Canvas */
-    #brandRainCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      /* Stable through mobile URL-bar show/hide */
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.65;
+    a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    img, svg { display: block; max-width: 100%; }
+    ul { list-style: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
     }
 
-    /* Wrap all main content above canvas */
-    .app-root {
-      position: relative;
-      z-index: 2;
-    }
-
-    /* ================= 1. LUXURY SPLASH / PRELOADER SCREEN ================= */
-    #preloader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #070706;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
-    }
-
-    #preloader.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .preloader-logo-wrap {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .preloader-glow-ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      border-top-color: var(--gold);
-      border-right-color: var(--gold-light);
-      animation: spinRing 1.6s linear infinite;
-    }
-
-    .preloader-glow-ring-2 {
-      position: absolute;
-      width: 120%;
-      height: 120%;
-      border-radius: 50%;
-      border: 1px dashed rgba(215, 168, 78, 0.3);
-      animation: spinRingRev 3.2s linear infinite;
-    }
-
-    @keyframes spinRing {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes spinRingRev {
-      0% {
-        transform: rotate(360deg);
-      }
-
-      100% {
-        transform: rotate(0deg);
-      }
-    }
-
-    .preloader-logo {
-      width: 90px;
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 0 25px var(--gold-glow));
-      animation: logoPulse 1.6s ease-in-out infinite alternate;
-    }
-
-    @keyframes logoPulse {
-      0% {
-        transform: scale(0.95);
-        filter: drop-shadow(0 0 15px rgba(215, 168, 78, 0.2));
-      }
-
-      100% {
-        transform: scale(1.05);
-        filter: drop-shadow(0 0 35px rgba(215, 168, 78, 0.6));
-      }
-    }
-
-    .preloader-text {
-      font-family: 'Baloo 2', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.22em;
+    /* ---------- Type scale ---------- */
+    h1, h2, h3, h4 {
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .preloader-sub {
-      font-size: 11px;
-      letter-spacing: 0.32em;
-      color: var(--gold);
-      margin-top: 3px;
-    }
-
-    .preloader-bar-bg {
-      width: 160px;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 999px;
-      margin-top: 18px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .preloader-bar-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--gold-deep), var(--gold-light));
-      border-radius: 999px;
-      animation: fillBar 1s ease-out forwards;
-    }
-
-    @keyframes fillBar {
-      0% {
-        width: 0%;
-      }
-
-      60% {
-        width: 80%;
-      }
-
-      100% {
-        width: 100%;
-      }
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    .brand-font {
-      font-family: 'Baloo 2', sans-serif;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Visible focus for keyboard & switch-control users on touch devices */
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    textarea:focus-visible,
-    .vehicle-card:focus-visible {
-      outline: 2px solid var(--gold);
-      outline-offset: 2px;
-    }
-
-    img,
-    svg {
-      display: block;
-      max-width: 100%;
     }
 
     .wrap {
       max-width: var(--maxw);
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 28px;
     }
 
+    /* Small uppercase label. No decorative rules around it. */
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 10px;
+      color: var(--text-3);
+      margin-bottom: 14px;
     }
-
-    .eyebrow::before,
-    .eyebrow::after {
-      content: '';
-      display: inline-block;
-      width: 16px;
-      height: 1.5px;
-      background: var(--gold);
-    }
+    .eyebrow.accent { color: var(--accent); }
 
     .section-title {
-      font-size: clamp(28px, 5vw, 38px);
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 10px;
+      font-size: clamp(25px, 3.4vw, 34px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
     }
-
     .section-subtitle {
-      color: var(--text-muted);
-      font-size: clamp(14px, 3.5vw, 16px);
+      color: var(--text-2);
+      font-size: 15px;
+      max-width: 560px;
+      margin-bottom: 44px;
+    }
+
+    /* Centred section heads */
+    .section-head {
       text-align: center;
-      max-width: 600px;
-      margin: 0 auto 30px;
+      margin-bottom: 48px;
     }
+    .section-head .section-subtitle { margin: 0 auto; }
 
-    /* Route Dash Divider */
-    .route-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: var(--maxw);
-      margin: 18px auto;
-      padding: 0 20px;
-      opacity: 0.5;
-    }
-
-    .route-divider .pin {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--gold);
-      flex: none;
-      box-shadow: 0 0 0 3px var(--gold-wash);
-    }
-
-    .route-divider .dash {
-      flex: 1;
-      height: 0;
-      border-top: 2px dashed var(--border-strong);
-    }
-
-    /* Buttons */
+    /* ---------- Buttons ---------- */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 13px 24px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 14.5px;
-      transition: var(--transition);
-      text-decoration: none;
+      padding: 0 22px;
+      height: 46px;
+      border-radius: var(--r);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
       white-space: nowrap;
-      min-height: 48px;
+      transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
       touch-action: manipulation;
     }
 
     .btn-gold {
-      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-      color: #0d0c09;
-      box-shadow: 0 4px 18px rgba(215, 168, 78, 0.3);
+      background: var(--accent);
+      color: #0a0a0a;
     }
-
-    .btn-gold:hover,
-    .btn-gold:active {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(215, 168, 78, 0.45);
-      background: linear-gradient(135deg, #ffe08a 0%, var(--gold-light) 100%);
-    }
+    .btn-gold:hover { background: var(--accent-hi); }
 
     .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--line-strong);
       color: var(--text);
     }
+    .btn-outline:hover { border-color: var(--text-2); background: rgba(255, 255, 255, 0.03); }
 
-    .btn-outline:hover,
-    .btn-outline:active {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: var(--gold-wash);
-      transform: translateY(-2px);
-    }
-
+    /* WhatsApp keeps its brand cue as a tint, not a neon slab —
+       full-strength green is reserved for the floating action button. */
     .btn-whatsapp {
-      background: var(--green);
-      color: #ffffff;
-      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
+      background: rgba(37, 211, 102, 0.10);
+      border: 1px solid rgba(37, 211, 102, 0.32);
+      color: #4ade80;
+    }
+    .btn-whatsapp:hover {
+      background: rgba(37, 211, 102, 0.16);
+      border-color: rgba(37, 211, 102, 0.5);
     }
 
-    .btn-whatsapp:hover,
-    .btn-whatsapp:active {
-      background: #20ba59;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(37, 211, 102, 0.4);
-    }
+    .btn-sm { height: 38px; padding: 0 16px; font-size: 13px; }
+    .cta-btn { align-self: flex-start; }
 
-    /* Top Announcement Bar */
+    /* Quiet text link with an arrow */
+    .link-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      transition: gap 0.18s var(--ease);
+    }
+    .link-arrow:hover { gap: 11px; }
+
+    /* ---------- Top bar ---------- */
     .top-bar {
-      background: rgba(215, 168, 78, 0.08);
-      border-bottom: 1px solid rgba(215, 168, 78, 0.16);
+      border-bottom: 1px solid var(--line);
       font-size: 12.5px;
-      padding: 7px 0;
-      color: var(--gold-light);
+      color: var(--text-2);
+      background: var(--bg);
     }
-
     .top-bar .wrap {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
+      gap: 16px;
+      height: 40px;
     }
+    .top-info { display: flex; align-items: center; gap: 22px; }
+    .top-info span { display: inline-flex; align-items: center; gap: 7px; }
+    .top-info i { color: var(--text-3); font-size: 11px; }
 
-    .top-info {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-weight: 500;
-    }
-
-    .top-info span {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .top-info i {
-      color: var(--gold);
-      font-size: 11px;
-    }
-
-    /* Header Nav */
+    /* ---------- Header ---------- */
     .nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--surface-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      transition: var(--transition);
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
-
     .nav .wrap {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 70px;
+      gap: 24px;
+      height: var(--nav-h);
     }
 
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-
+    .nav-brand { display: flex; align-items: center; gap: 11px; }
     .brand-logo-img {
-      height: 42px;
+      height: 34px;
       width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
     }
-
     .brand-title {
-      font-family: 'Baloo 2', sans-serif;
-      font-weight: 800;
-      font-size: 17px;
-      letter-spacing: 0.16em;
-      color: var(--text);
       display: flex;
       flex-direction: column;
-      line-height: 1;
+      line-height: 1.1;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
     }
-
     .brand-title span.sub {
-      font-size: 10px;
-      letter-spacing: 0.26em;
-      color: var(--gold);
-      font-weight: 600;
-      margin-top: 2px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      color: var(--text-3);
+      margin-top: 3px;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 22px;
+      gap: 32px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
     }
-
     .nav-links a {
-      color: var(--text-muted);
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 0;
+      color: var(--text-2);
+      transition: color 0.18s var(--ease);
     }
+    .nav-links a:hover { color: var(--text); }
 
-    .nav-links a:hover {
-      color: var(--gold-light);
-    }
-
-    .nav-cta-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .nav-cta-group { display: flex; align-items: center; gap: 10px; }
 
     .btn-qr-nav {
-      background: var(--surface-3);
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      padding: 7px 14px;
-      border-radius: 999px;
-      font-size: 12.5px;
-      font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      min-height: 38px;
-      transition: var(--transition);
+      gap: 7px;
+      height: 38px;
+      padding: 0 15px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
     }
+    .btn-qr-nav:hover { border-color: var(--text-2); color: var(--text); }
 
-    .btn-qr-nav:hover,
-    .btn-qr-nav:active {
-      background: var(--gold);
-      color: #000;
-    }
-
-    /* Mobile Hamburger Menu Button */
     .mobile-menu-toggle {
       display: none;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-sm);
+      width: 44px;
+      height: 44px;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      cursor: pointer;
+      font-size: 17px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
     }
 
-    /* Mobile Slide-Out Drawer */
+    /* ---------- Mobile drawer ---------- */
     .mobile-drawer {
       position: fixed;
       top: 0;
       right: -100%;
-      width: min(300px, 85vw);
+      width: min(320px, 86vw);
       height: 100vh;
       height: 100dvh;
       background: var(--surface);
-      border-left: 1px solid var(--border-strong);
+      border-left: 1px solid var(--line);
       z-index: 999;
-      padding: 24px 20px;
-      padding-top: max(24px, env(safe-area-inset-top));
-      padding-bottom: max(24px, env(safe-area-inset-bottom));
-      padding-right: max(20px, env(safe-area-inset-right));
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 20px;
-      /* Short screens (landscape phones) must still reach every link */
+      gap: 24px;
+      padding: 22px;
+      padding-top: max(22px, env(safe-area-inset-top));
+      padding-bottom: max(22px, env(safe-area-inset-bottom));
+      padding-right: max(22px, env(safe-area-inset-right));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
-      /* Hidden (not just off-screen) so its links stay out of the tab order
-         and the screen-reader tree; the delay lets it finish sliding out. */
       visibility: hidden;
-      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.3s;
+      transition: right 0.3s var(--ease), visibility 0s linear 0.3s;
     }
-
     .mobile-drawer.open {
       right: 0;
       visibility: visible;
-      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+      transition: right 0.3s var(--ease), visibility 0s linear 0s;
     }
-
     .drawer-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
     }
-
     .drawer-close {
-      font-size: 22px;
-      color: var(--text-muted);
-      background: none;
       width: 44px;
       height: 44px;
       margin-right: -10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 19px;
+      color: var(--text-2);
       flex: none;
     }
-
     .drawer-links {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-top: 24px;
+      margin-top: 8px;
     }
-
     .drawer-links a {
-      font-size: 15.5px;
-      font-weight: 600;
-      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
-      min-height: 48px;
-      border-radius: var(--radius-sm);
-      background: var(--surface-2);
+      min-height: 52px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      border-bottom: 1px solid var(--line);
     }
-
-    .drawer-links a i {
-      color: var(--gold);
-      width: 20px;
-      flex: none;
-    }
-
     .drawer-backdrop {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100vh;
       height: 100dvh;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.62);
       z-index: 998;
       display: none;
     }
+    .drawer-backdrop.open { display: block; }
 
-    .drawer-backdrop.open {
-      display: block;
-    }
-
-    /* ================= 2. HERO SECTION & SCROLL-ZOOM LOGO ================= */
+    /* ---------- Hero ---------- */
     .hero {
-      padding: 36px 0 30px;
+      padding: 84px 0 72px;
       text-align: center;
-      position: relative;
     }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface-2);
-      border: 1px solid var(--border-strong);
-      padding: 6px 16px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--gold);
-      font-weight: 600;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Hero Logo Container with Dynamic Scroll Scaling */
-    .hero-logo-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0 auto 18px;
-      perspective: 1000px;
-    }
-
+    .hero-logo-container { margin-bottom: 34px; }
     .hero-logo-center {
-      width: clamp(100px, 25vw, 135px);
-      height: clamp(100px, 25vw, 135px);
-      background: var(--surface-2);
-      border: 1.5px solid rgba(215, 168, 78, 0.35);
-      border-radius: 24px;
-      padding: 14px;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 25px var(--gold-glow);
-      transition: transform 0.1s linear, opacity 0.2s ease;
-      will-change: transform;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
     }
-
+    .hero-badge {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 26px;
+    }
     .hero h1 {
-      font-size: clamp(30px, 6vw, 46px);
-      font-weight: 800;
-      max-width: 860px;
-      margin: 0 auto 14px;
-      letter-spacing: -0.01em;
-      padding: 0 10px;
+      font-size: clamp(33px, 5.4vw, 54px);
+      font-weight: 600;
+      letter-spacing: -0.032em;
+      line-height: 1.06;
+      max-width: 15ch;
+      margin: 0 auto 22px;
     }
-
-    .hero h1 span.highlight {
-      background: linear-gradient(135deg, #fff 20%, var(--gold-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
+    .hero h1 .highlight { color: var(--accent); }
     .hero .lede {
-      max-width: 640px;
-      margin: 0 auto 24px;
-      color: var(--text-muted);
-      font-size: clamp(14.5px, 3.5vw, 16px);
-      line-height: 1.6;
-      padding: 0 10px;
+      max-width: 54ch;
+      margin: 0 auto 36px;
+      color: var(--text-2);
+      font-size: 16px;
+      line-height: 1.7;
     }
-
     .hero-actions {
       display: flex;
       justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 30px;
+      margin-bottom: 72px;
     }
 
-    /* Trust Stats */
+    /* Stats — hairline separated, no box */
     .hero-stats {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      padding: 16px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      max-width: 900px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 860px;
       margin: 0 auto;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
     }
-
     .stat-box {
+      padding: 26px 16px;
       text-align: center;
+      border-right: 1px solid var(--line);
     }
-
+    .stat-box:last-child { border-right: none; }
     .stat-num {
-      font-family: 'Baloo 2', sans-serif;
-      font-size: clamp(20px, 4vw, 24px);
-      font-weight: 800;
-      color: var(--gold);
-      line-height: 1;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
     }
-
     .stat-label {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-top: 3px;
+      font-size: 12.5px;
+      color: var(--text-3);
+      margin-top: 5px;
+      line-height: 1.45;
     }
+    .stat-sep { display: none; }
 
-    .stat-sep {
-      width: 1px;
-      height: 28px;
-      background: var(--border);
-    }
+    /* ---------- Section rhythm ---------- */
+    section { padding: 88px 0; }
+    .booking  { border-top: 1px solid var(--line); }
+    .packages { border-top: 1px solid var(--line); }
+    .about-driver { border-top: 1px solid var(--line); }
+    .feedback-section { border-top: 1px solid var(--line); padding-bottom: 96px; }
 
-    /* Booking Section */
-    .booking {
-      padding: 24px 0 50px;
-    }
-
+    /* ---------- Booking ---------- */
     .steps-pill {
       display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 20px;
+      justify-content: flex-start;
+      gap: 34px;
+      margin-bottom: 40px;
       flex-wrap: wrap;
     }
-
     .step-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      font-weight: 700;
+      gap: 9px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-3);
     }
-
     .step-item span.num {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--surface-3);
-      color: var(--gold);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      border: 1px solid rgba(215, 168, 78, 0.3);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
     }
 
     .booking-card {
       background: var(--surface);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl);
-      padding: clamp(20px, 4vw, 34px);
-      max-width: 960px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 36px;
+      max-width: 940px;
       margin: 0 auto;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
-      position: relative;
     }
 
-    .booking-card::before {
-      content: '';
-      position: absolute;
-      top: -1px;
-      left: 10%;
-      right: 10%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-
-    /* Google Map Location Picker Row */
     .route-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1.2fr 0.9fr 0.9fr;
-      gap: 14px;
-      margin-bottom: 22px;
+      grid-template-columns: 1.2fr 1.2fr 0.85fr 0.85fr;
+      gap: 18px;
+      margin-bottom: 34px;
     }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-group label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-2);
     }
-
-    .form-group label span.label-text {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .form-group label i {
-      color: var(--gold);
-      font-size: 11px;
-    }
+    .form-group label span.label-text { display: inline-flex; align-items: center; gap: 6px; }
+    .form-group label i { display: none; }
 
     .map-helper-btn {
-      font-size: 10.5px;
-      color: var(--gold-light);
-      background: var(--surface-3);
-      padding: 2px 7px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid rgba(215, 168, 78, 0.25);
-      transition: var(--transition);
-      touch-action: manipulation;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-3);
+      border-bottom: 1px solid transparent;
+      transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
     }
-
-    .map-helper-btn:hover {
-      background: var(--gold);
-      color: #000;
-    }
+    .map-helper-btn i { display: none; }
+    .map-helper-btn:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
     .form-input,
     .form-select {
       width: 100%;
+      height: 48px;
       background: var(--field);
-      border: 1px solid var(--field-border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 0 14px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 14.5px;
       font-family: inherit;
       outline: none;
-      transition: var(--transition);
-      min-height: 46px;
+      transition: border-color 0.18s var(--ease);
+      -webkit-appearance: none;
+      appearance: none;
     }
-
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      background-size: 17px;
+      padding-right: 38px;
+    }
     .form-input:focus,
-    .form-select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px var(--gold-wash);
-      background: #151410;
-    }
+    .form-select:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--text-3); }
+    .form-select option { background: #141414; color: #fff; }
 
-    .form-input::placeholder {
-      color: var(--text-faint);
-    }
-
-    .form-select option {
-      background: #141310;
-      color: #fff;
-    }
-
-    /* Vehicle Fleet Cards */
     .vehicle-section-head {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
+      align-items: baseline;
+      gap: 14px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+      margin-bottom: 18px;
     }
-
-    .vehicle-section-head h3 {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .vehicle-section-head span {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+    .vehicle-section-head h3 { font-size: 16px; font-weight: 600; }
+    .vehicle-section-head span { font-size: 12.5px; color: var(--text-3); }
 
     .fleet-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 30px;
     }
-
     .vehicle-card {
-      background: var(--surface-2);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px 12px;
+      position: relative;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 18px 16px;
       text-align: left;
       cursor: pointer;
-      transition: var(--transition);
-      position: relative;
       user-select: none;
       touch-action: manipulation;
+      transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
     }
-
-    .vehicle-card:hover,
-    .vehicle-card:active {
-      border-color: var(--border-strong);
-      transform: translateY(-2px);
-      background: var(--surface-3);
-    }
-
+    .vehicle-card:hover { border-color: var(--line-strong); }
     .vehicle-card.selected {
-      border-color: var(--gold);
-      background: rgba(215, 168, 78, 0.08);
-      box-shadow: 0 6px 18px rgba(215, 168, 78, 0.15);
+      border-color: var(--accent);
+      background: var(--accent-dim);
     }
-
     .vehicle-card.selected::after {
-      content: '✓';
+      content: '';
       position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--gold);
-      background: var(--gold-wash);
+      top: 16px;
+      right: 16px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--gold);
+      background: var(--accent);
     }
-
     .vehicle-icon {
-      font-size: 24px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      transition: var(--transition);
+      font-size: 19px;
+      color: var(--text-3);
+      margin-bottom: 14px;
+      transition: color 0.18s var(--ease);
     }
-
-    .vehicle-card.selected .vehicle-icon {
-      color: var(--gold);
-      transform: scale(1.06);
-    }
-
+    .vehicle-card.selected .vehicle-icon { color: var(--accent); }
     .vehicle-badge-type {
-      display: inline-block;
+      display: block;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 600;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 3px;
+      color: var(--text-3);
+      margin-bottom: 6px;
     }
-
     .vehicle-title {
-      font-size: 14.5px;
-      font-weight: 700;
-      margin-bottom: 3px;
-      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 5px;
     }
-
     .vehicle-specs {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      line-height: 1.35;
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.5;
     }
-
-    .vehicle-quote-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--gold-light);
-      background: var(--surface-3);
-      padding: 3px 7px;
-      border-radius: 5px;
-      border: 1px solid rgba(215, 168, 78, 0.2);
-    }
+    /* The marketing badge on each card was pure noise — hidden, not deleted,
+       so the copy stays in the markup if it is ever wanted again. */
+    .vehicle-quote-badge { display: none; }
 
     .booking-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 20px;
       flex-wrap: wrap;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+      padding-top: 26px;
+      border-top: 1px solid var(--line);
     }
-
-    .price-estimate-box {
-      font-size: 13.5px;
-      color: var(--text-muted);
-    }
-
-    .price-estimate-box strong {
-      color: var(--text);
-      font-size: 14.5px;
-    }
-
+    .price-estimate-box { font-size: 13.5px; color: var(--text-2); }
+    .price-estimate-box strong { color: var(--text); font-weight: 600; }
     .price-note-sub {
-      font-size: 11.5px;
-      color: var(--gold);
-      margin-top: 3px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      font-size: 12.5px;
+      color: var(--text-3);
+      margin-top: 5px;
     }
+    .price-note-sub i { display: none; }
+    .booking-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
 
-    .booking-btn-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    /* Popular Tour Routes */
-    .packages {
-      padding: 40px 0;
-    }
-
+    /* ---------- Tours ---------- */
     .pkg-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .pkg-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
       overflow: hidden;
-      transition: var(--transition);
+    }
+    .pkg-card {
+      background: var(--bg);
       display: flex;
       flex-direction: column;
+      padding: 32px 28px;
+      transition: background-color 0.2s var(--ease);
     }
-
-    .pkg-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--gold);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .pkg-header {
-      padding: 18px 20px 14px;
-      background: var(--surface-2);
-      border-bottom: 1px solid var(--border);
-    }
-
+    .pkg-card:hover { background: var(--surface); }
+    .pkg-header { margin-bottom: 22px; }
     .pkg-tag {
-      display: inline-block;
+      display: block;
       font-size: 10.5px;
-      font-weight: 700;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--gold);
-      margin-bottom: 4px;
+      color: var(--accent);
+      margin-bottom: 10px;
     }
-
     .pkg-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
     }
-
     .pkg-body {
-      padding: 18px 20px;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
-
     .pkg-list {
-      list-style: none;
-      margin-bottom: 18px;
-      font-size: 13px;
-      color: var(--text-muted);
+      margin-bottom: 26px;
+      font-size: 14px;
+      color: var(--text-2);
     }
-
     .pkg-list li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 11px;
+      line-height: 1.55;
     }
-
-    .pkg-list li i {
-      color: var(--gold);
-      font-size: 11px;
+    /* A hairline tick replaces the icon font */
+    .pkg-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 7px;
+      height: 1px;
+      background: var(--accent);
     }
-
+    .pkg-list li i { display: none; }
+    /* Stacked rather than space-between: the three labels differ in
+       length, and a row layout wrapped on one card but not the others. */
     .pkg-footer {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
     }
+    .pkg-price { font-size: 13px; color: var(--text-3); }
+    .pkg-price i { display: none; }
 
-    .pkg-price {
-      font-size: 13px;
-      color: var(--gold);
-      font-weight: 600;
-    }
-
-    /* Driver Profile & Multilingual Section */
-    .about-driver {
-      padding: 50px 0;
-    }
-
+    /* ---------- Driver ---------- */
     .driver-card {
-      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl);
-      padding: clamp(24px, 4vw, 36px);
       display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 32px;
-      align-items: center;
+      grid-template-columns: 260px 1fr;
+      gap: 64px;
+      align-items: start;
     }
-
     .driver-badge-card {
-      background: var(--surface-3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 30px 24px;
       text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
-
     .driver-avatar {
-      width: 88px;
-      height: 88px;
-      margin: 0 auto 14px;
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
       border-radius: 50%;
-      background: var(--gold-wash);
-      border: 2px solid var(--gold);
+      border: 1px solid var(--line-strong);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
-      color: var(--gold);
+      font-size: 24px;
+      color: var(--text-3);
     }
-
-    .driver-name {
-      font-size: 19px;
-      font-weight: 700;
-      margin-bottom: 3px;
-    }
-
+    .driver-name { font-size: 17px; font-weight: 600; margin-bottom: 5px; }
     .driver-role {
-      font-size: 12px;
-      color: var(--gold);
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      color: var(--accent);
+      margin-bottom: 16px;
     }
-
     .driver-location-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11.5px;
-      color: var(--text-muted);
+      display: inline-block;
+      font-size: 12.5px;
+      color: var(--text-3);
     }
+    .driver-location-tag i { display: none; }
 
     .driver-details h3 {
-      font-size: clamp(22px, 4vw, 26px);
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-size: clamp(23px, 3vw, 30px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      margin-bottom: 18px;
     }
-
     .driver-details p {
-      color: var(--text-muted);
-      font-size: 14.5px;
-      margin-bottom: 16px;
-      line-height: 1.65;
+      color: var(--text-2);
+      font-size: 15px;
+      line-height: 1.75;
+      margin-bottom: 28px;
+      max-width: 62ch;
     }
 
     .languages-badge-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
-      background: var(--surface);
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
     }
-
     .languages-label {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      color: var(--text-3);
+      margin-right: 4px;
     }
-
-    .lang-pill {
-      background: var(--surface-3);
-      border: 1px solid var(--border-strong);
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--text);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+    .languages-label i { display: none; }
+    .lang-pill { font-size: 13.5px; color: var(--text-2); }
+    .lang-pill + .lang-pill::before {
+      content: '·';
+      margin-right: 10px;
+      color: var(--text-3);
     }
 
     .driver-perks {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 22px;
+      gap: 14px 32px;
+      margin-bottom: 32px;
     }
-
     .driver-perk {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .driver-perk i {
-      color: var(--gold);
-      font-size: 13px;
-      width: 16px;
-    }
-
-    /* QR Code & Passenger Feedback Section */
-    .feedback-section {
-      padding: 50px 0 80px;
       position: relative;
+      padding-left: 18px;
+      font-size: 14px;
+      color: var(--text-2);
     }
-
-    .feedback-container {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 28px;
-      align-items: start;
-    }
-
-    /* In-Vehicle QR Code Standee Card */
-    .qr-standee-card {
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl);
-      padding: 28px 22px;
-      text-align: center;
-      position: sticky;
-      top: 86px;
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
-    }
-
-    .qr-standee-card::before {
+    .driver-perk::before {
       content: '';
       position: absolute;
-      top: -1px;
-      left: 15%;
-      right: 15%;
-      height: 2px;
-      background: var(--gold);
+      left: 0;
+      top: 11px;
+      width: 7px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .driver-perk i { display: none; }
+
+    /* ---------- Feedback / QR ---------- */
+    .feedback-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      margin-bottom: 88px;
     }
 
+    .qr-standee-card {
+      background: var(--bg);
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .qr-standee-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
     .qr-box-frame {
       background: #ffffff;
       padding: 14px;
-      border-radius: 14px;
+      border-radius: var(--r);
       display: inline-block;
-      margin: 16px auto;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-      position: relative;
+      margin: 26px auto 22px;
     }
-
-    #qrcode {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #qrcode img {
-      margin: 0 auto;
-      max-width: 100%;
-      height: auto;
-    }
-
+    #qrcode { display: flex; justify-content: center; }
+    #qrcode img { margin: 0 auto; max-width: 100%; height: auto; }
     .qr-instruction {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 18px;
-      line-height: 1.45;
+      font-size: 13.5px;
+      color: var(--text-2);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 34ch;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    .qr-instruction strong {
-      color: var(--text);
-    }
-
-    .qr-btn-row {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
+    .qr-instruction strong { color: var(--text); font-weight: 600; }
+    .qr-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .btn-qr-action {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      min-height: 38px;
-      transition: var(--transition);
-      touch-action: manipulation;
+      gap: 7px;
+      height: 40px;
+      padding: 0 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
     }
+    .btn-qr-action:hover { border-color: var(--text-2); color: var(--text); }
 
-    .btn-qr-action:hover,
-    .btn-qr-action:active {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: var(--surface-3);
-    }
-
-    /* Review Invitation Panel (links to the dedicated feedback page) */
     .feedback-cta-card {
-      background: var(--surface);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-xl);
-      padding: clamp(20px, 4vw, 32px);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+      background: var(--bg);
+      padding: 40px 32px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-
-    .cta-points {
-      list-style: none;
-      margin: 4px 0 22px;
-      display: grid;
-      gap: 11px;
-    }
-
-    .cta-points li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    .cta-points li i {
-      color: var(--gold);
-      font-size: 13px;
-      width: 16px;
-      flex: none;
-    }
-
-    .cta-note {
-      margin-top: 14px;
-      font-size: 12.5px;
-      color: var(--text-muted);
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      line-height: 1.5;
-    }
-
-    .cta-note i {
-      color: var(--gold);
-      flex: none;
-    }
-
-    /* Reviews loading / empty / error state */
-    .reviews-state {
-      text-align: center;
-      padding: 34px 18px;
-      color: var(--text-muted);
-      font-size: 14px;
-      border: 1px dashed var(--border-strong);
-      border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .reviews-state[hidden] {
-      display: none;
-    }
-
-    .reviews-state i {
-      font-size: 24px;
-      color: var(--gold);
+    .feedback-form-header { margin-bottom: 26px; }
+    .feedback-form-header h2 {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
       margin-bottom: 10px;
-      display: block;
     }
-
-    .reviews-state p {
-      margin: 0 auto;
-      max-width: 420px;
+    .feedback-form-header .line { display: none; }
+    .feedback-form-header p {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .cta-points { margin-bottom: 30px; }
+    .cta-points li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 11px;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+    .cta-points li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 7px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .cta-points li i { display: none; }
+    .cta-note {
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: var(--text-3);
       line-height: 1.6;
     }
+    .cta-note i { display: none; }
 
-    .reviews-state .state-cta {
-      display: inline-flex;
-      margin-top: 16px;
-    }
-
-    /* Customer Feedback Form Card */
-    .feedback-form-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .feedback-form-header h2 {
-      font-size: 26px;
-      font-weight: 700;
-    }
-
-    .feedback-form-header .line {
-      width: 44px;
-      height: 3px;
-      background: var(--gold);
-      border-radius: 2px;
-      margin: 8px auto;
-    }
-
-    .feedback-form-header p {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-
-    /* Live Feedback Scroller & Showcase */
-    .reviews-showcase {
-      margin-top: 50px;
-      padding-top: 36px;
-      border-top: 1px solid var(--border);
-    }
-
+    /* ---------- Reviews ---------- */
     .reviews-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 24px;
+      padding-bottom: 26px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 40px;
     }
-
-    .reviews-stat-summary {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .reviews-header h3 {
+      font-size: clamp(22px, 2.8vw, 28px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
     }
-
+    .reviews-stat-summary { display: flex; align-items: baseline; gap: 14px; }
+    .reviews-stat-summary[hidden] { display: none; }
     .big-score {
-      font-family: 'Baloo 2', sans-serif;
-      font-size: 38px;
-      font-weight: 800;
-      color: var(--gold);
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text);
       line-height: 1;
     }
+    .score-details { display: flex; flex-direction: column; gap: 3px; }
+    .score-stars { display: flex; gap: 3px; color: var(--accent); font-size: 11px; }
+    .score-count { font-size: 12.5px; color: var(--text-3); }
 
-    .score-details {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .score-stars {
-      color: var(--gold);
-      font-size: 13px;
-      display: flex;
-      gap: 2px;
-    }
-
-    .score-count {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      margin-top: 3px;
-    }
-
-    /* Review Cards Grid */
     .reviews-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
     }
-
+    .reviews-grid:empty { display: none; }
     .review-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
+      background: var(--bg);
+      padding: 28px 26px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: var(--transition);
-      position: relative;
+      gap: 22px;
+      transition: background-color 0.2s var(--ease);
     }
-
-    .review-card:hover {
-      border-color: var(--border-strong);
-      transform: translateY(-2px);
-      background: var(--surface-2);
-    }
-
-    .review-card.newly-added {
-      border-color: var(--gold);
-      background: rgba(215, 168, 78, 0.06);
-      animation: highlightCard 2s ease-out;
-    }
-
-    @keyframes highlightCard {
-      from {
-        transform: scale(1.02);
-        box-shadow: 0 0 20px var(--gold-glow);
-      }
-
-      to {
-        transform: scale(1);
-        box-shadow: none;
-      }
-    }
-
+    .review-card:hover { background: var(--surface); }
     .review-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 10px;
+      gap: 14px;
+      margin-bottom: 16px;
     }
-
-    .reviewer-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .reviewer-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .reviewer-avatar {
       width: 38px;
       height: 38px;
+      flex: none;
       border-radius: 50%;
-      background: var(--surface-3);
-      border: 1px solid var(--gold);
-      color: var(--gold);
+      border: 1px solid var(--line-strong);
+      color: var(--text-2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 13px;
+      font-size: 12.5px;
+      font-weight: 600;
     }
-
-    .reviewer-meta h4 {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .reviewer-tag {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .review-stars {
-      color: var(--gold);
-      font-size: 11.5px;
-      display: flex;
-      gap: 2px;
-    }
-
+    .reviewer-meta { min-width: 0; }
+    .reviewer-meta h4 { font-size: 14.5px; font-weight: 600; }
+    .reviewer-tag { font-size: 12px; color: var(--text-3); }
+    .reviewer-tag i { display: none; }
+    .review-stars { display: flex; gap: 2px; color: var(--accent); font-size: 11px; flex: none; }
     .review-body {
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.55;
-      margin-bottom: 14px;
-      flex: 1;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-2);
     }
-
     .review-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 11px;
-      color: var(--text-faint);
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--text-3);
     }
+    .verified-pill { display: inline-flex; align-items: center; gap: 6px; }
+    .verified-pill i { color: var(--accent); font-size: 10px; }
+    .review-footer i { font-size: 10px; }
 
-    .verified-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #5cdb95;
-      font-weight: 600;
+    .reviews-state {
+      text-align: center;
+      padding: 64px 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      color: var(--text-2);
+      font-size: 14.5px;
     }
+    .reviews-state[hidden] { display: none; }
+    .reviews-state i { display: block; font-size: 20px; color: var(--text-3); margin-bottom: 14px; }
+    .reviews-state p { max-width: 44ch; margin: 0 auto; line-height: 1.7; }
+    .reviews-state .state-cta { margin-top: 24px; }
 
-    /* Fullscreen QR Modal */
+    /* ---------- QR modal ---------- */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 999;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      padding-top: max(16px, env(safe-area-inset-top));
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      /* Landscape phones: let a tall card scroll instead of trapping the user */
+      padding: 20px;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal-card {
       background: var(--surface);
-      border: 1px solid var(--gold);
-      border-radius: var(--radius-xl);
-      padding: 30px 24px;
-      max-width: 420px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 36px 30px 30px;
+      max-width: 380px;
       width: 100%;
       margin: auto;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
       position: relative;
-      animation: modalPop 0.25s ease-out;
     }
-
-    @keyframes modalPop {
-      from {
-        transform: scale(0.9);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
+    .modal-card h3 { font-size: 18px; font-weight: 600; }
     .modal-close {
       position: absolute;
       top: 8px;
       right: 8px;
-      font-size: 20px;
-      color: var(--text-muted);
-      background: none;
       width: 44px;
       height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 17px;
+      color: var(--text-3);
     }
-
-    .modal-close:hover {
-      color: var(--gold);
-    }
-
+    .modal-close:hover { color: var(--text); }
     .modal-qr-frame {
       background: #fff;
       padding: 14px;
-      border-radius: 14px;
+      border-radius: var(--r);
       display: inline-block;
-      margin: 16px 0;
+      margin: 24px 0 20px;
       max-width: 100%;
     }
 
-    /* Floating WhatsApp & Call Buttons */
+    /* ---------- Floating actions ---------- */
     .floating-actions {
       position: fixed;
-      bottom: calc(20px + env(safe-area-inset-bottom));
-      right: calc(20px + env(safe-area-inset-right));
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      right: calc(24px + env(safe-area-inset-right));
       display: flex;
       flex-direction: column;
       gap: 10px;
       z-index: 90;
     }
-
     .float-btn {
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 19px;
       color: #fff;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      transition: var(--transition);
-      text-decoration: none;
+      transition: transform 0.18s var(--ease);
       touch-action: manipulation;
     }
+    .float-btn.whatsapp { background: var(--green); color: #05240f; }
+    .float-btn.call { background: var(--surface-3); border: 1px solid var(--line-strong); color: var(--text); }
+    .float-btn:hover { transform: translateY(-2px); }
+    .float-tooltip { display: none; }
 
-    .float-btn.whatsapp {
-      background: var(--green);
-    }
-
-    .float-btn.call {
-      background: var(--gold-deep);
-    }
-
-    .float-btn:hover,
-    .float-btn:active {
-      transform: scale(1.08);
-    }
-
-    .float-tooltip {
-      position: absolute;
-      right: 60px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 11.5px;
-      font-weight: 600;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    .float-btn:hover .float-tooltip {
-      opacity: 1;
-      right: 64px;
-    }
-
-    /* Footer */
+    /* ---------- Footer ---------- */
     footer {
-      border-top: 1px solid var(--border);
-      background: #0d0c0a;
-      padding: 44px 0 24px;
+      border-top: 1px solid var(--line);
+      padding: 72px 0 32px;
     }
-
     .footer-grid {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      gap: 36px;
-      margin-bottom: 36px;
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 56px;
+      margin-bottom: 56px;
     }
-
     .footer-about p {
-      color: var(--text-muted);
-      font-size: 13.5px;
-      margin: 12px 0 18px;
-      line-height: 1.6;
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 1.75;
+      margin: 18px 0 24px;
+      max-width: 42ch;
     }
-
     .footer-col h4 {
-      font-size: 15.5px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 20px;
     }
-
-    .footer-links {
-      list-style: none;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .footer-links li {
-      margin-bottom: 8px;
-    }
-
-    .footer-links a:hover {
-      color: var(--gold);
-    }
-
+    .footer-links { font-size: 14px; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: var(--text-2); transition: color 0.18s var(--ease); }
+    .footer-links a:hover { color: var(--text); }
+    .footer-links a i { display: none; }
     .footer-contact-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.65;
+      margin-bottom: 18px;
     }
-
-    .footer-contact-item i {
-      color: var(--gold);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
+    .footer-contact-item i { display: none; }
+    .footer-contact-item strong { color: var(--text); font-weight: 600; display: block; }
     .footer-bottom {
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      font-size: 12px;
-      color: var(--text-faint);
+      gap: 12px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+      font-size: 12.5px;
+      color: var(--text-3);
     }
 
-    /* ================= ADVANCED RESPONSIVE DESIGN (MOBILE & TABLETS) ================= */
-    @media (max-width: 992px) {
-      .route-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
 
-      .fleet-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
+    @media (max-width: 1020px) {
+      .driver-card { grid-template-columns: 1fr; gap: 36px; }
+      .driver-badge-card { max-width: 320px; }
+      .pkg-grid { grid-template-columns: 1fr; }
+      .feedback-container { grid-template-columns: 1fr; }
+      /* Form-equivalent CTA first, printable QR second */
+      .feedback-cta-card { order: 1; }
+      .qr-standee-card   { order: 2; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .footer-about { grid-column: 1 / -1; }
+    }
 
-      .pkg-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .driver-card {
-        grid-template-columns: 1fr;
-        text-align: center;
-        gap: 24px;
-      }
-
-      .driver-avatar {
-        margin: 0 auto 14px;
-      }
-
-      .languages-badge-row {
-        justify-content: center;
-      }
-
-      .driver-perks {
-        text-align: left;
-      }
-
-      /* Mobile Feedback Ordering: Form First, Standee Second */
-      .feedback-container {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      .feedback-cta-card {
-        order: 1;
-        width: 100%;
-      }
-
-      .qr-standee-card {
-        order: 2;
-        width: 100%;
-        /* relative, not static — the ::before gold accent is absolutely
-           positioned and would otherwise escape to an ancestor */
-        position: relative;
-        top: auto;
-      }
-
-      .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 26px;
-      }
+    @media (max-width: 860px) {
+      .route-grid { grid-template-columns: 1fr 1fr; }
+      .fleet-grid { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
+      section { padding: 64px 0; }
+      .wrap { padding: 0 20px; }
 
-      .mobile-menu-toggle {
-        display: flex;
-      }
+      .nav-links { display: none; }
+      .mobile-menu-toggle { display: flex; }
+      :root { --nav-h: 64px; }
+      .nav .wrap { height: var(--nav-h); gap: 12px; }
 
-      .nav .wrap {
-        height: 62px;
-        gap: 10px;
-      }
+      .top-bar { font-size: 11.5px; }
+      .top-bar .wrap { justify-content: center; height: auto; padding-top: 8px; padding-bottom: 8px; }
+      .top-info:last-child { display: none; }
+      .top-info { gap: 16px; }
 
-      .top-bar {
-        font-size: 11.5px;
-        padding: 6px 0;
-      }
-
-      .top-bar .wrap {
-        justify-content: center;
-        text-align: center;
-        gap: 4px;
-      }
-
-      /* --- Header must never exceed the viewport width --- */
-      .nav-brand {
-        min-width: 0;
-        flex: 1 1 auto;
-      }
-
-      .brand-title {
-        min-width: 0;
-        font-size: 15px;
-        letter-spacing: 0.12em;
-      }
-
-      .brand-title span.sub {
-        font-size: 9px;
-        letter-spacing: 0.2em;
-      }
-
-      .brand-logo-img {
-        height: 36px;
-        flex: none;
-      }
-
-      .nav-cta-group {
-        flex: none;
-        gap: 8px;
-      }
-
-      /* "Show QR" also lives in the drawer and its own section — drop the duplicate */
-      .btn-qr-nav {
-        display: none;
-      }
-
-      /* Collapse the WhatsApp pill to a round icon button.
-         font-size:0 zeroes the "WhatsApp" text node without removing it
-         from the accessibility tree. */
+      /* Header must never exceed the viewport */
+      .nav-brand { min-width: 0; flex: 1 1 auto; }
+      .brand-title { min-width: 0; font-size: 14px; }
+      .brand-logo-img { height: 30px; flex: none; }
+      .nav-cta-group { flex: none; gap: 8px; }
+      .btn-qr-nav { display: none; }
       .nav-cta-group .btn-whatsapp {
         width: 44px;
         min-width: 44px;
         height: 44px;
-        min-height: 44px;
-        padding: 0 !important;
+        padding: 0;
         border-radius: 50%;
-        font-size: 0 !important;
+        /* zeroes the label text without removing it from the a11y tree */
+        font-size: 0;
         gap: 0;
       }
+      .nav-cta-group .btn-whatsapp i { font-size: 17px; }
 
-      .nav-cta-group .btn-whatsapp i {
-        font-size: 18px;
-      }
+      .hero { padding: 56px 0 52px; }
+      .hero-actions { margin-bottom: 52px; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+      .stat-box:nth-child(2) { border-right: none; }
+      .stat-box:nth-child(1),
+      .stat-box:nth-child(2) { border-bottom: 1px solid var(--line); }
+      .stat-box { padding: 22px 12px; }
 
-      .mobile-menu-toggle {
-        width: 44px;
-        height: 44px;
-        flex: none;
-      }
+      .booking-card { padding: 26px 20px; }
+      .steps-pill { gap: 20px; margin-bottom: 30px; }
+      .pkg-card { padding: 28px 22px; }
+      .qr-standee-card,
+      .feedback-cta-card { padding: 32px 22px; }
+      .feedback-container { margin-bottom: 64px; }
 
-      .hero {
-        padding: 24px 0 20px;
-      }
-
-      .hero-logo-center {
-        width: 105px;
-        height: 105px;
-        border-radius: 20px;
-        padding: 12px;
-      }
-
-      .hero-stats {
-        gap: 12px;
-        justify-content: space-around;
-        padding: 12px 14px;
-      }
-
-      .stat-sep {
-        display: none;
-      }
-
-      .stat-box {
-        flex: 1 1 42%;
-        padding: 6px 0;
-      }
-
-      /* Prevent iOS Safari from forcing auto-zoom on input focus */
+      /* iOS zooms the page if a focused field is under 16px */
       .form-input,
-      .form-select {
-        font-size: 16px !important;
-      }
+      .form-select { font-size: 16px; }
     }
 
     @media (max-width: 600px) {
-      .wrap {
-        padding: 0 16px;
-      }
+      .hero h1 { font-size: 30px; }
+      .hero .lede { font-size: 15px; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
 
-      .section-title {
-        font-size: 26px;
-      }
+      .route-grid { grid-template-columns: 1fr; gap: 16px; }
 
-      .section-subtitle {
-        font-size: 13.5px;
-        margin-bottom: 22px;
-      }
-
-      .route-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      /* App-like Fleet Row Cards for Mobile */
-      .fleet-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      /* App-style row: emblem column + stacked text column.
-         Children are placed explicitly — auto-placement scattered them
-         across rows and crushed the spec text into the icon column. */
+      /* Fleet becomes app-style rows: emblem column + stacked text.
+         Children are placed explicitly — auto-placement scatters them. */
+      .fleet-grid { grid-template-columns: 1fr; gap: 10px; }
       .vehicle-card {
-        padding: 14px 40px 14px 14px;
         display: grid;
-        grid-template-columns: 42px minmax(0, 1fr);
-        grid-template-rows: auto auto auto auto;
-        align-items: center;
-        column-gap: 12px;
+        grid-template-columns: 30px minmax(0, 1fr);
+        column-gap: 14px;
         row-gap: 2px;
+        align-items: center;
+        padding: 16px 34px 16px 16px;
       }
+      .vehicle-card.selected::after { top: 50%; right: 16px; transform: translateY(-50%); }
+      .vehicle-icon { grid-column: 1; grid-row: 1 / span 3; justify-self: center; margin-bottom: 0; }
+      .vehicle-badge-type { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+      .vehicle-title { grid-column: 2; grid-row: 2; margin-bottom: 0; }
+      .vehicle-specs { grid-column: 2; grid-row: 3; }
 
-      .vehicle-card.selected::after {
-        top: 50%;
-        right: 12px;
-        transform: translateY(-50%);
-      }
+      .booking-actions { flex-direction: column; align-items: stretch; }
+      .booking-btn-group { flex-direction: column; }
+      .booking-btn-group .btn { width: 100%; }
 
-      .vehicle-icon {
-        grid-column: 1;
-        grid-row: 1 / span 4;
-        justify-self: center;
-        margin-bottom: 0;
-        font-size: 26px;
-      }
-
-      .vehicle-badge-type {
-        grid-column: 2;
-        grid-row: 1;
-        font-size: 9.5px;
-        margin-bottom: 0;
-      }
-
-      .vehicle-title {
-        grid-column: 2;
-        grid-row: 2;
-        font-size: 15px;
-        margin-bottom: 0;
-      }
-
-      .vehicle-specs {
-        grid-column: 2;
-        grid-row: 3;
-        font-size: 11.5px;
-        margin-bottom: 0;
-      }
-
-      .vehicle-quote-badge {
-        grid-column: 2;
-        grid-row: 4;
-        justify-self: start;
-        font-size: 10px;
-        padding: 3px 6px;
-        margin-top: 5px;
-      }
-
-      .booking-card {
-        padding: 18px 14px;
-        border-radius: var(--radius-lg);
-      }
-
-      .steps-pill {
-        display: none;
-      }
-
-      /* Simplified for clean mobile view */
-
-      .hero h1 {
-        font-size: 27px;
-      }
-
-      .hero .lede {
-        font-size: 14px;
-      }
-
-      .hero-actions {
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-      }
-
-      .hero-actions .btn {
-        width: 100%;
-      }
-
-      .booking-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-      }
-
-      .booking-btn-group {
-        flex-direction: column;
-        width: 100%;
-        gap: 8px;
-      }
-
-      .booking-btn-group .btn,
-      .booking-btn-group button,
-      .booking-btn-group a {
-        width: 100%;
-      }
-
-      .driver-card {
-        padding: 20px 14px;
-        border-radius: var(--radius-lg);
-      }
-
-      .driver-perks {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .feedback-cta-card {
-        padding: 20px 14px;
-        border-radius: var(--radius-lg);
-      }
-
-      .qr-standee-card {
-        padding: 20px 14px;
-        border-radius: var(--radius-lg);
-      }
-
-      .reviews-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      .review-card {
-        padding: 16px 14px;
-      }
+      .driver-perks { grid-template-columns: 1fr; gap: 12px; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .review-card { padding: 24px 20px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 36px; }
+      .footer-bottom { justify-content: center; text-align: center; }
+      footer { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
 
       .floating-actions {
-        bottom: calc(14px + env(safe-area-inset-bottom));
-        right: calc(14px + env(safe-area-inset-right));
-        gap: 8px;
-      }
-
-      .float-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 19px;
-      }
-
-      .float-tooltip {
-        display: none;
-      }
-
-      .modal-card {
-        padding: 24px 16px;
-        border-radius: var(--radius-lg);
-      }
-
-      /* Footer reads better centered on a narrow column */
-      .footer-bottom {
-        justify-content: center;
-        text-align: center;
-      }
-
-      footer {
-        padding-bottom: calc(24px + env(safe-area-inset-bottom));
-      }
-
-      /* Keep the last CTA clear of the floating action buttons */
-      .feedback-section {
-        padding-bottom: 96px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        right: calc(16px + env(safe-area-inset-right));
       }
     }
 
-    /* --- Comfortable touch targets on any finger-driven device ---
-       Keyed to the input method rather than a width, so tablets and
-       large phones get them too. --- */
+    @media (max-width: 380px) {
+      .wrap { padding: 0 16px; }
+      .hero h1 { font-size: 27px; }
+      .brand-title { font-size: 13px; letter-spacing: 0.08em; }
+      .brand-title span.sub { font-size: 8px; letter-spacing: 0.18em; }
+      .brand-logo-img { height: 27px; }
+      .section-title { font-size: 23px; }
+      .big-score { font-size: 29px; }
+      .top-info { gap: 12px; }
+    }
+
+    /* Touch devices: comfortable targets, no sticky hover states */
     @media (hover: none) and (pointer: coarse) {
-      .map-helper-btn {
-        font-size: 11px;
-        padding: 8px 10px;
-        min-height: 36px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .form-group label {
-        gap: 8px;
-        min-height: 36px;
-      }
-
-      .btn-qr-action {
-        min-height: 44px;
-        padding: 10px 16px;
-        font-size: 12.5px;
-      }
-
-      .qr-btn-row {
-        gap: 10px;
-      }
-
-      .qr-btn-row .btn-qr-action {
-        flex: 1 1 auto;
-        justify-content: center;
-      }
-
-      .footer-links li {
-        margin-bottom: 2px;
-      }
-
-      .footer-links a {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 11px 0;
-        min-height: 44px;
-      }
-
-      .nav-brand {
-        padding: 6px 0;
-      }
-
-      .drawer-close,
-      .modal-close {
-        width: 44px;
-        height: 44px;
-      }
-
-      .pkg-footer .btn {
-        min-height: 44px;
-      }
-
-      /* Hover transforms just stick on touch — drop them */
+      .map-helper-btn { min-height: 36px; display: inline-flex; align-items: center; }
+      .form-group label { min-height: 36px; }
+      .btn-qr-action { height: 44px; }
+      .qr-btn-row .btn-qr-action { flex: 1 1 auto; justify-content: center; }
+      .footer-links li { margin-bottom: 4px; }
+      .footer-links a { display: flex; align-items: center; min-height: 44px; }
+      .nav-brand { padding: 6px 0; }
+      .pkg-footer .btn { min-height: 44px; }
       .pkg-card:hover,
-      .review-card:hover,
-      .vehicle-card:hover {
-        transform: none;
-      }
-
-      .btn-gold:hover,
-      .btn-outline:hover,
-      .btn-whatsapp:hover {
-        transform: none;
-      }
+      .review-card:hover { background: var(--bg); }
+      .float-btn:hover { transform: none; }
     }
 
-    /* --- Landscape phones: short viewports need tighter vertical rhythm --- */
-    @media (max-height: 480px) and (orientation: landscape) {
-      .hero {
-        padding: 16px 0 14px;
-      }
-
-      .hero-logo-center {
-        width: 74px;
-        height: 74px;
-        padding: 8px;
-        border-radius: 16px;
-      }
-
-      .hero-badge {
-        margin-bottom: 12px;
-      }
-
-      .preloader-logo-wrap {
-        width: 96px;
-        height: 96px;
-        margin-bottom: 12px;
-      }
-
-      .preloader-logo {
-        width: 62px;
-      }
-
-      .modal-card {
-        padding: 20px 18px;
-      }
-
-      .modal-qr-frame {
-        margin: 10px 0;
-      }
+    /* Landscape phones */
+    @media (max-height: 460px) and (orientation: landscape) {
+      .hero { padding: 40px 0 36px; }
+      .hero-logo-center { width: 54px; height: 54px; }
+      .hero-logo-container { margin-bottom: 22px; }
     }
 
-    /* --- Respect the OS "reduce motion" setting --- */
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
+      html { scroll-behavior: auto; }
       *,
       *::before,
       *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
       }
-
-      #brandRainCanvas {
-        display: none;
-      }
-
-      .btn:hover,
-      .btn:active,
-      .vehicle-card:hover,
-      .vehicle-card:active,
-      .pkg-card:hover,
-      .review-card:hover {
-        transform: none !important;
-      }
-    }
-
-    @media (max-width: 380px) {
-      .wrap {
-        padding: 0 12px;
-      }
-
-      .btn {
-        padding: 11px 16px;
-        font-size: 13.5px;
-      }
-
-      .hero h1 {
-        font-size: 24px;
-      }
-
-      .big-score {
-        font-size: 32px;
-      }
-
-      /* Header: brand shrinks first so the CTAs always fit */
-      .brand-title {
-        font-size: 13.5px;
-        letter-spacing: 0.08em;
-      }
-
-      .brand-title span.sub {
-        font-size: 8.5px;
-        letter-spacing: 0.16em;
-      }
-
-      .brand-logo-img {
-        height: 32px;
-      }
-
-      .nav .wrap {
-        gap: 8px;
-      }
-
-      .nav-cta-group {
-        gap: 6px;
-      }
-
-      /* Announcement bar: one fact per line rather than a cramped jumble */
-      .top-bar {
-        font-size: 10.5px;
-      }
-
-      .top-info {
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .hero-badge {
-        font-size: 10.5px;
-        padding: 6px 12px;
-      }
-
-      .stat-label {
-        font-size: 10.5px;
-      }
-
-      .section-title {
-        font-size: 23px;
-      }
-
-      .feedback-form-header h2 {
-        font-size: 22px;
-      }
-
-      .driver-name {
-        font-size: 17px;
-      }
+      .float-btn:hover { transform: none; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ================= AMBIENT DG TRAVELS LOGO RAIN CANVAS ================= -->
-  <canvas id="brandRainCanvas"></canvas>
-
   <div class="app-root">
-    <!-- ================= LUXURY SPLASH / PRELOADER SCREEN ================= -->
-    <div id="preloader">
-      <div class="preloader-logo-wrap">
-        <div class="preloader-glow-ring"></div>
-        <div class="preloader-glow-ring-2"></div>
-        <img src="LOGO/DG - 1.png" alt="DG Travels Logo" class="preloader-logo">
-      </div>
-      <div class="preloader-text">
-        DG TRAVELS
-        <span class="preloader-sub">SRI LANKA</span>
-      </div>
-      <div class="preloader-bar-bg">
-        <div class="preloader-bar-fill"></div>
-      </div>
-    </div>
-
     <!-- ================= TOP ANNOUNCEMENT BAR ================= -->
     <div class="top-bar">
       <div class="wrap">
         <div class="top-info">
-          <span><i class="fa-solid fa-location-dot"></i> Base: Ahangama, Galle · Island-Wide</span>
-          <span><i class="fa-solid fa-phone"></i> +94 77 826 1901</span>
+          <span>Base: Ahangama, Galle · Island-Wide</span>
+          <span>+94 77 826 1901</span>
         </div>
         <div class="top-info">
-          <span><i class="fa-solid fa-clock"></i> 24/7 Island Dispatch & Airport Transfers</span>
+          <span>24/7 Island Dispatch & Airport Transfers</span>
         </div>
       </div>
     </div>
@@ -2519,10 +1364,10 @@
 
         <!-- Desktop Navigation Links -->
         <nav class="nav-links">
-          <a href="#booking"><i class="fa-solid fa-car"></i> Fleet & Booking</a>
-          <a href="#tours"><i class="fa-solid fa-map-location-dot"></i> Popular Tours</a>
-          <a href="#about"><i class="fa-solid fa-user-shield"></i> About Driver</a>
-          <a href="#feedback"><i class="fa-solid fa-star"></i> Reviews & QR</a>
+          <a href="#booking">Fleet & Booking</a>
+          <a href="#tours">Popular Tours</a>
+          <a href="#about">About Driver</a>
+          <a href="#feedback">Reviews & QR</a>
         </nav>
 
         <div class="nav-cta-group">
@@ -2557,11 +1402,11 @@
         </div>
 
         <div class="drawer-links">
-          <a href="#booking" class="drawer-link"><i class="fa-solid fa-car"></i> Fleet & Booking</a>
-          <a href="#tours" class="drawer-link"><i class="fa-solid fa-map-location-dot"></i> Popular Tours</a>
-          <a href="#about" class="drawer-link"><i class="fa-solid fa-user-shield"></i> About Driver</a>
-          <a href="#feedback" class="drawer-link"><i class="fa-solid fa-star"></i> Reviews & QR</a>
-          <a href="#feedback" class="drawer-link" id="drawerShowQrBtn"><i class="fa-solid fa-qrcode"></i> In-Vehicle QR
+          <a href="#booking" class="drawer-link">Fleet & Booking</a>
+          <a href="#tours" class="drawer-link">Popular Tours</a>
+          <a href="#about" class="drawer-link">About Driver</a>
+          <a href="#feedback" class="drawer-link">Reviews & QR</a>
+          <a href="#feedback" class="drawer-link" id="drawerShowQrBtn">In-Vehicle QR
             Standee</a>
         </div>
       </div>
@@ -2580,9 +1425,7 @@
     <!-- ================= HERO SECTION (WITH DYNAMIC SCROLL-ZOOM LOGO) ================= -->
     <section class="hero">
       <div class="wrap">
-        <div class="hero-badge">
-          <i class="fa-solid fa-gem"></i> Premium Private Transport · English & Japanese Speaking Host
-        </div>
+        <p class="hero-badge">Premium Private Transport · Ahangama, Galle</p>
 
         <!-- Big Scroll-Interactive Hero Logo -->
         <div class="hero-logo-container">
@@ -2597,10 +1440,10 @@
 
         <div class="hero-actions">
           <a href="#booking" class="btn btn-gold">
-            <i class="fa-solid fa-calendar-check"></i> Plan Your Ride & Get Quote
+            Plan Your Ride & Get Quote
           </a>
           <a href="#feedback" class="btn btn-outline">
-            <i class="fa-solid fa-star"></i> Passenger Feedback & QR
+            Passenger Feedback & QR
           </a>
         </div>
 
@@ -2629,12 +1472,11 @@
       </div>
     </section>
 
-    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
 
     <!-- ================= BOOKING & FLEET CALCULATOR (CUSTOM QUOTE ON INQUIRY) ================= -->
     <section class="booking" id="booking">
       <div class="wrap">
-        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Flexible Route & Fleet</div>
+        <div class="eyebrow">Flexible Route & Fleet</div>
         <h2 class="section-title">Where Are You Headed Today?</h2>
         <p class="section-subtitle">Enter any hotel, villa, airport, or pinpoint on Google Maps. Select your vehicle to
           receive an instant direct quote tailored to your trip.</p>
@@ -2762,7 +1604,7 @@
     <!-- ================= POPULAR TOURS SECTION ================= -->
     <section class="packages" id="tours">
       <div class="wrap">
-        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Island-Wide Excursions</div>
+        <div class="eyebrow">Island-Wide Excursions</div>
         <h2 class="section-title">Popular Sri Lanka Tour Routes</h2>
         <p class="section-subtitle">Tailored scenic road trips and transfers with flexible stops for photography, tea
           factory visits, wildlife safaris, and beach spots.</p>
@@ -2776,10 +1618,10 @@
             </div>
             <div class="pkg-body">
               <ul class="pkg-list">
-                <li><i class="fa-solid fa-circle-check"></i> Historic Galle Dutch Fort UNESCO World Heritage</li>
-                <li><i class="fa-solid fa-circle-check"></i> Ahangama & Midigama Surf Breaks & Stilt Fishermen</li>
-                <li><i class="fa-solid fa-circle-check"></i> Turtle Conservation Project & Madu River Boat Safari</li>
-                <li><i class="fa-solid fa-circle-check"></i> Mirissa Coconut Tree Hill & Whale Watching Excursions</li>
+                <li>Historic Galle Dutch Fort UNESCO World Heritage</li>
+                <li>Ahangama & Midigama Surf Breaks & Stilt Fishermen</li>
+                <li>Turtle Conservation Project & Madu River Boat Safari</li>
+                <li>Mirissa Coconut Tree Hill & Whale Watching Excursions</li>
               </ul>
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Flexible Day Trips</span>
@@ -2798,10 +1640,10 @@
             </div>
             <div class="pkg-body">
               <ul class="pkg-list">
-                <li><i class="fa-solid fa-circle-check"></i> Nine Arch Bridge & Little Adam's Peak, Ella</li>
-                <li><i class="fa-solid fa-circle-check"></i> Ceylon Tea Plantations & Waterfalls Scenic Drive</li>
-                <li><i class="fa-solid fa-circle-check"></i> Temple of the Sacred Tooth Relic, Kandy</li>
-                <li><i class="fa-solid fa-circle-check"></i> Mountain Train Coordination & Pickup</li>
+                <li>Nine Arch Bridge & Little Adam's Peak, Ella</li>
+                <li>Ceylon Tea Plantations & Waterfalls Scenic Drive</li>
+                <li>Temple of the Sacred Tooth Relic, Kandy</li>
+                <li>Mountain Train Coordination & Pickup</li>
               </ul>
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Multi-Day Excursions</span>
@@ -2820,10 +1662,10 @@
             </div>
             <div class="pkg-body">
               <ul class="pkg-list">
-                <li><i class="fa-solid fa-circle-check"></i> Sigiriya Ancient Lion Rock Fortress & Pidurangala</li>
-                <li><i class="fa-solid fa-circle-check"></i> Dambulla Golden Cave Temples</li>
-                <li><i class="fa-solid fa-circle-check"></i> Minneriya / Yala National Park Elephant Safari</li>
-                <li><i class="fa-solid fa-circle-check"></i> Authentic Sri Lankan Village Cuisine Experiences</li>
+                <li>Sigiriya Ancient Lion Rock Fortress & Pidurangala</li>
+                <li>Dambulla Golden Cave Temples</li>
+                <li>Minneriya / Yala National Park Elephant Safari</li>
+                <li>Authentic Sri Lankan Village Cuisine Experiences</li>
               </ul>
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Custom Itinerary</span>
@@ -2837,7 +1679,6 @@
       </div>
     </section>
 
-    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
 
     <!-- ================= ABOUT DRIVER & MULTILINGUAL SECTION ================= -->
     <section class="about-driver" id="about">
@@ -2855,7 +1696,7 @@
           </div>
 
           <div class="driver-details">
-            <div class="eyebrow" style="margin-bottom:8px;">Meet Your Chauffeur</div>
+            <div class="eyebrow">Meet Your Chauffeur</div>
             <h3>Personalized Island-Wide Travel with DG Travels</h3>
             <p>
               Hello and welcome! Founded in 2022, DG Travels is built on reliability, immaculate vehicles, and
@@ -2868,17 +1709,17 @@
             <!-- Languages Spoken -->
             <div class="languages-badge-row">
               <span class="languages-label"><i class="fa-solid fa-language"></i> Fluent Languages:</span>
-              <span class="lang-pill">🇬🇧 English</span>
-              <span class="lang-pill">🇯🇵 Japanese (日本語)</span>
-              <span class="lang-pill">🇱🇰 Sinhala (සිංහල)</span>
-              <span class="lang-pill">🇮🇳 Tamil (தமிழ்)</span>
+              <span class="lang-pill">English</span>
+              <span class="lang-pill">Japanese (日本語)</span>
+              <span class="lang-pill">Sinhala (සිංහල)</span>
+              <span class="lang-pill">Tamil (தமிழ்)</span>
             </div>
 
             <div class="driver-perks">
-              <div class="driver-perk"><i class="fa-solid fa-shield-halved"></i> 100% Safe & Defensive Driving</div>
-              <div class="driver-perk"><i class="fa-solid fa-plane-arrival"></i> On-Time Flight Tracking & Meet</div>
-              <div class="driver-perk"><i class="fa-solid fa-snowflake"></i> Fully Air-Conditioned Clean Fleet</div>
-              <div class="driver-perk"><i class="fa-solid fa-clock"></i> 24/7 On-Call Support & Assistance</div>
+              <div class="driver-perk">100% Safe & Defensive Driving</div>
+              <div class="driver-perk">On-Time Flight Tracking & Meet</div>
+              <div class="driver-perk">Fully Air-Conditioned Clean Fleet</div>
+              <div class="driver-perk">24/7 On-Call Support & Assistance</div>
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -2894,12 +1735,11 @@
       </div>
     </section>
 
-    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
 
     <!-- ================= QR CODE & DYNAMIC FEEDBACK SECTION ================= -->
     <section class="feedback-section" id="feedback">
       <div class="wrap">
-        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Passenger Reviews & QR Code</div>
+        <div class="eyebrow">Passenger Reviews & QR Code</div>
         <h2 class="section-title">We Value Your Feedback</h2>
         <p class="section-subtitle">Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap
           the button below, to share your experience with us.</p>
@@ -2907,7 +1747,7 @@
         <div class="feedback-container">
           <!-- In-Vehicle QR Code Standee Card -->
           <div class="qr-standee-card">
-            <div class="eyebrow" style="margin-bottom:6px;">In-Vehicle QR Code</div>
+            <div class="eyebrow">In-Vehicle QR Code</div>
             <h3 style="font-size:22px; font-weight:700;">Scan to Leave a Review</h3>
 
             <div class="qr-box-frame">
@@ -2938,14 +1778,14 @@
             </div>
 
             <ul class="cta-points">
-              <li><i class="fa-solid fa-circle-check"></i> Takes less than a minute</li>
-              <li><i class="fa-solid fa-circle-check"></i> Rate your ride from 1 to 5 stars</li>
-              <li><i class="fa-solid fa-circle-check"></i> Your review appears on this page</li>
-              <li><i class="fa-solid fa-shield-halved"></i> Your email is never published</li>
+              <li>Takes less than a minute</li>
+              <li>Rate your ride from 1 to 5 stars</li>
+              <li>Your review appears on this page</li>
+              <li>Your email is never published</li>
             </ul>
 
-            <a href="feedback.html" class="btn btn-gold" style="width:100%;">
-              <i class="fa-solid fa-star"></i> Leave a Review
+            <a href="feedback.html" class="btn btn-gold cta-btn">
+              Leave a Review
             </a>
 
             <p class="cta-note">
@@ -2959,7 +1799,7 @@
         <div class="reviews-showcase">
           <div class="reviews-header">
             <div>
-              <div class="eyebrow" style="margin-bottom:4px;">Real Passenger Stories</div>
+              <div class="eyebrow">Real Passenger Stories</div>
               <h3 style="font-size: 24px; font-weight: 700;">Verified Customer Reviews</h3>
             </div>
 
@@ -2988,15 +1828,15 @@
     <div class="modal-overlay" id="qrModal">
       <div class="modal-card">
         <button type="button" class="modal-close" id="closeQrModalBtn"><i class="fa-solid fa-xmark"></i></button>
-        <div class="eyebrow" style="margin-bottom:6px;">DG Travels Sri Lanka</div>
+        <div class="eyebrow">DG Travels Sri Lanka</div>
         <h3 style="font-size:22px; font-weight:700;">Passenger Feedback QR</h3>
-        <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Scan with any phone camera</p>
+        <p style="font-size:13px; color:var(--text-2); margin-top:4px;">Scan with any phone camera</p>
 
         <div class="modal-qr-frame">
           <div id="modalQrCode"></div>
         </div>
 
-        <div style="font-size:13.5px; font-weight:700; color:var(--gold); margin-bottom:14px;">
+        <div style="font-size:13.5px; font-weight:700; color:var(--accent); margin-bottom:14px;">
           Owner: Isum Sejan Gunasekara · +94 77 826 1901
         </div>
 
@@ -3046,11 +1886,11 @@
           <div class="footer-col">
             <h4>Quick Navigation</h4>
             <ul class="footer-links">
-              <li><a href="#booking"><i class="fa-solid fa-angle-right"></i> Fleet & Booking</a></li>
-              <li><a href="#tours"><i class="fa-solid fa-angle-right"></i> Tour Packages</a></li>
-              <li><a href="#about"><i class="fa-solid fa-angle-right"></i> Driver Profile</a></li>
-              <li><a href="#feedback"><i class="fa-solid fa-angle-right"></i> Passenger Feedback</a></li>
-              <li><a href="#feedback"><i class="fa-solid fa-angle-right"></i> Scan Review QR</a></li>
+              <li><a href="#booking">Fleet & Booking</a></li>
+              <li><a href="#tours">Tour Packages</a></li>
+              <li><a href="#about">Driver Profile</a></li>
+              <li><a href="#feedback">Passenger Feedback</a></li>
+              <li><a href="#feedback">Scan Review QR</a></li>
             </ul>
           </div>
 
@@ -3082,7 +1922,7 @@
 
         <div class="footer-bottom">
           <div>&copy; <span id="currentYear"></span> DG Travels Sri Lanka. All Rights Reserved.</div>
-          <div>Designed with luxury dark aesthetics & dynamic passenger QR feedback.</div>
+          <div>Ahangama, Galle · Southern Province, Sri Lanka</div>
         </div>
       </div>
     </footer>
@@ -3091,203 +1931,10 @@
   <!-- ================= APPLICATION LOGIC SCRIPT ================= -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // ================= 1. AMBIENT DG TRAVELS LOGO RAIN PARTICLES =================
+      // Respect the OS 'reduce motion' setting for the few remaining transitions.
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const canvas = document.getElementById('brandRainCanvas');
-      if (canvas && !prefersReducedMotion) {
-        const ctx = canvas.getContext('2d');
-        let width = 0, height = 0;
-
-        // Size the backing store to the device pixel ratio so the emblems
-        // stay crisp on phone displays, capped at 2x to protect the GPU.
-        function sizeCanvas() {
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          width = window.innerWidth;
-          height = window.innerHeight;
-          canvas.width = Math.floor(width * dpr);
-          canvas.height = Math.floor(height * dpr);
-          canvas.style.width = width + 'px';
-          canvas.style.height = height + 'px';
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-        sizeCanvas();
-
-        // On mobile the URL bar collapsing fires resize constantly and only
-        // changes height. Re-size on width changes (i.e. rotation) only.
-        let lastWidth = window.innerWidth;
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-          if (window.innerWidth === lastWidth) {
-            height = window.innerHeight;
-            return;
-          }
-          lastWidth = window.innerWidth;
-          clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(sizeCanvas, 150);
-        }, { passive: true });
-
-        // Offscreen transparent logo renderer (removes black background dynamically)
-        let transparentLogoReady = false;
-        const offCanvas = document.createElement('canvas');
-        const offCtx = offCanvas.getContext('2d');
-        const logoImg = new Image();
-        logoImg.src = 'LOGO/DG - 1.png';
-        logoImg.onload = () => {
-          offCanvas.width = logoImg.width;
-          offCanvas.height = logoImg.height;
-          offCtx.drawImage(logoImg, 0, 0);
-          try {
-            const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
-            const data = imgData.data;
-            for (let i = 0; i < data.length; i += 4) {
-              const r = data[i], g = data[i + 1], b = data[i + 2];
-              const brightness = Math.max(r, g, b);
-              if (brightness < 40) {
-                data[i + 3] = 0; // Transparent background
-              } else {
-                // Tint to luxury warm gold
-                data[i] = 243;
-                data[i + 1] = 201;
-                data[i + 2] = 111;
-                data[i + 3] = Math.min(255, brightness * 1.1);
-              }
-            }
-            offCtx.putImageData(imgData, 0, 0);
-            transparentLogoReady = true;
-          } catch (e) {
-            transparentLogoReady = false;
-          }
-        };
-
-        // Particle class that renders gentle falling translucent DG emblems and gold sparkles
-        const particles = [];
-        // Lighter density on phones — fewer composited emblems means less
-        // battery burn and a steadier frame rate on mid-range hardware.
-        const particleCount = window.innerWidth < 480 ? 12
-          : window.innerWidth < 768 ? 20
-            : 34;
-
-        class BrandParticle {
-          constructor() {
-            this.reset(true);
-          }
-
-          reset(initial = false) {
-            this.x = Math.random() * width;
-            this.y = initial ? Math.random() * height : -70;
-            this.size = Math.random() * 28 + 18; // Size of floating DG logo
-            this.speedY = Math.random() * 0.8 + 0.4; // Gentle downward rainfall drift
-            this.speedX = Math.sin(Math.random() * Math.PI * 2) * 0.35; // Gentle horizontal drift
-            this.opacity = Math.random() * 0.16 + 0.05; // Ambient luxury watermark opacity
-            this.rotation = (Math.random() - 0.5) * 0.4;
-            this.rotSpeed = (Math.random() - 0.5) * 0.005;
-            this.pulseAngle = Math.random() * Math.PI * 2;
-            this.pulseSpeed = Math.random() * 0.03 + 0.015;
-            this.type = Math.random() > 0.3 ? 'logo' : (Math.random() > 0.5 ? 'text' : 'sparkle');
-          }
-
-          update() {
-            this.y += this.speedY;
-            this.x += this.speedX + Math.sin(this.pulseAngle) * 0.2;
-            this.rotation += this.rotSpeed;
-            this.pulseAngle += this.pulseSpeed;
-
-            if (this.y > height + 80 || this.x < -60 || this.x > width + 60) {
-              this.reset(false);
-            }
-          }
-
-          draw() {
-            ctx.save();
-            ctx.translate(this.x, this.y);
-            ctx.rotate(this.rotation);
-
-            // Gentle popping/breathing scale
-            const popScale = 1 + Math.sin(this.pulseAngle) * 0.12;
-            ctx.scale(popScale, popScale);
-            ctx.globalAlpha = this.opacity;
-
-            if (this.type === 'logo') {
-              if (transparentLogoReady) {
-                // Draw clean transparent PNG logo
-                const s = this.size;
-                ctx.drawImage(offCanvas, -s / 2, -s / 2, s, s);
-              } else {
-                // Clean vector fallback if image loading
-                ctx.strokeStyle = '#d7a84e';
-                ctx.lineWidth = 1.8;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-
-                const s = this.size;
-                // 'D' bracket on left
-                ctx.beginPath();
-                ctx.moveTo(s * 0.1, -s * 0.4);
-                ctx.lineTo(-s * 0.35, -s * 0.4);
-                ctx.lineTo(-s * 0.35, s * 0.4);
-                ctx.lineTo(s * 0.1, s * 0.4);
-                ctx.stroke();
-
-                // 'G' oval on right interlocking
-                ctx.beginPath();
-                ctx.ellipse(s * 0.05, 0, s * 0.35, s * 0.4, 0, Math.PI * 1.7, Math.PI * 0.8, false);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(s * 0.35, 0);
-                ctx.lineTo(s * 0.05, 0);
-                ctx.stroke();
-              }
-            } else if (this.type === 'text') {
-              ctx.font = '700 9.5px "Baloo 2", sans-serif';
-              ctx.fillStyle = '#f3c96f';
-              ctx.letterSpacing = '0.22em';
-              ctx.textAlign = 'center';
-              ctx.fillText('DG TRAVELS', 0, 0);
-            } else {
-              // Ambient soft golden sparkle
-              ctx.fillStyle = '#d7a84e';
-              ctx.beginPath();
-              ctx.arc(0, 0, Math.random() * 2 + 1.2, 0, Math.PI * 2);
-              ctx.fill();
-            }
-
-            ctx.restore();
-          }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-          particles.push(new BrandParticle());
-        }
-
-        // Fully stop the loop when the tab is backgrounded rather than
-        // idling a rAF every frame — meaningful on battery-powered devices.
-        let rafId = null;
-
-        function animateRain() {
-          ctx.clearRect(0, 0, width, height);
-          for (let i = 0; i < particles.length; i++) {
-            particles[i].update();
-            particles[i].draw();
-          }
-          rafId = requestAnimationFrame(animateRain);
-        }
-        function startRain() {
-          if (rafId === null) rafId = requestAnimationFrame(animateRain);
-        }
-        function stopRain() {
-          if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-        }
-
-        document.addEventListener('visibilitychange', () => {
-          if (document.hidden) stopRain(); else startRain();
-        });
-        startRain();
-      }
-
-
-      // ================= 2. MOBILE DRAWER NAVIGATION =================
+      // ================= 1. MOBILE DRAWER NAVIGATION =================
 
       // iOS Safari keeps scrolling the page behind an overlay when only
       // `overflow: hidden` is set, so pin the body and restore the offset.
@@ -3342,48 +1989,6 @@
         });
       }
 
-      // ================= 3. PRELOADER FADE OUT =================
-      const preloader = document.getElementById('preloader');
-      if (preloader) {
-        window.addEventListener('load', () => {
-          setTimeout(() => {
-            preloader.classList.add('fade-out');
-          }, 700);
-        });
-        setTimeout(() => {
-          if (!preloader.classList.contains('fade-out')) {
-            preloader.classList.add('fade-out');
-          }
-        }, 1300);
-      }
-
-      // ================= 4. DYNAMIC HERO LOGO ZOOM-OUT ON SCROLL =================
-      const heroLogo = document.getElementById('heroLogo');
-      if (heroLogo && !prefersReducedMotion) {
-        // Touch scrolling fires far more often than the screen refreshes, so
-        // coalesce the style writes into one per frame to keep scrolling smooth.
-        let heroTicking = false;
-
-        function updateHeroLogo() {
-          heroTicking = false;
-          const scrollY = window.scrollY || window.pageYOffset;
-          const maxScroll = 320;
-          const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
-          const scale = 1 - (scrollProgress * 0.30);
-          const opacity = 1 - (scrollProgress * 0.15);
-
-          heroLogo.style.transform = `scale(${scale})`;
-          heroLogo.style.opacity = opacity;
-        }
-
-        window.addEventListener('scroll', () => {
-          if (!heroTicking) {
-            heroTicking = true;
-            requestAnimationFrame(updateHeroLogo);
-          }
-        }, { passive: true });
-      }
-
       // Set current year in footer
       document.getElementById('currentYear').textContent = new Date().getFullYear();
 
@@ -3398,7 +2003,7 @@
         dateInput.value = `${yyyy}-${mm}-${dd}`;
       }
 
-      // ================= 5. GOOGLE MAP HELPER BUTTONS =================
+      // ================= 2. GOOGLE MAP HELPER BUTTONS =================
       const openPickupMapBtn = document.getElementById('openPickupMapBtn');
       const openDropoffMapBtn = document.getElementById('openDropoffMapBtn');
       const pickupInput = document.getElementById('pickup');
@@ -3418,7 +2023,7 @@
         });
       }
 
-      // ================= 6. FLEET & BOOKING LOGIC =================
+      // ================= 3. FLEET & BOOKING LOGIC =================
       const vehicleCards = document.querySelectorAll('.vehicle-card');
       let selectedVehicle = 'Toyota Aqua';
 
@@ -3467,7 +2072,7 @@
         });
       }
 
-      // ================= 7. DYNAMIC QR CODE GENERATOR =================
+      // ================= 4. QR CODE GENERATOR =================
       // The printed QR must point at the LIVE feedback page, so that a
       // standee printed today keeps working. Set SITE_URL to the deployed
       // domain before printing; otherwise the QR is built from wherever
@@ -3541,7 +2146,7 @@
         copyLinkBtn.addEventListener('click', () => {
           navigator.clipboard.writeText(feedbackUrl).then(() => {
             const originalHtml = copyLinkBtn.innerHTML;
-            copyLinkBtn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--gold);"></i> Copied Link!';
+            copyLinkBtn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--accent);"></i> Copied Link!';
             setTimeout(() => {
               copyLinkBtn.innerHTML = originalHtml;
             }, 2000);
@@ -3551,7 +2156,7 @@
         });
       }
 
-      // ================= 8. LIVE PASSENGER REVIEWS (SUPABASE) =================
+      // ================= 5. LIVE PASSENGER REVIEWS (SUPABASE) =================
       // Reviews are submitted on feedback.html and stored in Supabase.
       // This page only reads them, through /api/reviews, which never
       // exposes passenger email addresses.
@@ -3584,7 +2189,7 @@
         for (let i = 1; i <= 5; i++) {
           html += i <= r
             ? '<i class="fa-solid fa-star"></i>'
-            : '<i class="fa-regular fa-star" style="color:var(--text-faint);"></i>';
+            : '<i class="fa-regular fa-star" style="color:var(--text-3);"></i>';
         }
         return html;
       }
@@ -3643,8 +2248,7 @@
             '<div class="reviewer-meta">' +
             '<h4>' + escapeHtml(review.name) + '</h4>' +
             '<div class="reviewer-tag">' +
-            '<i class="fa-solid fa-circle-check" style="color:var(--gold); font-size:10px;"></i>' +
-            ' Passenger review' +
+            'Passenger review' +
             '</div>' +
             '</div>' +
             '</div>' +

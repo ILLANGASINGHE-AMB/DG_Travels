@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="robots" content="noindex">
   <title>Share Your Feedback | DG Travels Sri Lanka</title>
   <meta name="description" content="Tell Isum how your DG Travels ride or tour went. Takes less than a minute.">
@@ -13,28 +13,28 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #000000;
-      --surface: #0c0c0c;
-      --surface-2: #141414;
-      --field: #0a0a0a;
-      --border: rgba(255, 255, 255, 0.14);
-      --border-soft: rgba(255, 255, 255, 0.08);
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #161616;
+      --field: #0d0d0d;
+      --border: rgba(255, 255, 255, 0.17);
+      --border-soft: rgba(255, 255, 255, 0.09);
 
-      --text: #ffffff;
-      --text-muted: #9a9a9a;
-      --text-faint: #6a6a6a;
+      --text: #f4f4f4;
+      --text-muted: #a0a0a0;
+      --text-faint: #808080;
 
-      --gold: #d7a84e;
-      --gold-light: #f3c96f;
+      --gold: #c9a961;
+      --gold-light: #dcbe7c;
       --danger: #ff7b72;
       --success: #4ade80;
 
-      --radius: 14px;
-      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --radius: 8px;
+      --transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,22 +82,18 @@
       padding: 6px 0 22px;
     }
     .head h1 {
-      font-family: 'Baloo 2', sans-serif;
-      font-size: clamp(23px, 6.4vw, 29px);
-      font-weight: 700;
-      line-height: 1.22;
-      letter-spacing: -0.01em;
+      font-size: clamp(24px, 6.4vw, 30px);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
       margin-bottom: 16px;
     }
     .logo {
-      width: 82px;
-      height: 82px;
+      width: 72px;
+      height: 72px;
       margin: 0 auto;
-      border-radius: 20px;
-      padding: 10px;
-      background: var(--surface-2);
-      border: 1px solid rgba(215, 168, 78, 0.32);
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
       object-fit: contain;
     }
     .head .tagline {
@@ -111,8 +107,8 @@
     .card {
       background: var(--surface);
       border: 1px solid var(--border-soft);
-      border-radius: 20px;
-      padding: 22px 18px 24px;
+      border-radius: 12px;
+      padding: 26px 22px 28px;
     }
 
     /* ============ FIELDS ============ */
@@ -138,7 +134,7 @@
       background: var(--field);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 15px;
+      padding: 13px 14px;
       color: var(--text);
       /* 16px keeps iOS Safari from zooming in on focus */
       font-size: 16px;
@@ -158,8 +154,7 @@
 
     input:focus, textarea:focus {
       border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(215, 168, 78, 0.16);
-      background: #0f0e0c;
+      background: #101010;
     }
 
     .field.invalid input,
@@ -233,23 +228,21 @@
     .submit {
       width: 100%;
       min-height: 54px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
-      color: #0d0c09;
-      font-size: 16px;
-      font-weight: 700;
+      border-radius: var(--radius);
+      background: var(--gold);
+      color: #0a0a0a;
+      font-size: 15px;
+      font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 9px;
       transition: var(--transition);
-      box-shadow: 0 6px 20px rgba(215, 168, 78, 0.24);
     }
-    .submit:active { transform: scale(0.985); }
+    .submit:hover { background: var(--gold-light); }
     .submit[disabled] {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: not-allowed;
-      box-shadow: none;
     }
     .spinner {
       width: 17px;
@@ -297,7 +290,6 @@
     }
     .success-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 3; }
     .success h2 {
-      font-family: 'Baloo 2', sans-serif;
       font-size: 23px;
       font-weight: 700;
       margin-bottom: 8px;
@@ -324,7 +316,7 @@
       gap: 8px;
       min-height: 48px;
       padding: 12px 24px;
-      border-radius: 999px;
+      border-radius: var(--radius);
       border: 1px solid var(--border);
       color: var(--text);
       font-size: 14.5px;
