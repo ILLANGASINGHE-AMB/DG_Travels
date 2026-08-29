@@ -42,7 +42,9 @@
     @property --dg-angle {
       syntax: '<angle>';
       initial-value: 0deg;
-      inherits: false;
+      /* Inherited so a single animation on .logo-mark drives both the
+         trailing sweep and the leading dot, keeping them exactly in step. */
+      inherits: true;
     }
 
     :root {
@@ -90,7 +92,11 @@
 
     html {
       -webkit-text-size-adjust: 100%;
+      /* `clip` rather than `hidden`: hidden makes html/body a scroll
+         container, which silently breaks `position: sticky` on the header.
+         clip contains any stray overflow without that side effect. */
       overflow-x: hidden;
+      overflow-x: clip;
       scroll-behavior: smooth;
       scroll-padding-top: calc(var(--nav-h) + 16px);
     }
@@ -104,6 +110,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
+      overflow-x: clip;
       min-height: 100vh;
     }
 
@@ -684,6 +691,7 @@
        the #dgContour SVG filter) and a rotating wedge lights a moving
        section of it, so the line travels around the DG monogram. */
     .logo-mark {
+      animation: dgSweep 4.5s linear infinite;
       position: relative;
       width: 340px;
       max-width: 78vw;
@@ -703,7 +711,8 @@
        the monogram and the TRAVELS wordmark. Cutting at 86.5% keeps both
        contour layers on the DG letters and leaves the word untouched. */
     .logo-contour,
-    .logo-sweep {
+    .logo-sweep,
+    .logo-head {
       clip-path: inset(0 0 13.5% 0);
     }
 
@@ -724,7 +733,24 @@
           transparent 0 8%, #000 20%, #000 26%, transparent 40%, transparent 100%);
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
-      animation: dgSweep 4.5s linear infinite;
+    }
+
+    /* 2b — the dot: a narrow wedge right at the leading edge of the sweep,
+       so a bright point rides at the head of the travelling line. */
+    .logo-head {
+      position: absolute;
+      inset: 0;
+      -webkit-mask-image: conic-gradient(from var(--dg-angle),
+          transparent 0 35.5%, #000 38%, #000 39.5%, transparent 42%, transparent 100%);
+      mask-image: conic-gradient(from var(--dg-angle),
+          transparent 0 35.5%, #000 38%, #000 39.5%, transparent 42%, transparent 100%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+    .logo-head img {
+      filter: url(#dgContour) brightness(3.4)
+              drop-shadow(0 0 5px rgba(240, 248, 255, 0.95))
+              drop-shadow(0 0 11px rgba(198, 218, 245, 0.55));
     }
     .logo-sweep img {
       filter: url(#dgContour) brightness(2.2)
@@ -2393,7 +2419,7 @@
       }
 
       /* Hold the travelling highlight still */
-      .logo-sweep { animation: none; }
+      .logo-mark { animation: none; }
 
       /* Skip the splash entirely rather than flashing it */
       #preloader {
@@ -2481,7 +2507,7 @@
           <feFuncA type="linear" slope="14" intercept="-7"/>
         </feComponentTransfer>
         <!-- 2. Grow it, then subtract the original: a ring hugging every stroke -->
-        <feMorphology in="solid" operator="dilate" radius="1.2" result="fat"/>
+        <feMorphology in="solid" operator="dilate" radius="1.8" result="fat"/>
         <feComposite in="fat" in2="solid" operator="out" result="ring"/>
         <!-- 3. Paint the ring silver -->
         <feFlood flood-color="#9aa3ad" result="silver"/>
@@ -2580,6 +2606,9 @@
                  3. the logo itself, on top -->
             <img src="LOGO/DG_logo_Tp.png" alt="" aria-hidden="true" class="logo-contour">
             <div class="logo-sweep" aria-hidden="true">
+              <img src="LOGO/DG_logo_Tp.png" alt="">
+            </div>
+            <div class="logo-head" aria-hidden="true">
               <img src="LOGO/DG_logo_Tp.png" alt="">
             </div>
             <img src="LOGO/DG_logo_Tp.png" alt="DG Travels" class="logo-art">
