@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>DG Travels | Private Transport & Island-Wide Tours in Sri Lanka</title>
   <meta name="description"
-    content="DG Travels provides private transport, CMB airport transfers, surf trips, and custom tours across Sri Lanka. Owned and guided by Isum Sejan Gunasekara, based in Ahangama, Galle.">
+    content="DG Travels provides private transport, CMB airport transfers, surf trips, and custom tours across Sri Lanka. Owned and guided by Isum Sejan Gunasekara, based in Galle.">
   <!-- Favicon Links for All Browsers & Devices -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -21,8 +21,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
   <!-- Font Awesome Icons for UI -->
@@ -40,30 +39,30 @@
 
     :root {
       /* Surfaces — flat neutral blacks, no warm cast */
-      --bg:          #0a0a0a;
-      --surface:     #111111;
-      --surface-2:   #161616;
-      --surface-3:   #1c1c1c;
-      --field:       #0d0d0d;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #161616;
+      --surface-3: #1c1c1c;
+      --field: #0d0d0d;
 
       /* Hairlines do the structural work that shadows used to */
-      --line:        rgba(255, 255, 255, 0.09);
+      --line: rgba(255, 255, 255, 0.09);
       --line-strong: rgba(255, 255, 255, 0.17);
 
-      --text:        #f4f4f4;
-      --text-2:      #a0a0a0;
-      --text-3:      #808080;
+      --text: #f4f4f4;
+      --text-2: #a0a0a0;
+      --text-3: #808080;
 
       /* A single restrained accent, used sparingly */
-      --accent:      #c9a961;
-      --accent-hi:   #dcbe7c;
-      --accent-dim:  rgba(201, 169, 97, 0.10);
+      --accent: #c9a961;
+      --accent-hi: #dcbe7c;
+      --accent-dim: rgba(201, 169, 97, 0.10);
 
-      --green:       #25d366;
-      --danger:      #ff7b72;
+      --green: #25d366;
+      --danger: #ff7b72;
 
       --r-sm: 4px;
-      --r:    8px;
+      --r: 8px;
       --r-lg: 12px;
 
       --maxw: 1120px;
@@ -74,7 +73,11 @@
 
     *,
     *::before,
-    *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     html {
       -webkit-text-size-adjust: 100%;
@@ -95,10 +98,30 @@
       min-height: 100vh;
     }
 
-    a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
-    button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    img, svg { display: block; max-width: 100%; }
-    ul { list-style: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    img,
+    svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    ul {
+      list-style: none;
+    }
 
     :focus-visible {
       outline: 2px solid var(--accent);
@@ -107,7 +130,10 @@
     }
 
     /* ---------- Type scale ---------- */
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
       font-weight: 600;
       line-height: 1.15;
       letter-spacing: -0.02em;
@@ -130,7 +156,10 @@
       color: var(--text-3);
       margin-bottom: 14px;
     }
-    .eyebrow.accent { color: var(--accent); }
+
+    .eyebrow.accent {
+      color: var(--accent);
+    }
 
     .section-title {
       font-size: clamp(25px, 3.4vw, 34px);
@@ -138,6 +167,7 @@
       letter-spacing: -0.025em;
       margin-bottom: 12px;
     }
+
     .section-subtitle {
       color: var(--text-2);
       font-size: 15px;
@@ -150,7 +180,10 @@
       text-align: center;
       margin-bottom: 48px;
     }
-    .section-head .section-subtitle { margin: 0 auto; }
+
+    .section-head .section-subtitle {
+      margin: 0 auto;
+    }
 
     /* ---------- Buttons ---------- */
     .btn {
@@ -158,13 +191,18 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 0 22px;
-      height: 46px;
+      padding: 12px 22px;
+      min-height: 46px;
       border-radius: var(--r);
       font-size: 14px;
       font-weight: 600;
+      line-height: 1.3;
       letter-spacing: -0.005em;
-      white-space: nowrap;
+      text-align: center;
+      /* No nowrap: a long label wraps to a second line rather than
+         overflowing its box on a narrow phone. */
+      white-space: normal;
+      text-wrap: balance;
       transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
       touch-action: manipulation;
     }
@@ -173,13 +211,20 @@
       background: var(--accent);
       color: #0a0a0a;
     }
-    .btn-gold:hover { background: var(--accent-hi); }
+
+    .btn-gold:hover {
+      background: var(--accent-hi);
+    }
 
     .btn-outline {
       border: 1px solid var(--line-strong);
       color: var(--text);
     }
-    .btn-outline:hover { border-color: var(--text-2); background: rgba(255, 255, 255, 0.03); }
+
+    .btn-outline:hover {
+      border-color: var(--text-2);
+      background: rgba(255, 255, 255, 0.03);
+    }
 
     /* WhatsApp keeps its brand cue as a tint, not a neon slab —
        full-strength green is reserved for the floating action button. */
@@ -188,13 +233,35 @@
       border: 1px solid rgba(37, 211, 102, 0.32);
       color: #4ade80;
     }
+
     .btn-whatsapp:hover {
       background: rgba(37, 211, 102, 0.16);
       border-color: rgba(37, 211, 102, 0.5);
     }
 
-    .btn-sm { height: 38px; padding: 0 16px; font-size: 13px; }
-    .cta-btn { align-self: flex-start; }
+    .btn-sm {
+      min-height: 40px;
+      padding: 9px 16px;
+      font-size: 13px;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .cta-btn {
+      align-self: flex-start;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-row .btn {
+      flex: 1 1 auto;
+    }
 
     /* Quiet text link with an arrow */
     .link-arrow {
@@ -206,7 +273,96 @@
       color: var(--accent);
       transition: gap 0.18s var(--ease);
     }
-    .link-arrow:hover { gap: 11px; }
+
+    .link-arrow:hover {
+      gap: 11px;
+    }
+
+    /* ---------- Loading screen ---------- */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: preloaderOut 0.45s var(--ease) 1.05s forwards;
+    }
+
+    #preloader.done {
+      animation: preloaderOut 0.4s var(--ease) forwards;
+    }
+
+    @keyframes preloaderOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
+
+    /* No entrance animation: with a `both` fill the mark would sit at
+       opacity 0 until the compositor starts the animation, which on a slow
+       phone shows an empty black screen. It is simply visible immediately. */
+    .preloader-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .preloader-logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+    }
+
+    .preloader-word {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+      color: var(--text);
+    }
+
+    .preloader-word span {
+      display: block;
+      margin-top: 6px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-indent: 0.3em;
+      color: var(--text-3);
+    }
+
+    /* A single hairline that fills — no spinner, no glow */
+    .preloader-bar {
+      width: 116px;
+      height: 1px;
+      margin-top: 26px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .preloader-bar span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: preloaderFill 1.15s var(--ease) forwards;
+    }
+
+    @keyframes preloaderFill {
+      to {
+        transform: scaleX(1);
+      }
+    }
 
     /* ---------- Top bar ---------- */
     .top-bar {
@@ -215,6 +371,7 @@
       color: var(--text-2);
       background: var(--bg);
     }
+
     .top-bar .wrap {
       display: flex;
       justify-content: space-between;
@@ -222,9 +379,27 @@
       gap: 16px;
       height: 40px;
     }
-    .top-info { display: flex; align-items: center; gap: 22px; }
-    .top-info span { display: inline-flex; align-items: center; gap: 7px; }
-    .top-info i { color: var(--text-3); font-size: 11px; }
+
+    .top-info {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .top-info span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .top-tel {
+      color: inherit;
+      transition: color 0.18s var(--ease);
+    }
+
+    .top-tel:hover {
+      color: var(--text);
+    }
 
     /* ---------- Header ---------- */
     .nav {
@@ -236,6 +411,7 @@
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line);
     }
+
     .nav .wrap {
       display: flex;
       align-items: center;
@@ -244,7 +420,12 @@
       height: var(--nav-h);
     }
 
-    .nav-brand { display: flex; align-items: center; gap: 11px; }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
     .brand-logo-img {
       height: 34px;
       width: auto;
@@ -252,6 +433,7 @@
       border: 1px solid var(--line);
       border-radius: var(--r-sm);
     }
+
     .brand-title {
       display: flex;
       flex-direction: column;
@@ -260,6 +442,7 @@
       font-weight: 700;
       letter-spacing: 0.12em;
     }
+
     .brand-title span.sub {
       font-size: 9px;
       font-weight: 500;
@@ -275,13 +458,21 @@
       font-size: 14px;
       font-weight: 500;
     }
+
     .nav-links a {
       color: var(--text-2);
       transition: color 0.18s var(--ease);
     }
-    .nav-links a:hover { color: var(--text); }
 
-    .nav-cta-group { display: flex; align-items: center; gap: 10px; }
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .btn-qr-nav {
       display: inline-flex;
@@ -296,7 +487,11 @@
       color: var(--text-2);
       transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
     }
-    .btn-qr-nav:hover { border-color: var(--text-2); color: var(--text); }
+
+    .btn-qr-nav:hover {
+      border-color: var(--text-2);
+      color: var(--text);
+    }
 
     .mobile-menu-toggle {
       display: none;
@@ -335,11 +530,13 @@
       visibility: hidden;
       transition: right 0.3s var(--ease), visibility 0s linear 0.3s;
     }
+
     .mobile-drawer.open {
       right: 0;
       visibility: visible;
       transition: right 0.3s var(--ease), visibility 0s linear 0s;
     }
+
     .drawer-header {
       display: flex;
       align-items: center;
@@ -347,6 +544,7 @@
       padding-bottom: 18px;
       border-bottom: 1px solid var(--line);
     }
+
     .drawer-close {
       width: 44px;
       height: 44px;
@@ -358,11 +556,13 @@
       color: var(--text-2);
       flex: none;
     }
+
     .drawer-links {
       display: flex;
       flex-direction: column;
       margin-top: 8px;
     }
+
     .drawer-links a {
       display: flex;
       align-items: center;
@@ -372,6 +572,7 @@
       color: var(--text);
       border-bottom: 1px solid var(--line);
     }
+
     .drawer-backdrop {
       position: fixed;
       inset: 0;
@@ -382,14 +583,21 @@
       z-index: 998;
       display: none;
     }
-    .drawer-backdrop.open { display: block; }
+
+    .drawer-backdrop.open {
+      display: block;
+    }
 
     /* ---------- Hero ---------- */
     .hero {
       padding: 84px 0 72px;
       text-align: center;
     }
-    .hero-logo-container { margin-bottom: 34px; }
+
+    .hero-logo-container {
+      margin-bottom: 34px;
+    }
+
     .hero-logo-center {
       width: 76px;
       height: 76px;
@@ -398,6 +606,7 @@
       border: 1px solid var(--line);
       border-radius: var(--r);
     }
+
     .hero-badge {
       display: block;
       font-size: 11px;
@@ -407,6 +616,7 @@
       color: var(--text-3);
       margin-bottom: 26px;
     }
+
     .hero h1 {
       font-size: clamp(33px, 5.4vw, 54px);
       font-weight: 600;
@@ -415,7 +625,11 @@
       max-width: 15ch;
       margin: 0 auto 22px;
     }
-    .hero h1 .highlight { color: var(--accent); }
+
+    .hero h1 .highlight {
+      color: var(--accent);
+    }
+
     .hero .lede {
       max-width: 54ch;
       margin: 0 auto 36px;
@@ -423,6 +637,7 @@
       font-size: 16px;
       line-height: 1.7;
     }
+
     .hero-actions {
       display: flex;
       justify-content: center;
@@ -440,12 +655,17 @@
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
     }
+
     .stat-box {
       padding: 26px 16px;
       text-align: center;
       border-right: 1px solid var(--line);
     }
-    .stat-box:last-child { border-right: none; }
+
+    .stat-box:last-child {
+      border-right: none;
+    }
+
     .stat-num {
       font-size: 22px;
       font-weight: 600;
@@ -453,20 +673,39 @@
       color: var(--text);
       line-height: 1.2;
     }
+
     .stat-label {
       font-size: 12.5px;
       color: var(--text-3);
       margin-top: 5px;
       line-height: 1.45;
     }
-    .stat-sep { display: none; }
+
+    .stat-sep {
+      display: none;
+    }
 
     /* ---------- Section rhythm ---------- */
-    section { padding: 88px 0; }
-    .booking  { border-top: 1px solid var(--line); }
-    .packages { border-top: 1px solid var(--line); }
-    .about-driver { border-top: 1px solid var(--line); }
-    .feedback-section { border-top: 1px solid var(--line); padding-bottom: 96px; }
+    section {
+      padding: 88px 0;
+    }
+
+    .booking {
+      border-top: 1px solid var(--line);
+    }
+
+    .packages {
+      border-top: 1px solid var(--line);
+    }
+
+    .about-driver {
+      border-top: 1px solid var(--line);
+    }
+
+    .feedback-section {
+      border-top: 1px solid var(--line);
+      padding-bottom: 96px;
+    }
 
     /* ---------- Booking ---------- */
     .steps-pill {
@@ -476,6 +715,7 @@
       margin-bottom: 40px;
       flex-wrap: wrap;
     }
+
     .step-item {
       display: flex;
       align-items: center;
@@ -484,6 +724,7 @@
       font-weight: 500;
       color: var(--text-3);
     }
+
     .step-item span.num {
       font-size: 11px;
       font-weight: 600;
@@ -506,7 +747,13 @@
       gap: 18px;
       margin-bottom: 34px;
     }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .form-group label {
       display: flex;
       align-items: center;
@@ -516,8 +763,16 @@
       font-weight: 500;
       color: var(--text-2);
     }
-    .form-group label span.label-text { display: inline-flex; align-items: center; gap: 6px; }
-    .form-group label i { display: none; }
+
+    .form-group label span.label-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-group label i {
+      display: none;
+    }
 
     .map-helper-btn {
       font-size: 11.5px;
@@ -526,8 +781,15 @@
       border-bottom: 1px solid transparent;
       transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
     }
-    .map-helper-btn i { display: none; }
-    .map-helper-btn:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .map-helper-btn i {
+      display: none;
+    }
+
+    .map-helper-btn:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
 
     .form-input,
     .form-select {
@@ -545,6 +807,7 @@
       -webkit-appearance: none;
       appearance: none;
     }
+
     .form-select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
@@ -552,10 +815,20 @@
       background-size: 17px;
       padding-right: 38px;
     }
+
     .form-input:focus,
-    .form-select:focus { border-color: var(--accent); }
-    .form-input::placeholder { color: var(--text-3); }
-    .form-select option { background: #141414; color: #fff; }
+    .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-3);
+    }
+
+    .form-select option {
+      background: #141414;
+      color: #fff;
+    }
 
     .vehicle-section-head {
       display: flex;
@@ -566,8 +839,16 @@
       border-top: 1px solid var(--line);
       margin-bottom: 18px;
     }
-    .vehicle-section-head h3 { font-size: 16px; font-weight: 600; }
-    .vehicle-section-head span { font-size: 12.5px; color: var(--text-3); }
+
+    .vehicle-section-head h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .vehicle-section-head span {
+      font-size: 12.5px;
+      color: var(--text-3);
+    }
 
     .fleet-grid {
       display: grid;
@@ -575,6 +856,7 @@
       gap: 12px;
       margin-bottom: 30px;
     }
+
     .vehicle-card {
       position: relative;
       background: transparent;
@@ -587,11 +869,16 @@
       touch-action: manipulation;
       transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
     }
-    .vehicle-card:hover { border-color: var(--line-strong); }
+
+    .vehicle-card:hover {
+      border-color: var(--line-strong);
+    }
+
     .vehicle-card.selected {
       border-color: var(--accent);
       background: var(--accent-dim);
     }
+
     .vehicle-card.selected::after {
       content: '';
       position: absolute;
@@ -602,13 +889,18 @@
       border-radius: 50%;
       background: var(--accent);
     }
+
     .vehicle-icon {
       font-size: 19px;
       color: var(--text-3);
       margin-bottom: 14px;
       transition: color 0.18s var(--ease);
     }
-    .vehicle-card.selected .vehicle-icon { color: var(--accent); }
+
+    .vehicle-card.selected .vehicle-icon {
+      color: var(--accent);
+    }
+
     .vehicle-badge-type {
       display: block;
       font-size: 10px;
@@ -618,20 +910,25 @@
       color: var(--text-3);
       margin-bottom: 6px;
     }
+
     .vehicle-title {
       font-size: 15px;
       font-weight: 600;
       letter-spacing: -0.01em;
       margin-bottom: 5px;
     }
+
     .vehicle-specs {
       font-size: 12.5px;
       color: var(--text-2);
       line-height: 1.5;
     }
+
     /* The marketing badge on each card was pure noise — hidden, not deleted,
        so the copy stays in the markup if it is ever wanted again. */
-    .vehicle-quote-badge { display: none; }
+    .vehicle-quote-badge {
+      display: none;
+    }
 
     .booking-actions {
       display: flex;
@@ -642,15 +939,32 @@
       padding-top: 26px;
       border-top: 1px solid var(--line);
     }
-    .price-estimate-box { font-size: 13.5px; color: var(--text-2); }
-    .price-estimate-box strong { color: var(--text); font-weight: 600; }
+
+    .price-estimate-box {
+      font-size: 13.5px;
+      color: var(--text-2);
+    }
+
+    .price-estimate-box strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
     .price-note-sub {
       font-size: 12.5px;
       color: var(--text-3);
       margin-top: 5px;
     }
-    .price-note-sub i { display: none; }
-    .booking-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .price-note-sub i {
+      display: none;
+    }
+
+    .booking-btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
     /* ---------- Tours ---------- */
     .pkg-grid {
@@ -662,6 +976,7 @@
       border-radius: var(--r-lg);
       overflow: hidden;
     }
+
     .pkg-card {
       background: var(--bg);
       display: flex;
@@ -669,8 +984,15 @@
       padding: 32px 28px;
       transition: background-color 0.2s var(--ease);
     }
-    .pkg-card:hover { background: var(--surface); }
-    .pkg-header { margin-bottom: 22px; }
+
+    .pkg-card:hover {
+      background: var(--surface);
+    }
+
+    .pkg-header {
+      margin-bottom: 22px;
+    }
+
     .pkg-tag {
       display: block;
       font-size: 10.5px;
@@ -680,29 +1002,34 @@
       color: var(--accent);
       margin-bottom: 10px;
     }
+
     .pkg-title {
       font-size: 20px;
       font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.25;
     }
+
     .pkg-body {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
+
     .pkg-list {
       margin-bottom: 26px;
       font-size: 14px;
       color: var(--text-2);
     }
+
     .pkg-list li {
       position: relative;
       padding-left: 18px;
       margin-bottom: 11px;
       line-height: 1.55;
     }
+
     /* A hairline tick replaces the icon font */
     .pkg-list li::before {
       content: '';
@@ -713,7 +1040,11 @@
       height: 1px;
       background: var(--accent);
     }
-    .pkg-list li i { display: none; }
+
+    .pkg-list li i {
+      display: none;
+    }
+
     /* Stacked rather than space-between: the three labels differ in
        length, and a row layout wrapped on one card but not the others. */
     .pkg-footer {
@@ -724,8 +1055,15 @@
       padding-top: 20px;
       border-top: 1px solid var(--line);
     }
-    .pkg-price { font-size: 13px; color: var(--text-3); }
-    .pkg-price i { display: none; }
+
+    .pkg-price {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .pkg-price i {
+      display: none;
+    }
 
     /* ---------- Driver ---------- */
     .driver-card {
@@ -734,12 +1072,14 @@
       gap: 64px;
       align-items: start;
     }
+
     .driver-badge-card {
       border: 1px solid var(--line);
       border-radius: var(--r-lg);
       padding: 30px 24px;
       text-align: center;
     }
+
     .driver-avatar {
       width: 72px;
       height: 72px;
@@ -752,7 +1092,13 @@
       font-size: 24px;
       color: var(--text-3);
     }
-    .driver-name { font-size: 17px; font-weight: 600; margin-bottom: 5px; }
+
+    .driver-name {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
     .driver-role {
       font-size: 11px;
       font-weight: 600;
@@ -761,12 +1107,16 @@
       color: var(--accent);
       margin-bottom: 16px;
     }
+
     .driver-location-tag {
       display: inline-block;
       font-size: 12.5px;
       color: var(--text-3);
     }
-    .driver-location-tag i { display: none; }
+
+    .driver-location-tag i {
+      display: none;
+    }
 
     .driver-details h3 {
       font-size: clamp(23px, 3vw, 30px);
@@ -774,6 +1124,7 @@
       letter-spacing: -0.025em;
       margin-bottom: 18px;
     }
+
     .driver-details p {
       color: var(--text-2);
       font-size: 15px;
@@ -792,6 +1143,7 @@
       border-bottom: 1px solid var(--line);
       margin-bottom: 28px;
     }
+
     .languages-label {
       font-size: 11px;
       font-weight: 600;
@@ -800,9 +1152,17 @@
       color: var(--text-3);
       margin-right: 4px;
     }
-    .languages-label i { display: none; }
-    .lang-pill { font-size: 13.5px; color: var(--text-2); }
-    .lang-pill + .lang-pill::before {
+
+    .languages-label i {
+      display: none;
+    }
+
+    .lang-pill {
+      font-size: 13.5px;
+      color: var(--text-2);
+    }
+
+    .lang-pill+.lang-pill::before {
       content: '·';
       margin-right: 10px;
       color: var(--text-3);
@@ -814,12 +1174,14 @@
       gap: 14px 32px;
       margin-bottom: 32px;
     }
+
     .driver-perk {
       position: relative;
       padding-left: 18px;
       font-size: 14px;
       color: var(--text-2);
     }
+
     .driver-perk::before {
       content: '';
       position: absolute;
@@ -829,7 +1191,10 @@
       height: 1px;
       background: var(--accent);
     }
-    .driver-perk i { display: none; }
+
+    .driver-perk i {
+      display: none;
+    }
 
     /* ---------- Feedback / QR ---------- */
     .feedback-container {
@@ -848,11 +1213,13 @@
       padding: 40px 32px;
       text-align: center;
     }
+
     .qr-standee-card h3 {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 4px;
     }
+
     .qr-box-frame {
       background: #ffffff;
       padding: 14px;
@@ -860,8 +1227,18 @@
       display: inline-block;
       margin: 26px auto 22px;
     }
-    #qrcode { display: flex; justify-content: center; }
-    #qrcode img { margin: 0 auto; max-width: 100%; height: auto; }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+    }
+
+    #qrcode img {
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+
     .qr-instruction {
       font-size: 13.5px;
       color: var(--text-2);
@@ -871,8 +1248,19 @@
       margin-left: auto;
       margin-right: auto;
     }
-    .qr-instruction strong { color: var(--text); font-weight: 600; }
-    .qr-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    .qr-instruction strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .qr-btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
     .btn-qr-action {
       display: inline-flex;
       align-items: center;
@@ -886,7 +1274,11 @@
       color: var(--text-2);
       transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
     }
-    .btn-qr-action:hover { border-color: var(--text-2); color: var(--text); }
+
+    .btn-qr-action:hover {
+      border-color: var(--text-2);
+      color: var(--text);
+    }
 
     .feedback-cta-card {
       background: var(--bg);
@@ -895,20 +1287,32 @@
       flex-direction: column;
       justify-content: center;
     }
-    .feedback-form-header { margin-bottom: 26px; }
+
+    .feedback-form-header {
+      margin-bottom: 26px;
+    }
+
     .feedback-form-header h2 {
       font-size: 21px;
       font-weight: 600;
       letter-spacing: -0.02em;
       margin-bottom: 10px;
     }
-    .feedback-form-header .line { display: none; }
+
+    .feedback-form-header .line {
+      display: none;
+    }
+
     .feedback-form-header p {
       font-size: 14px;
       color: var(--text-2);
       line-height: 1.65;
     }
-    .cta-points { margin-bottom: 30px; }
+
+    .cta-points {
+      margin-bottom: 30px;
+    }
+
     .cta-points li {
       position: relative;
       padding-left: 18px;
@@ -916,6 +1320,7 @@
       font-size: 14px;
       color: var(--text-2);
     }
+
     .cta-points li::before {
       content: '';
       position: absolute;
@@ -925,14 +1330,21 @@
       height: 1px;
       background: var(--accent);
     }
-    .cta-points li i { display: none; }
+
+    .cta-points li i {
+      display: none;
+    }
+
     .cta-note {
       margin-top: 16px;
       font-size: 12.5px;
       color: var(--text-3);
       line-height: 1.6;
     }
-    .cta-note i { display: none; }
+
+    .cta-note i {
+      display: none;
+    }
 
     /* ---------- Reviews ---------- */
     .reviews-header {
@@ -945,13 +1357,23 @@
       border-bottom: 1px solid var(--line);
       margin-bottom: 40px;
     }
+
     .reviews-header h3 {
       font-size: clamp(22px, 2.8vw, 28px);
       font-weight: 600;
       letter-spacing: -0.025em;
     }
-    .reviews-stat-summary { display: flex; align-items: baseline; gap: 14px; }
-    .reviews-stat-summary[hidden] { display: none; }
+
+    .reviews-stat-summary {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+
+    .reviews-stat-summary[hidden] {
+      display: none;
+    }
+
     .big-score {
       font-size: 34px;
       font-weight: 600;
@@ -959,9 +1381,24 @@
       color: var(--text);
       line-height: 1;
     }
-    .score-details { display: flex; flex-direction: column; gap: 3px; }
-    .score-stars { display: flex; gap: 3px; color: var(--accent); font-size: 11px; }
-    .score-count { font-size: 12.5px; color: var(--text-3); }
+
+    .score-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .score-stars {
+      display: flex;
+      gap: 3px;
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .score-count {
+      font-size: 12.5px;
+      color: var(--text-3);
+    }
 
     .reviews-grid {
       display: grid;
@@ -972,7 +1409,11 @@
       border-radius: var(--r-lg);
       overflow: hidden;
     }
-    .reviews-grid:empty { display: none; }
+
+    .reviews-grid:empty {
+      display: none;
+    }
+
     .review-card {
       background: var(--bg);
       padding: 28px 26px;
@@ -982,7 +1423,11 @@
       gap: 22px;
       transition: background-color 0.2s var(--ease);
     }
-    .review-card:hover { background: var(--surface); }
+
+    .review-card:hover {
+      background: var(--surface);
+    }
+
     .review-top {
       display: flex;
       justify-content: space-between;
@@ -990,7 +1435,14 @@
       gap: 14px;
       margin-bottom: 16px;
     }
-    .reviewer-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
     .reviewer-avatar {
       width: 38px;
       height: 38px;
@@ -1004,16 +1456,39 @@
       font-size: 12.5px;
       font-weight: 600;
     }
-    .reviewer-meta { min-width: 0; }
-    .reviewer-meta h4 { font-size: 14.5px; font-weight: 600; }
-    .reviewer-tag { font-size: 12px; color: var(--text-3); }
-    .reviewer-tag i { display: none; }
-    .review-stars { display: flex; gap: 2px; color: var(--accent); font-size: 11px; flex: none; }
+
+    .reviewer-meta {
+      min-width: 0;
+    }
+
+    .reviewer-meta h4 {
+      font-size: 14.5px;
+      font-weight: 600;
+    }
+
+    .reviewer-tag {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .reviewer-tag i {
+      display: none;
+    }
+
+    .review-stars {
+      display: flex;
+      gap: 2px;
+      color: var(--accent);
+      font-size: 11px;
+      flex: none;
+    }
+
     .review-body {
       font-size: 14.5px;
       line-height: 1.7;
       color: var(--text-2);
     }
+
     .review-footer {
       display: flex;
       justify-content: space-between;
@@ -1025,9 +1500,21 @@
       font-size: 12px;
       color: var(--text-3);
     }
-    .verified-pill { display: inline-flex; align-items: center; gap: 6px; }
-    .verified-pill i { color: var(--accent); font-size: 10px; }
-    .review-footer i { font-size: 10px; }
+
+    .verified-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .verified-pill i {
+      color: var(--accent);
+      font-size: 10px;
+    }
+
+    .review-footer i {
+      font-size: 10px;
+    }
 
     .reviews-state {
       text-align: center;
@@ -1037,10 +1524,27 @@
       color: var(--text-2);
       font-size: 14.5px;
     }
-    .reviews-state[hidden] { display: none; }
-    .reviews-state i { display: block; font-size: 20px; color: var(--text-3); margin-bottom: 14px; }
-    .reviews-state p { max-width: 44ch; margin: 0 auto; line-height: 1.7; }
-    .reviews-state .state-cta { margin-top: 24px; }
+
+    .reviews-state[hidden] {
+      display: none;
+    }
+
+    .reviews-state i {
+      display: block;
+      font-size: 20px;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+
+    .reviews-state p {
+      max-width: 44ch;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .reviews-state .state-cta {
+      margin-top: 24px;
+    }
 
     /* ---------- QR modal ---------- */
     .modal-overlay {
@@ -1060,7 +1564,11 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
     }
-    .modal-overlay.active { display: flex; }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
     .modal-card {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -1072,7 +1580,26 @@
       text-align: center;
       position: relative;
     }
-    .modal-card h3 { font-size: 18px; font-weight: 600; }
+
+    .modal-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-sub {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-top: 6px;
+    }
+
+    .modal-owner {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
     .modal-close {
       position: absolute;
       top: 8px;
@@ -1085,7 +1612,11 @@
       font-size: 17px;
       color: var(--text-3);
     }
-    .modal-close:hover { color: var(--text); }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
     .modal-qr-frame {
       background: #fff;
       padding: 14px;
@@ -1105,6 +1636,7 @@
       gap: 10px;
       z-index: 90;
     }
+
     .float-btn {
       width: 48px;
       height: 48px;
@@ -1117,22 +1649,43 @@
       transition: transform 0.18s var(--ease);
       touch-action: manipulation;
     }
-    .float-btn.whatsapp { background: var(--green); color: #05240f; }
-    .float-btn.call { background: var(--surface-3); border: 1px solid var(--line-strong); color: var(--text); }
-    .float-btn:hover { transform: translateY(-2px); }
-    .float-tooltip { display: none; }
+
+    .float-btn.whatsapp {
+      background: var(--green);
+      color: #05240f;
+    }
+
+    .float-btn.call {
+      background: var(--surface-3);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+    }
+
+    .float-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .float-tooltip {
+      display: none;
+    }
 
     /* ---------- Footer ---------- */
     footer {
       border-top: 1px solid var(--line);
       padding: 72px 0 32px;
     }
+
     .footer-grid {
       display: grid;
       grid-template-columns: 1.6fr 1fr 1fr;
       gap: 56px;
       margin-bottom: 56px;
     }
+
+    .footer-brand {
+      margin-bottom: 14px;
+    }
+
     .footer-about p {
       color: var(--text-2);
       font-size: 14px;
@@ -1140,6 +1693,7 @@
       margin: 18px 0 24px;
       max-width: 42ch;
     }
+
     .footer-col h4 {
       font-size: 11px;
       font-weight: 600;
@@ -1148,19 +1702,45 @@
       color: var(--text-3);
       margin-bottom: 20px;
     }
-    .footer-links { font-size: 14px; }
-    .footer-links li { margin-bottom: 12px; }
-    .footer-links a { color: var(--text-2); transition: color 0.18s var(--ease); }
-    .footer-links a:hover { color: var(--text); }
-    .footer-links a i { display: none; }
+
+    .footer-links {
+      font-size: 14px;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: var(--text-2);
+      transition: color 0.18s var(--ease);
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .footer-links a i {
+      display: none;
+    }
+
     .footer-contact-item {
       font-size: 14px;
       color: var(--text-2);
       line-height: 1.65;
       margin-bottom: 18px;
     }
-    .footer-contact-item i { display: none; }
-    .footer-contact-item strong { color: var(--text); font-weight: 600; display: block; }
+
+    .footer-contact-item i {
+      display: none;
+    }
+
+    .footer-contact-item strong {
+      color: var(--text);
+      font-weight: 600;
+      display: block;
+    }
+
     .footer-bottom {
       display: flex;
       justify-content: space-between;
@@ -1178,42 +1758,122 @@
        ============================================================ */
 
     @media (max-width: 1020px) {
-      .driver-card { grid-template-columns: 1fr; gap: 36px; }
-      .driver-badge-card { max-width: 320px; }
-      .pkg-grid { grid-template-columns: 1fr; }
-      .feedback-container { grid-template-columns: 1fr; }
+      .driver-card {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+
+      .driver-badge-card {
+        max-width: 320px;
+      }
+
+      .pkg-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feedback-container {
+        grid-template-columns: 1fr;
+      }
+
       /* Form-equivalent CTA first, printable QR second */
-      .feedback-cta-card { order: 1; }
-      .qr-standee-card   { order: 2; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
-      .footer-about { grid-column: 1 / -1; }
+      .feedback-cta-card {
+        order: 1;
+      }
+
+      .qr-standee-card {
+        order: 2;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
+
+      .footer-about {
+        grid-column: 1 / -1;
+      }
     }
 
     @media (max-width: 860px) {
-      .route-grid { grid-template-columns: 1fr 1fr; }
-      .fleet-grid { grid-template-columns: 1fr 1fr; }
+      .route-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .fleet-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     @media (max-width: 768px) {
-      section { padding: 64px 0; }
-      .wrap { padding: 0 20px; }
+      section {
+        padding: 64px 0;
+      }
 
-      .nav-links { display: none; }
-      .mobile-menu-toggle { display: flex; }
-      :root { --nav-h: 64px; }
-      .nav .wrap { height: var(--nav-h); gap: 12px; }
+      .wrap {
+        padding: 0 20px;
+      }
 
-      .top-bar { font-size: 11.5px; }
-      .top-bar .wrap { justify-content: center; height: auto; padding-top: 8px; padding-bottom: 8px; }
-      .top-info:last-child { display: none; }
-      .top-info { gap: 16px; }
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      :root {
+        --nav-h: 64px;
+      }
+
+      .nav .wrap {
+        height: var(--nav-h);
+        gap: 12px;
+      }
+
+      .top-bar {
+        font-size: 11.5px;
+      }
+
+      .top-bar .wrap {
+        justify-content: center;
+        height: auto;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .top-info:last-child {
+        display: none;
+      }
+
+      .top-info {
+        gap: 16px;
+      }
 
       /* Header must never exceed the viewport */
-      .nav-brand { min-width: 0; flex: 1 1 auto; }
-      .brand-title { min-width: 0; font-size: 14px; }
-      .brand-logo-img { height: 30px; flex: none; }
-      .nav-cta-group { flex: none; gap: 8px; }
-      .btn-qr-nav { display: none; }
+      .nav-brand {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .brand-title {
+        min-width: 0;
+        font-size: 14px;
+      }
+
+      .brand-logo-img {
+        height: 30px;
+        flex: none;
+      }
+
+      .nav-cta-group {
+        flex: none;
+        gap: 8px;
+      }
+
+      .btn-qr-nav {
+        display: none;
+      }
+
       .nav-cta-group .btn-whatsapp {
         width: 44px;
         min-width: 44px;
@@ -1224,39 +1884,94 @@
         font-size: 0;
         gap: 0;
       }
-      .nav-cta-group .btn-whatsapp i { font-size: 17px; }
 
-      .hero { padding: 56px 0 52px; }
-      .hero-actions { margin-bottom: 52px; }
-      .hero-stats { grid-template-columns: 1fr 1fr; }
-      .stat-box:nth-child(2) { border-right: none; }
+      .nav-cta-group .btn-whatsapp i {
+        font-size: 17px;
+      }
+
+      .hero {
+        padding: 56px 0 52px;
+      }
+
+      .hero-actions {
+        margin-bottom: 52px;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-box:nth-child(2) {
+        border-right: none;
+      }
+
       .stat-box:nth-child(1),
-      .stat-box:nth-child(2) { border-bottom: 1px solid var(--line); }
-      .stat-box { padding: 22px 12px; }
+      .stat-box:nth-child(2) {
+        border-bottom: 1px solid var(--line);
+      }
 
-      .booking-card { padding: 26px 20px; }
-      .steps-pill { gap: 20px; margin-bottom: 30px; }
-      .pkg-card { padding: 28px 22px; }
+      .stat-box {
+        padding: 22px 12px;
+      }
+
+      .booking-card {
+        padding: 26px 20px;
+      }
+
+      .steps-pill {
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .pkg-card {
+        padding: 28px 22px;
+      }
+
       .qr-standee-card,
-      .feedback-cta-card { padding: 32px 22px; }
-      .feedback-container { margin-bottom: 64px; }
+      .feedback-cta-card {
+        padding: 32px 22px;
+      }
+
+      .feedback-container {
+        margin-bottom: 64px;
+      }
 
       /* iOS zooms the page if a focused field is under 16px */
       .form-input,
-      .form-select { font-size: 16px; }
+      .form-select {
+        font-size: 16px;
+      }
     }
 
     @media (max-width: 600px) {
-      .hero h1 { font-size: 30px; }
-      .hero .lede { font-size: 15px; }
-      .hero-actions { flex-direction: column; }
-      .hero-actions .btn { width: 100%; }
+      .hero h1 {
+        font-size: 30px;
+      }
 
-      .route-grid { grid-template-columns: 1fr; gap: 16px; }
+      .hero .lede {
+        font-size: 15px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .route-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
 
       /* Fleet becomes app-style rows: emblem column + stacked text.
          Children are placed explicitly — auto-placement scatters them. */
-      .fleet-grid { grid-template-columns: 1fr; gap: 10px; }
+      .fleet-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
       .vehicle-card {
         display: grid;
         grid-template-columns: 30px minmax(0, 1fr);
@@ -1265,22 +1980,103 @@
         align-items: center;
         padding: 16px 34px 16px 16px;
       }
-      .vehicle-card.selected::after { top: 50%; right: 16px; transform: translateY(-50%); }
-      .vehicle-icon { grid-column: 1; grid-row: 1 / span 3; justify-self: center; margin-bottom: 0; }
-      .vehicle-badge-type { grid-column: 2; grid-row: 1; margin-bottom: 0; }
-      .vehicle-title { grid-column: 2; grid-row: 2; margin-bottom: 0; }
-      .vehicle-specs { grid-column: 2; grid-row: 3; }
 
-      .booking-actions { flex-direction: column; align-items: stretch; }
-      .booking-btn-group { flex-direction: column; }
-      .booking-btn-group .btn { width: 100%; }
+      .vehicle-card.selected::after {
+        top: 50%;
+        right: 16px;
+        transform: translateY(-50%);
+      }
 
-      .driver-perks { grid-template-columns: 1fr; gap: 12px; }
-      .reviews-grid { grid-template-columns: 1fr; }
-      .review-card { padding: 24px 20px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 36px; }
-      .footer-bottom { justify-content: center; text-align: center; }
-      footer { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+      .vehicle-icon {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+        justify-self: center;
+        margin-bottom: 0;
+      }
+
+      .vehicle-badge-type {
+        grid-column: 2;
+        grid-row: 1;
+        margin-bottom: 0;
+      }
+
+      .vehicle-title {
+        grid-column: 2;
+        grid-row: 2;
+        margin-bottom: 0;
+      }
+
+      .vehicle-specs {
+        grid-column: 2;
+        grid-row: 3;
+      }
+
+      .booking-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .booking-btn-group {
+        flex-direction: column;
+      }
+
+      .booking-btn-group .btn {
+        width: 100%;
+      }
+
+      /* Give stacked CTAs a little more breathing room for wrapped labels */
+      .btn {
+        padding: 12px 18px;
+      }
+
+      .btn-row {
+        flex-direction: column;
+      }
+
+      .btn-row .btn {
+        width: 100%;
+      }
+
+      .cta-btn {
+        align-self: stretch;
+      }
+
+      .pkg-footer .btn {
+        width: 100%;
+      }
+
+      /* The sticky header already carries a permanent WhatsApp button here,
+         and these were sitting on top of the full-width CTA labels. */
+      .floating-actions {
+        display: none;
+      }
+
+      .driver-perks {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .review-card {
+        padding: 24px 20px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+
+      .footer-bottom {
+        justify-content: center;
+        text-align: center;
+      }
+
+      footer {
+        padding-bottom: calc(32px + env(safe-area-inset-bottom));
+      }
 
       .floating-actions {
         bottom: calc(16px + env(safe-area-inset-bottom));
@@ -1289,40 +2085,136 @@
     }
 
     @media (max-width: 380px) {
-      .wrap { padding: 0 16px; }
-      .hero h1 { font-size: 27px; }
-      .brand-title { font-size: 13px; letter-spacing: 0.08em; }
-      .brand-title span.sub { font-size: 8px; letter-spacing: 0.18em; }
-      .brand-logo-img { height: 27px; }
-      .section-title { font-size: 23px; }
-      .big-score { font-size: 29px; }
-      .top-info { gap: 12px; }
+      .wrap {
+        padding: 0 16px;
+      }
+
+      .hero h1 {
+        font-size: 27px;
+      }
+
+      .brand-title {
+        font-size: 13px;
+        letter-spacing: 0.08em;
+      }
+
+      .brand-title span.sub {
+        font-size: 8px;
+        letter-spacing: 0.18em;
+      }
+
+      .brand-logo-img {
+        height: 27px;
+      }
+
+      .section-title {
+        font-size: 23px;
+      }
+
+      .big-score {
+        font-size: 29px;
+      }
+
+      /* Two facts wrapped to four lines here — keep the phone number,
+         which is the only actionable one, and drop the rest. */
+      .top-info span:not(:last-child) {
+        display: none;
+      }
+
+      .top-info {
+        gap: 0;
+      }
+
+      .btn {
+        font-size: 13.5px;
+        padding: 12px 14px;
+      }
+
+      .btn-sm {
+        font-size: 12.5px;
+        padding: 9px 12px;
+      }
+
+      .hero-badge {
+        letter-spacing: 0.1em;
+      }
     }
 
     /* Touch devices: comfortable targets, no sticky hover states */
     @media (hover: none) and (pointer: coarse) {
-      .map-helper-btn { min-height: 36px; display: inline-flex; align-items: center; }
-      .form-group label { min-height: 36px; }
-      .btn-qr-action { height: 44px; }
-      .qr-btn-row .btn-qr-action { flex: 1 1 auto; justify-content: center; }
-      .footer-links li { margin-bottom: 4px; }
-      .footer-links a { display: flex; align-items: center; min-height: 44px; }
-      .nav-brand { padding: 6px 0; }
-      .pkg-footer .btn { min-height: 44px; }
+      .map-helper-btn {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .form-group label {
+        min-height: 36px;
+      }
+
+      .btn-qr-action {
+        height: 44px;
+      }
+
+      .qr-btn-row .btn-qr-action {
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+
+      .footer-links li {
+        margin-bottom: 4px;
+      }
+
+      .footer-links a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+      }
+
+      .nav-brand {
+        padding: 6px 0;
+      }
+
+      .pkg-footer .btn {
+        min-height: 44px;
+      }
+
       .pkg-card:hover,
-      .review-card:hover { background: var(--bg); }
-      .float-btn:hover { transform: none; }
+      .review-card:hover {
+        background: var(--bg);
+      }
+
+      .float-btn:hover {
+        transform: none;
+      }
     }
 
     /* Landscape phones */
     @media (max-height: 460px) and (orientation: landscape) {
-      .hero { padding: 40px 0 36px; }
-      .hero-logo-center { width: 54px; height: 54px; }
-      .hero-logo-container { margin-bottom: 22px; }
+      .hero {
+        padding: 40px 0 36px;
+      }
+
+      .hero-logo-center {
+        width: 54px;
+        height: 54px;
+      }
+
+      .hero-logo-container {
+        margin-bottom: 22px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
+      html {
+        scroll-behavior: auto;
+      }
+
+      /* Skip the splash entirely rather than flashing it */
+      #preloader {
+        display: none;
+      }
+
       *,
       *::before,
       *::after {
@@ -1330,20 +2222,38 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      .float-btn:hover { transform: none; }
+
+      .float-btn:hover {
+        transform: none;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- ================= LOADING SCREEN =================
+       Clears itself through a CSS animation, so a JS failure or a blocked
+       script can never leave a visitor staring at a covered page. The
+       script below only shortens it once the page has actually loaded. -->
+  <div id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <img src="LOGO/DG - 1.png" alt="" class="preloader-logo" width="72" height="72">
+      <div class="preloader-word">
+        DG TRAVELS
+        <span>SRI LANKA</span>
+      </div>
+      <div class="preloader-bar"><span></span></div>
+    </div>
+  </div>
+
   <div class="app-root">
     <!-- ================= TOP ANNOUNCEMENT BAR ================= -->
     <div class="top-bar">
       <div class="wrap">
         <div class="top-info">
-          <span>Base: Ahangama, Galle · Island-Wide</span>
-          <span>+94 77 826 1901</span>
+          <span>Base:Galle · Island-Wide</span>
+          <span><a href="tel:+94778261901" class="top-tel">+94 77 826 1901</a></span>
         </div>
         <div class="top-info">
           <span>24/7 Island Dispatch & Airport Transfers</span>
@@ -1375,7 +2285,7 @@
             <i class="fa-solid fa-qrcode"></i> Show QR
           </button>
           <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20would%20like%20to%20inquire%20about%20a%20private%20ride%20or%20tour."
-            target="_blank" class="btn btn-whatsapp" style="padding: 8px 16px; font-size: 13px; min-height: 38px;">
+            target="_blank" class="btn btn-sm btn-whatsapp">
             <i class="fa-brands fa-whatsapp"></i> WhatsApp
           </a>
           <!-- Mobile Drawer Trigger -->
@@ -1393,7 +2303,7 @@
         <div class="drawer-header">
           <div class="nav-brand">
             <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:36px;">
-            <div class="brand-title" style="font-size:15px;">
+            <div class="brand-title">
               DG TRAVELS
               <span class="sub">SRI LANKA</span>
             </div>
@@ -1412,11 +2322,10 @@
       </div>
 
       <div>
-        <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp"
-          style="width:100%; margin-bottom:10px;">
+        <a href="https://wa.me/94778261901" target="_blank" class="btn btn-block btn-whatsapp">
           <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
         </a>
-        <a href="tel:+94778261901" class="btn btn-outline" style="width:100%;">
+        <a href="tel:+94778261901" class="btn btn-block btn-outline">
           <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
         </a>
       </div>
@@ -1425,7 +2334,7 @@
     <!-- ================= HERO SECTION (WITH DYNAMIC SCROLL-ZOOM LOGO) ================= -->
     <section class="hero">
       <div class="wrap">
-        <p class="hero-badge">Premium Private Transport · Ahangama, Galle</p>
+        <p class="hero-badge">Premium Private Transport</p>
 
         <!-- Big Scroll-Interactive Hero Logo -->
         <div class="hero-logo-container">
@@ -1435,7 +2344,7 @@
         <h1>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
         <p class="lede">
           Personalized, safe, and luxurious private transport for foreign tourists, surf travelers, and local guests.
-          Operating from Ahangama, Galle across all scenic destinations in Sri Lanka.
+          Operating from Galle across all scenic destinations in Sri Lanka.
         </p>
 
         <div class="hero-actions">
@@ -1626,7 +2535,7 @@
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Flexible Day Trips</span>
                 <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Galle%20%26%20Southern%20Coast%20Tour."
-                  target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on
+                  target="_blank" class="btn btn-sm btn-outline">Inquire on
                   WhatsApp</a>
               </div>
             </div>
@@ -1648,7 +2557,7 @@
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Multi-Day Excursions</span>
                 <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Hill%20Country%20%26%20Ella%20Tour."
-                  target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on
+                  target="_blank" class="btn btn-sm btn-outline">Inquire on
                   WhatsApp</a>
               </div>
             </div>
@@ -1670,7 +2579,7 @@
               <div class="pkg-footer">
                 <span class="pkg-price"><i class="fa-solid fa-route"></i> Custom Itinerary</span>
                 <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Sigiriya%20%26%20Safari%20Tour."
-                  target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on
+                  target="_blank" class="btn btn-sm btn-outline">Inquire on
                   WhatsApp</a>
               </div>
             </div>
@@ -1691,7 +2600,7 @@
             <div class="driver-name">Isum Sejan Gunasekara</div>
             <div class="driver-role">Owner & Chauffeur Host</div>
             <div class="driver-location-tag">
-              <i class="fa-solid fa-location-dot"></i> Ahangama, Galle
+              <i class="fa-solid fa-location-dot"></i>Galle
             </div>
           </div>
 
@@ -1722,7 +2631,7 @@
               <div class="driver-perk">24/7 On-Call Support & Assistance</div>
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div class="btn-row">
               <a href="tel:+94778261901" class="btn btn-gold">
                 <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
               </a>
@@ -1748,7 +2657,7 @@
           <!-- In-Vehicle QR Code Standee Card -->
           <div class="qr-standee-card">
             <div class="eyebrow">In-Vehicle QR Code</div>
-            <h3 style="font-size:22px; font-weight:700;">Scan to Leave a Review</h3>
+            <h3>Scan to Leave a Review</h3>
 
             <div class="qr-box-frame">
               <div id="qrcode"></div>
@@ -1800,7 +2709,7 @@
           <div class="reviews-header">
             <div>
               <div class="eyebrow">Real Passenger Stories</div>
-              <h3 style="font-size: 24px; font-weight: 700;">Verified Customer Reviews</h3>
+              <h3>Verified Customer Reviews</h3>
             </div>
 
             <div class="reviews-stat-summary" id="reviewsSummary" hidden>
@@ -1829,18 +2738,18 @@
       <div class="modal-card">
         <button type="button" class="modal-close" id="closeQrModalBtn"><i class="fa-solid fa-xmark"></i></button>
         <div class="eyebrow">DG Travels Sri Lanka</div>
-        <h3 style="font-size:22px; font-weight:700;">Passenger Feedback QR</h3>
-        <p style="font-size:13px; color:var(--text-2); margin-top:4px;">Scan with any phone camera</p>
+        <h3>Passenger Feedback QR</h3>
+        <p class="modal-sub">Scan with any phone camera</p>
 
         <div class="modal-qr-frame">
           <div id="modalQrCode"></div>
         </div>
 
-        <div style="font-size:13.5px; font-weight:700; color:var(--accent); margin-bottom:14px;">
+        <div class="modal-owner">
           Owner: Isum Sejan Gunasekara · +94 77 826 1901
         </div>
 
-        <button type="button" class="btn btn-gold" id="modalCloseActionBtn" style="width:100%;">
+        <button type="button" class="btn btn-block btn-gold" id="modalCloseActionBtn">
           Close QR Code
         </button>
       </div>
@@ -1864,7 +2773,7 @@
       <div class="wrap">
         <div class="footer-grid">
           <div class="footer-about">
-            <div class="nav-brand" style="margin-bottom: 12px;">
+            <div class="nav-brand footer-brand">
               <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:40px;">
               <div class="brand-title">
                 DG TRAVELS
@@ -1875,9 +2784,8 @@
               Private island-wide transport, airport transfers, surf trips, and customized tourist excursions across Sri
               Lanka. Committed to safety, punctuality, and genuine Sri Lankan hospitality since 2022.
             </p>
-            <div style="display:flex; gap:10px;">
-              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp"
-                style="padding:8px 16px; font-size:13px; min-height:38px;">
+            <div class="btn-row">
+              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-sm btn-whatsapp">
                 <i class="fa-brands fa-whatsapp"></i> +94 77 826 1901
               </a>
             </div>
@@ -1906,7 +2814,7 @@
             <div class="footer-contact-item">
               <i class="fa-solid fa-location-dot"></i>
               <div>
-                <strong>Ahangama, Galle</strong><br>
+                <strong>Galle</strong><br>
                 Southern Province, Sri Lanka
               </div>
             </div>
@@ -1934,7 +2842,20 @@
       // Respect the OS 'reduce motion' setting for the few remaining transitions.
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // ================= 1. MOBILE DRAWER NAVIGATION =================
+      // ================= 1. LOADING SCREEN =================
+      // The CSS animation already guarantees the splash clears. This only
+      // ends it sooner once loading finishes, keeping a short minimum so it
+      // does not flash on a fast connection.
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        const shownAt = Date.now();
+        window.addEventListener('load', () => {
+          const wait = Math.max(0, 400 - (Date.now() - shownAt));
+          setTimeout(() => preloader.classList.add('done'), wait);
+        });
+      }
+
+      // ================= 2. MOBILE DRAWER NAVIGATION =================
 
       // iOS Safari keeps scrolling the page behind an overlay when only
       // `overflow: hidden` is set, so pin the body and restore the offset.
@@ -2003,7 +2924,7 @@
         dateInput.value = `${yyyy}-${mm}-${dd}`;
       }
 
-      // ================= 2. GOOGLE MAP HELPER BUTTONS =================
+      // ================= 3. GOOGLE MAP HELPER BUTTONS =================
       const openPickupMapBtn = document.getElementById('openPickupMapBtn');
       const openDropoffMapBtn = document.getElementById('openDropoffMapBtn');
       const pickupInput = document.getElementById('pickup');
@@ -2018,12 +2939,12 @@
 
       if (openDropoffMapBtn) {
         openDropoffMapBtn.addEventListener('click', () => {
-          const val = encodeURIComponent(dropoffInput.value.trim() || 'Ahangama Galle Sri Lanka');
+          const val = encodeURIComponent(dropoffInput.value.trim() || 'Galle Sri Lanka');
           window.open(`https://www.google.com/maps/search/?api=1&query=${val}`, '_blank');
         });
       }
 
-      // ================= 3. FLEET & BOOKING LOGIC =================
+      // ================= 4. FLEET & BOOKING LOGIC =================
       const vehicleCards = document.querySelectorAll('.vehicle-card');
       let selectedVehicle = 'Toyota Aqua';
 
@@ -2072,7 +2993,7 @@
         });
       }
 
-      // ================= 4. QR CODE GENERATOR =================
+      // ================= 5. QR CODE GENERATOR =================
       // The printed QR must point at the LIVE feedback page, so that a
       // standee printed today keeps working. Set SITE_URL to the deployed
       // domain before printing; otherwise the QR is built from wherever
@@ -2156,7 +3077,7 @@
         });
       }
 
-      // ================= 5. LIVE PASSENGER REVIEWS (SUPABASE) =================
+      // ================= 6. LIVE PASSENGER REVIEWS (SUPABASE) =================
       // Reviews are submitted on feedback.html and stored in Supabase.
       // This page only reads them, through /api/reviews, which never
       // exposes passenger email addresses.
