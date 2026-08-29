@@ -680,9 +680,9 @@
 
     /* ---------- Hero mark ----------
        No frame or plate: the artwork is transparent and sits straight on
-       the page. A gold contour is generated from the art itself (see the
-       #dgContour SVG filter) and a rotating wedge lights a moving section
-       of that contour, so the line appears to travel around the mark. */
+       the page. A fine silver contour is generated from the art itself (see
+       the #dgContour SVG filter) and a rotating wedge lights a moving
+       section of it, so the line travels around the DG monogram. */
     .logo-mark {
       position: relative;
       width: 340px;
@@ -699,10 +699,18 @@
       display: block;
     }
 
+    /* The artwork's only horizontal gap sits at y 865-908 of 1024, between
+       the monogram and the TRAVELS wordmark. Cutting at 86.5% keeps both
+       contour layers on the DG letters and leaves the word untouched. */
+    .logo-contour,
+    .logo-sweep {
+      clip-path: inset(0 0 13.5% 0);
+    }
+
     /* 1 — the standing contour, dim */
     .logo-contour {
       filter: url(#dgContour);
-      opacity: 0.45;
+      opacity: 0.6;
     }
 
     /* 2 — the travelling highlight: same contour, revealed through a
@@ -718,7 +726,10 @@
       mask-size: 100% 100%;
       animation: dgSweep 4.5s linear infinite;
     }
-    .logo-sweep img { filter: url(#dgContour) brightness(1.5); }
+    .logo-sweep img {
+      filter: url(#dgContour) brightness(2.2)
+              drop-shadow(0 0 4px rgba(226, 235, 245, 0.85));
+    }
 
     /* 3 — the artwork itself, above both contour layers */
     .logo-art { position: relative; }
@@ -2470,11 +2481,11 @@
           <feFuncA type="linear" slope="14" intercept="-7"/>
         </feComponentTransfer>
         <!-- 2. Grow it, then subtract the original: a ring hugging every stroke -->
-        <feMorphology in="solid" operator="dilate" radius="2.5" result="fat"/>
+        <feMorphology in="solid" operator="dilate" radius="1.2" result="fat"/>
         <feComposite in="fat" in2="solid" operator="out" result="ring"/>
-        <!-- 3. Paint the ring gold -->
-        <feFlood flood-color="#c9a961" result="gold"/>
-        <feComposite in="gold" in2="ring" operator="in"/>
+        <!-- 3. Paint the ring silver -->
+        <feFlood flood-color="#9aa3ad" result="silver"/>
+        <feComposite in="silver" in2="ring" operator="in"/>
       </filter>
     </defs>
   </svg>
