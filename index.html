@@ -1136,14 +1136,63 @@
       background: var(--surface-3);
     }
 
-    /* Customer Feedback Form Card */
-    .feedback-form-card {
+    /* Review Invitation Panel (links to the dedicated feedback page) */
+    .feedback-cta-card {
       background: var(--surface);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius-xl);
       padding: clamp(20px, 4vw, 32px);
       box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
+    .cta-points {
+      list-style: none;
+      margin: 4px 0 22px;
+      display: grid;
+      gap: 11px;
+    }
+    .cta-points li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .cta-points li i { color: var(--gold); font-size: 13px; width: 16px; flex: none; }
+    .cta-note {
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      line-height: 1.5;
+    }
+    .cta-note i { color: var(--gold); flex: none; }
+
+    /* Reviews loading / empty / error state */
+    .reviews-state {
+      text-align: center;
+      padding: 34px 18px;
+      color: var(--text-muted);
+      font-size: 14px;
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.02);
+    }
+    .reviews-state[hidden] { display: none; }
+    .reviews-state i { font-size: 24px; color: var(--gold); margin-bottom: 10px; display: block; }
+    .reviews-state p { margin: 0 auto; max-width: 420px; line-height: 1.6; }
+    .reviews-state .state-cta {
+      display: inline-flex;
+      margin-top: 16px;
+    }
+
+    /* Customer Feedback Form Card */
     .feedback-form-header {
       text-align: center;
       margin-bottom: 20px;
@@ -1158,147 +1207,6 @@
     }
     .feedback-form-header p { font-size: 13px; color: var(--text-muted); }
 
-    .f-field { margin-bottom: 16px; }
-    .f-field label {
-      display: block;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .f-input-icon { position: relative; }
-    .f-input-icon input {
-      width: 100%;
-      background: var(--field);
-      border: 1px solid var(--field-border);
-      border-radius: 999px;
-      padding: 12px 40px 12px 16px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: var(--transition);
-      min-height: 46px;
-    }
-    .f-input-icon textarea {
-      width: 100%;
-      background: var(--field);
-      border: 1px solid var(--field-border);
-      border-radius: var(--radius-md);
-      padding: 12px 40px 12px 16px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      resize: vertical;
-      min-height: 100px;
-      transition: var(--transition);
-    }
-    .f-input-icon input:focus, .f-input-icon textarea:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px var(--gold-wash);
-      background: #161510;
-    }
-    .f-input-icon i {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-faint);
-      pointer-events: none;
-      font-size: 13px;
-    }
-    .f-input-icon.textarea-icon i {
-      top: auto;
-      bottom: 14px;
-      transform: none;
-    }
-    .f-error {
-      color: #ff7b72;
-      font-size: 11.5px;
-      margin-top: 4px;
-      display: none;
-    }
-    .f-error.show { display: block; }
-
-    /* Interactive Star Rating */
-    .rating-group {
-      text-align: center;
-      margin: 18px 0 22px;
-      background: var(--surface-2);
-      padding: 14px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-    .rating-group label {
-      display: block;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-    .stars-row {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .star-btn {
-      background: transparent;
-      padding: 6px;
-      font-size: clamp(24px, 5vw, 28px);
-      color: var(--text-faint);
-      transition: transform 0.15s ease, color 0.15s ease;
-      cursor: pointer;
-      min-width: 40px;
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .star-btn:hover, .star-btn:active { transform: scale(1.15); }
-    .star-btn.active, .star-btn.hovered { color: var(--gold); }
-    .rating-caption {
-      font-size: 12px;
-      color: var(--gold);
-      font-weight: 600;
-      margin-top: 5px;
-      height: 16px;
-    }
-
-    /* Feedback Submission Success Message */
-    .feedback-success {
-      display: none;
-      text-align: center;
-      padding: 26px 8px;
-    }
-    .feedback-success.show { display: block; }
-    .success-icon {
-      width: 58px;
-      height: 58px;
-      background: var(--gold-wash);
-      border: 2px solid var(--gold);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: var(--gold);
-      margin: 0 auto 14px;
-      animation: pulseGlow 1.5s infinite alternate;
-    }
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 0 0 rgba(215, 168, 78, 0.4); }
-      to { box-shadow: 0 0 0 10px rgba(215, 168, 78, 0); }
-    }
-    .feedback-success h3 { font-size: 20px; margin-bottom: 6px; }
-    .feedback-success p {
-      color: var(--text-muted);
-      font-size: 13.5px;
-      margin-bottom: 18px;
-      line-height: 1.55;
-    }
 
     /* Live Feedback Scroller & Showcase */
     .reviews-showcase {
@@ -1605,7 +1513,7 @@
         flex-direction: column;
         gap: 24px;
       }
-      .feedback-form-card {
+      .feedback-cta-card {
         order: 1;
         width: 100%;
       }
@@ -1658,7 +1566,7 @@
       .stat-box { flex: 1 1 42%; padding: 6px 0; }
       
       /* Prevent iOS Safari from forcing auto-zoom on input focus */
-      .form-input, .form-select, .f-input-icon input, .f-input-icon textarea {
+      .form-input, .form-select {
         font-size: 16px !important;
       }
     }
@@ -1741,7 +1649,7 @@
       .driver-card { padding: 20px 14px; border-radius: var(--radius-lg); }
       .driver-perks { grid-template-columns: 1fr; gap: 8px; }
       
-      .feedback-form-card { padding: 20px 14px; border-radius: var(--radius-lg); }
+      .feedback-cta-card { padding: 20px 14px; border-radius: var(--radius-lg); }
       .qr-standee-card { padding: 20px 14px; border-radius: var(--radius-lg); }
       .reviews-grid { grid-template-columns: 1fr; gap: 14px; }
       .review-card { padding: 16px 14px; }
@@ -1755,8 +1663,6 @@
       .float-tooltip { display: none; }
 
       .modal-card { padding: 24px 16px; border-radius: var(--radius-lg); }
-
-      .stars-row { gap: 6px; }
 
       /* Footer reads better centered on a narrow column */
       .footer-bottom { justify-content: center; text-align: center; }
@@ -1790,7 +1696,6 @@
         padding: 11px 0;
         min-height: 44px;
       }
-      .star-btn { min-width: 46px; min-height: 46px; padding: 8px; }
       .nav-brand { padding: 6px 0; }
       .drawer-close, .modal-close { width: 44px; height: 44px; }
       .pkg-footer .btn { min-height: 44px; }
@@ -1848,8 +1753,6 @@
       .section-title { font-size: 23px; }
       .feedback-form-header h2 { font-size: 22px; }
       .driver-name { font-size: 17px; }
-      .stars-row { gap: 2px; }
-      .star-btn { min-width: 42px; min-height: 42px; font-size: 23px; }
     }
   </style>
 </head>
@@ -2000,8 +1903,8 @@
           </div>
           <div class="stat-sep"></div>
           <div class="stat-box">
-            <div class="stat-num">4.9 ★</div>
-            <div class="stat-label">Customer Satisfaction</div>
+            <div class="stat-num">4 Vehicles</div>
+            <div class="stat-label">Hatchback to 9-Seat Van</div>
           </div>
         </div>
       </div>
@@ -2262,20 +2165,20 @@
       <div class="wrap">
         <div class="eyebrow" style="display:table; margin:0 auto 10px;">Passenger Reviews & QR Code</div>
         <h2 class="section-title">We Value Your Feedback</h2>
-        <p class="section-subtitle">Finished your ride or tour with DG Travels? Scan the QR code or fill out the form below to share your experience with us.</p>
+        <p class="section-subtitle">Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap the button below, to share your experience with us.</p>
 
         <div class="feedback-container">
           <!-- In-Vehicle QR Code Standee Card -->
           <div class="qr-standee-card">
             <div class="eyebrow" style="margin-bottom:6px;">In-Vehicle QR Code</div>
             <h3 style="font-size:22px; font-weight:700;">Scan to Leave a Review</h3>
-            
+
             <div class="qr-box-frame">
               <div id="qrcode"></div>
             </div>
 
             <p class="qr-instruction">
-              <strong>For Passengers:</strong> Point your phone camera at this QR code to quickly open this feedback form on your device.
+              <strong>For Passengers:</strong> Point your phone camera at this QR code to open the feedback form on your device.
             </p>
 
             <div class="qr-btn-row">
@@ -2288,89 +2191,33 @@
             </div>
           </div>
 
-          <!-- Customer Feedback Submission Form -->
-          <div class="feedback-form-card">
+          <!-- Review Invitation Panel -> dedicated mobile feedback page -->
+          <div class="feedback-cta-card">
             <div class="feedback-form-header">
               <h2>Share Your Experience</h2>
               <div class="line"></div>
               <p>Your review helps us maintain the highest standard of service for every traveler.</p>
             </div>
 
-            <!-- Form Body -->
-            <form id="feedbackForm">
-              <!-- 1. Name Field -->
-              <div class="f-field">
-                <label for="fbName">Your Name *</label>
-                <div class="f-input-icon">
-                  <input type="text" id="fbName" placeholder="e.g. Sarah Jenkins" required>
-                  <i class="fa-regular fa-user"></i>
-                </div>
-                <p class="f-error" id="nameError">Please enter your name.</p>
-              </div>
+            <ul class="cta-points">
+              <li><i class="fa-solid fa-circle-check"></i> Takes less than a minute</li>
+              <li><i class="fa-solid fa-circle-check"></i> Rate your ride from 1 to 5 stars</li>
+              <li><i class="fa-solid fa-circle-check"></i> Your review appears on this page</li>
+              <li><i class="fa-solid fa-shield-halved"></i> Your email is never published</li>
+            </ul>
 
-              <!-- 2. Email Field -->
-              <div class="f-field">
-                <label for="fbEmail">Your Email *</label>
-                <div class="f-input-icon">
-                  <input type="email" id="fbEmail" placeholder="example@email.com" required>
-                  <i class="fa-regular fa-envelope"></i>
-                </div>
-                <p class="f-error" id="emailError">Please enter a valid email address.</p>
-              </div>
+            <a href="feedback.html" class="btn btn-gold" style="width:100%;">
+              <i class="fa-solid fa-star"></i> Leave a Review
+            </a>
 
-              <!-- 3. Route / Country Field (Optional) -->
-              <div class="f-field">
-                <label for="fbRoute">Trip Route / Country (optional)</label>
-                <div class="f-input-icon">
-                  <input type="text" id="fbRoute" placeholder="e.g. Airport CMB to Ahangama · UK Traveler">
-                  <i class="fa-solid fa-route"></i>
-                </div>
-              </div>
-
-              <!-- 4. Feedback Message (Moved UP above rating) -->
-              <div class="f-field">
-                <label for="fbMessage">Type your feedback here *</label>
-                <div class="f-input-icon textarea-icon">
-                  <textarea id="fbMessage" placeholder="Share your experience regarding vehicle comfort, punctuality, driver friendliness, and the journey..." required></textarea>
-                  <i class="fa-solid fa-pen"></i>
-                </div>
-                <p class="f-error" id="messageError">Please share your feedback message.</p>
-              </div>
-
-              <!-- 5. Star Rating Block (At the last row below feedback message) -->
-              <div class="rating-group">
-                <label>Rating *</label>
-                <div class="stars-row" id="starsRow" role="radiogroup" aria-label="Star Rating">
-                  <button type="button" class="star-btn" data-value="1" aria-label="1 star"><i class="fa-solid fa-star"></i></button>
-                  <button type="button" class="star-btn" data-value="2" aria-label="2 stars"><i class="fa-solid fa-star"></i></button>
-                  <button type="button" class="star-btn" data-value="3" aria-label="3 stars"><i class="fa-solid fa-star"></i></button>
-                  <button type="button" class="star-btn" data-value="4" aria-label="4 stars"><i class="fa-solid fa-star"></i></button>
-                  <button type="button" class="star-btn" data-value="5" aria-label="5 stars"><i class="fa-solid fa-star"></i></button>
-                </div>
-                <div class="rating-caption" id="ratingCaption">Tap to rate your experience</div>
-                <p class="f-error" id="ratingError" style="margin-top:4px;">Please select a star rating.</p>
-              </div>
-
-              <button type="submit" class="btn btn-gold" id="submitFeedbackBtn" style="width:100%;">
-                <i class="fa-solid fa-paper-plane"></i> Send Feedback
-              </button>
-            </form>
-
-            <!-- Success State -->
-            <div class="feedback-success" id="feedbackSuccess">
-              <div class="success-icon">
-                <i class="fa-solid fa-check"></i>
-              </div>
-              <h3>Thank You for Your Feedback!</h3>
-              <p>Your review has been successfully stored with the exact Date & Time, and is now featured in our live verified customer reviews showcase below.</p>
-              <button type="button" class="btn btn-outline" id="submitAnotherBtn">
-                <i class="fa-solid fa-plus"></i> Submit Another Response
-              </button>
-            </div>
+            <p class="cta-note">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+              Riding with us right now? Just scan the QR code in the vehicle.
+            </p>
           </div>
         </div>
 
-        <!-- ================= LIVE FEEDBACK SHOWCASE ================= -->
+
         <div class="reviews-showcase">
           <div class="reviews-header">
             <div>
@@ -2378,24 +2225,22 @@
               <h3 style="font-size: 24px; font-weight: 700;">Verified Customer Reviews</h3>
             </div>
 
-            <div class="reviews-stat-summary">
-              <div class="big-score" id="averageScore">4.9</div>
+            <div class="reviews-stat-summary" id="reviewsSummary" hidden>
+              <div class="big-score" id="averageScore">—</div>
               <div class="score-details">
-                <div class="score-stars">
-                  <i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i>
-                  <i class="fa-solid fa-star"></i>
-                </div>
-                <div class="score-count" id="totalReviewsCount">Based on verified reviews</div>
+                <div class="score-stars" id="averageStars"></div>
+                <div class="score-count" id="totalReviewsCount"></div>
               </div>
             </div>
           </div>
 
-          <!-- Review Cards Grid -->
-          <div class="reviews-grid" id="reviewsGrid">
-            <!-- Dynamically populated from localStorage with exact Date & Time -->
+          <!-- Review Cards Grid — populated from Supabase via /api/reviews -->
+          <div class="reviews-grid" id="reviewsGrid"></div>
+
+          <!-- Loading / empty / error states -->
+          <div class="reviews-state" id="reviewsState">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p>Loading passenger reviews…</p>
           </div>
         </div>
       </div>
@@ -2882,8 +2727,17 @@
       }
 
       // ================= 7. DYNAMIC QR CODE GENERATOR =================
-      const feedbackUrl = window.location.href.split('#')[0] + '#feedback';
-      
+      // The printed QR must point at the LIVE feedback page, so that a
+      // standee printed today keeps working. Set SITE_URL to the deployed
+      // domain before printing; otherwise the QR is built from wherever
+      // this page is being served, which is only useful while developing.
+      const SITE_URL = ''; // e.g. 'https://dgtravels.vercel.app'
+
+      const feedbackUrl = SITE_URL
+        ? SITE_URL.replace(/\/+$/, '') + '/feedback'
+        : new URL('feedback.html', window.location.href).href;
+
+
       // Render In-Card QR
       const qrEl = document.getElementById('qrcode');
       if (qrEl && typeof QRCode !== 'undefined') {
@@ -2956,201 +2810,19 @@
         });
       }
 
-      // ================= 8. STAR RATING SYSTEM =================
-      const starButtons = document.querySelectorAll('#starsRow .star-btn');
-      const ratingCaption = document.getElementById('ratingCaption');
-      let currentRating = 0;
-
-      const ratingCaptions = {
-        1: "1 Star — Disappointing",
-        2: "2 Stars — Fair",
-        3: "3 Stars — Good",
-        4: "4 Stars — Very Good",
-        5: "5 Stars — Outstanding & Highly Recommended!"
-      };
-
-      function paintStars(ratingVal) {
-        starButtons.forEach(btn => {
-          const val = parseInt(btn.dataset.value, 10);
-          if (val <= ratingVal) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        });
-      }
-
-      starButtons.forEach(btn => {
-        const val = parseInt(btn.dataset.value, 10);
-
-        btn.addEventListener('mouseenter', () => {
-          starButtons.forEach(b => {
-            const bVal = parseInt(b.dataset.value, 10);
-            if (bVal <= val) {
-              b.classList.add('hovered');
-            } else {
-              b.classList.remove('hovered');
-            }
-          });
-          if (ratingCaption) ratingCaption.textContent = ratingCaptions[val] || '';
-        });
-
-        btn.addEventListener('click', () => {
-          currentRating = val;
-          paintStars(currentRating);
-          document.getElementById('ratingError').classList.remove('show');
-          if (ratingCaption) ratingCaption.textContent = ratingCaptions[currentRating];
-        });
-      });
-
-      const starsRow = document.getElementById('starsRow');
-      if (starsRow) {
-        starsRow.addEventListener('mouseleave', () => {
-          starButtons.forEach(b => b.classList.remove('hovered'));
-          paintStars(currentRating);
-          if (ratingCaption) {
-            ratingCaption.textContent = currentRating > 0 ? ratingCaptions[currentRating] : 'Tap to rate your experience';
-          }
-        });
-      }
-
-      // ================= 9. FEEDBACK STORAGE & LIVE REVIEWS =================
-      const STORAGE_KEY = 'dg_travels_customer_reviews';
-
-      // Initial authentic reviews for DG Travels
-      const defaultReviews = [
-        {
-          id: 'fb-1',
-          name: 'Charlotte & David Miller',
-          email: 'c.miller.uk@gmail.com',
-          route: 'Airport CMB to Ahangama · UK',
-          rating: 5,
-          message: 'Isum was waiting for us right on time at Colombo airport with a clear nameboard after our long flight. The Toyota KDH van was spotless, air conditioning was cool, and his driving on the expressway was smooth and relaxing. Fantastic welcome to Sri Lanka!',
-          dateTime: '28 Aug 2026, 04:30 PM'
-        },
-        {
-          id: 'fb-2',
-          name: 'Kenji & Yoko Tanaka',
-          email: 'yoko.tanaka@tokyo-travel.jp',
-          route: 'Galle to Ella Tour · Japan',
-          rating: 5,
-          message: '日本語で話してくれてとても親切でした！ (Isum spoke Japanese with us and was extremely kind and attentive!) His Honda Vezel was very clean and comfortable for our hill country tour to Ella. Highly recommended!',
-          dateTime: '24 Aug 2026, 11:15 AM'
-        },
-        {
-          id: 'fb-3',
-          name: 'Lukas Schneider',
-          email: 'lukas.schneider@web.de',
-          route: 'Ahangama Surf & Mirissa · Germany',
-          rating: 5,
-          message: 'Best driver in Sri Lanka! Isum took us on multiple day trips around Ahangama and Weligama. He knows all the best surf points, scenic viewpoints, and local spots. Super polite, punctual, and safe driver.',
-          dateTime: '20 Aug 2026, 06:10 PM'
-        },
-        {
-          id: 'fb-4',
-          name: 'Kavinda & Nimalka Perera',
-          email: 'kavinda.p@outlook.com',
-          route: 'Colombo to Yala Safari · Local Family',
-          rating: 5,
-          message: 'Excellent private hire service for our family vacation. The van was very comfortable with plenty of luggage room. Isum was courteous, on-time, and handled the entire route with great care.',
-          dateTime: '15 Aug 2026, 08:45 PM'
-        }
-      ];
-
-      function getStoredReviews() {
-        try {
-          const stored = localStorage.getItem(STORAGE_KEY);
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              return parsed;
-            }
-          }
-        } catch (e) {
-          console.error('Error reading localStorage', e);
-        }
-        return defaultReviews;
-      }
-
-      function saveReviews(reviews) {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
-        } catch (e) {
-          console.error('Error saving to localStorage', e);
-        }
-      }
-
-      function renderReviews() {
-        const reviews = getStoredReviews();
-        const reviewsGrid = document.getElementById('reviewsGrid');
-        const averageScoreEl = document.getElementById('averageScore');
-        const totalReviewsCountEl = document.getElementById('totalReviewsCount');
-
-        if (!reviewsGrid) return;
-
-        // Calculate average
-        const totalStars = reviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0);
-        const avg = reviews.length ? (totalStars / reviews.length).toFixed(1) : '5.0';
-
-        if (averageScoreEl) averageScoreEl.textContent = avg;
-        if (totalReviewsCountEl) {
-          totalReviewsCountEl.textContent = `Based on ${reviews.length} verified traveler ${reviews.length === 1 ? 'review' : 'reviews'}`;
-        }
-
-        reviewsGrid.innerHTML = '';
-
-        reviews.forEach((review, idx) => {
-          const card = document.createElement('div');
-          card.className = `review-card ${idx === 0 && review.isNew ? 'newly-added' : ''}`;
-
-          // Initials
-          const initials = review.name
-            .split(' ')
-            .map(n => n[0])
-            .join('')
-            .slice(0, 2)
-            .toUpperCase() || 'DG';
-
-          // Star icons
-          let starsHtml = '';
-          const rVal = Math.min(5, Math.max(1, parseInt(review.rating, 10) || 5));
-          for (let i = 1; i <= 5; i++) {
-            starsHtml += i <= rVal 
-              ? '<i class="fa-solid fa-star"></i>' 
-              : '<i class="fa-regular fa-star" style="color:var(--text-faint);"></i>';
-          }
-
-          card.innerHTML = `
-            <div>
-              <div class="review-top">
-                <div class="reviewer-info">
-                  <div class="reviewer-avatar">${escapeHtml(initials)}</div>
-                  <div class="reviewer-meta">
-                    <h4>${escapeHtml(review.name)}</h4>
-                    <div class="reviewer-tag">
-                      <i class="fa-solid fa-location-dot" style="color:var(--gold); font-size:10px;"></i>
-                      ${escapeHtml(review.route || 'Verified Passenger')}
-                    </div>
-                  </div>
-                </div>
-                <div class="review-stars">
-                  ${starsHtml}
-                </div>
-              </div>
-              <p class="review-body">"${escapeHtml(review.message)}"</p>
-            </div>
-            <div class="review-footer">
-              <span class="verified-pill"><i class="fa-solid fa-circle-check"></i> Verified Passenger</span>
-              <span><i class="fa-regular fa-clock"></i> ${escapeHtml(review.dateTime)}</span>
-            </div>
-          `;
-
-          reviewsGrid.appendChild(card);
-        });
-      }
+      // ================= 8. LIVE PASSENGER REVIEWS (SUPABASE) =================
+      // Reviews are submitted on feedback.html and stored in Supabase.
+      // This page only reads them, through /api/reviews, which never
+      // exposes passenger email addresses.
+      const reviewsGrid = document.getElementById('reviewsGrid');
+      const reviewsState = document.getElementById('reviewsState');
+      const reviewsSummary = document.getElementById('reviewsSummary');
+      const averageScoreEl = document.getElementById('averageScore');
+      const averageStarsEl = document.getElementById('averageStars');
+      const totalReviewsCountEl = document.getElementById('totalReviewsCount');
 
       function escapeHtml(str) {
-        if (!str) return '';
+        if (str === null || str === undefined) return '';
         return String(str)
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
@@ -3159,119 +2831,114 @@
           .replace(/'/g, '&#039;');
       }
 
-      function formatCurrentDateTime() {
-        const now = new Date();
-        const options = { 
-          day: 'numeric', 
-          month: 'short', 
-          year: 'numeric',
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: true 
-        };
-        return now.toLocaleString('en-US', options);
+      function initialsOf(name) {
+        const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return 'DG';
+        return parts.map(n => n[0]).join('').slice(0, 2).toUpperCase();
       }
 
-      // Initial Render
-      renderReviews();
+      function starIcons(rating) {
+        const r = Math.min(5, Math.max(1, parseInt(rating, 10) || 5));
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+          html += i <= r
+            ? '<i class="fa-solid fa-star"></i>'
+            : '<i class="fa-regular fa-star" style="color:var(--text-faint);"></i>';
+        }
+        return html;
+      }
 
-      // ================= 10. FEEDBACK FORM SUBMISSION =================
-      const feedbackForm = document.getElementById('feedbackForm');
-      const feedbackSuccess = document.getElementById('feedbackSuccess');
-      const submitAnotherBtn = document.getElementById('submitAnotherBtn');
-
-      if (feedbackForm) {
-        feedbackForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-
-          const nameInput = document.getElementById('fbName');
-          const emailInput = document.getElementById('fbEmail');
-          const routeInput = document.getElementById('fbRoute');
-          const messageInput = document.getElementById('fbMessage');
-
-          const nameVal = nameInput.value.trim();
-          const emailVal = emailInput.value.trim();
-          const routeVal = routeInput.value.trim() || 'Sri Lanka Tour';
-          const messageVal = messageInput.value.trim();
-
-          let isValid = true;
-
-          // Validation
-          if (!nameVal) {
-            document.getElementById('nameError').classList.add('show');
-            isValid = false;
-          } else {
-            document.getElementById('nameError').classList.remove('show');
-          }
-
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(emailVal)) {
-            document.getElementById('emailError').classList.add('show');
-            isValid = false;
-          } else {
-            document.getElementById('emailError').classList.remove('show');
-          }
-
-          if (currentRating === 0) {
-            document.getElementById('ratingError').classList.add('show');
-            isValid = false;
-          } else {
-            document.getElementById('ratingError').classList.remove('show');
-          }
-
-          if (!messageVal) {
-            document.getElementById('messageError').classList.add('show');
-            isValid = false;
-          } else {
-            document.getElementById('messageError').classList.remove('show');
-          }
-
-          if (!isValid) return;
-
-          // Create new review object with exact Date & Time
-          const newReview = {
-            id: 'fb-' + Date.now(),
-            name: nameVal,
-            email: emailVal,
-            route: routeVal,
-            rating: currentRating,
-            message: messageVal,
-            dateTime: formatCurrentDateTime(),
-            isNew: true
-          };
-
-          // Prepend to stored reviews
-          const reviews = getStoredReviews();
-          reviews.unshift(newReview);
-          saveReviews(reviews);
-
-          // Update reviews grid
-          renderReviews();
-
-          // Show success state
-          feedbackForm.style.display = 'none';
-          if (feedbackSuccess) feedbackSuccess.classList.add('show');
-
-          // Scroll reviews showcase into view smoothly
-          setTimeout(() => {
-            const showcase = document.querySelector('.reviews-showcase');
-            if (showcase) {
-              showcase.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 400);
+      function formatDateTime(iso) {
+        const d = new Date(iso);
+        if (isNaN(d)) return '';
+        return d.toLocaleString('en-GB', {
+          day: 'numeric', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: true
         });
       }
 
-      if (submitAnotherBtn) {
-        submitAnotherBtn.addEventListener('click', () => {
-          feedbackForm.reset();
-          currentRating = 0;
-          paintStars(0);
-          if (ratingCaption) ratingCaption.textContent = 'Tap to rate your experience';
-          if (feedbackSuccess) feedbackSuccess.classList.remove('show');
-          feedbackForm.style.display = 'block';
-        });
+      function showReviewsState(iconClass, text, withCta) {
+        if (!reviewsState) return;
+        reviewsState.hidden = false;
+        reviewsState.innerHTML =
+          '<i class="' + iconClass + '"></i><p>' + text + '</p>' +
+          (withCta ? '<a href="feedback.html" class="btn btn-outline state-cta">' +
+                     '<i class="fa-solid fa-star"></i> Be the first to review</a>' : '');
       }
+
+      function renderReviews(data) {
+        if (!reviewsGrid) return;
+        const reviews = (data && data.reviews) || [];
+
+        if (!reviews.length) {
+          reviewsGrid.innerHTML = '';
+          if (reviewsSummary) reviewsSummary.hidden = true;
+          showReviewsState('fa-solid fa-comment-dots',
+            'No passenger reviews yet. If you have travelled with DG Travels, yours would be the first.',
+            true);
+          return;
+        }
+
+        if (reviewsState) reviewsState.hidden = true;
+
+        // Rating summary, computed from the real rows
+        if (reviewsSummary && data.average != null) {
+          reviewsSummary.hidden = false;
+          if (averageScoreEl) averageScoreEl.textContent = Number(data.average).toFixed(1);
+          if (averageStarsEl) averageStarsEl.innerHTML = starIcons(Math.round(data.average));
+          if (totalReviewsCountEl) {
+            totalReviewsCountEl.textContent =
+              'Based on ' + data.total + ' passenger ' + (data.total === 1 ? 'review' : 'reviews');
+          }
+        }
+
+        reviewsGrid.innerHTML = reviews.map(function (review) {
+          return '' +
+            '<div class="review-card">' +
+              '<div>' +
+                '<div class="review-top">' +
+                  '<div class="reviewer-info">' +
+                    '<div class="reviewer-avatar">' + escapeHtml(initialsOf(review.name)) + '</div>' +
+                    '<div class="reviewer-meta">' +
+                      '<h4>' + escapeHtml(review.name) + '</h4>' +
+                      '<div class="reviewer-tag">' +
+                        '<i class="fa-solid fa-circle-check" style="color:var(--gold); font-size:10px;"></i>' +
+                        ' Passenger review' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>' +
+                  '<div class="review-stars">' + starIcons(review.rating) + '</div>' +
+                '</div>' +
+                '<p class="review-body">&ldquo;' + escapeHtml(review.message) + '&rdquo;</p>' +
+              '</div>' +
+              '<div class="review-footer">' +
+                '<span class="verified-pill"><i class="fa-solid fa-circle-check"></i> Verified Passenger</span>' +
+                '<span><i class="fa-regular fa-clock"></i> ' + escapeHtml(formatDateTime(review.created_at)) + '</span>' +
+              '</div>' +
+            '</div>';
+        }).join('');
+      }
+
+      function loadReviews() {
+        if (!reviewsGrid) return;
+
+        fetch('/api/reviews', { headers: { 'Accept': 'application/json' } })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(renderReviews)
+          .catch(function (err) {
+            console.warn('[reviews] could not load:', err.message);
+            reviewsGrid.innerHTML = '';
+            if (reviewsSummary) reviewsSummary.hidden = true;
+            showReviewsState('fa-solid fa-triangle-exclamation',
+              'Passenger reviews are temporarily unavailable. Please check back shortly.',
+              false);
+          });
+      }
+
+      loadReviews();
     });
   </script>
 </body>

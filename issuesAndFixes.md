@@ -25,6 +25,13 @@ Fully Mobile Optimized UI /UX
 
 Adjust the sizes of fonts for each text for tiitles and normal texts
 
+match theme of the feedback mobile view with main webiste.
+
+The QR scan only should view Feedback screen only.
+
+if user clicks on visit DG Tavels link then it should open the main website
+
+
 
 
 
@@ -58,6 +65,8 @@ Adjust the sizes of fonts for each text for tiitles and normal texts
 |
 |   ⭐ ⭐ ⭐ ⭐ ⭐
 |
-|    |Submit | button            
+|    |Submit | button         
 |
+|
+|   visit DG Tavels (website linked text)
 |_____________________________________________________________

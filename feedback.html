@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="robots" content="noindex">
+  <title>Share Your Feedback | DG Travels Sri Lanka</title>
+  <meta name="description" content="Tell Isum how your DG Travels ride or tour went. Takes less than a minute.">
+
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="LOGO/DG - 1.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0c0c0c;
+      --surface-2: #141414;
+      --field: #0a0a0a;
+      --border: rgba(255, 255, 255, 0.14);
+      --border-soft: rgba(255, 255, 255, 0.08);
+
+      --text: #ffffff;
+      --text-muted: #9a9a9a;
+      --text-faint: #6a6a6a;
+
+      --gold: #d7a84e;
+      --gold-light: #f3c96f;
+      --danger: #ff7b72;
+      --success: #4ade80;
+
+      --radius: 14px;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      /* Notch and home-indicator clearance */
+      padding: max(20px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
+               max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+    }
+
+    a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+    button { font-family: inherit; border: none; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    img { display: block; max-width: 100%; }
+
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+
+    /* ============ SHELL ============ */
+    .shell {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============ HEADER ============ */
+    .head {
+      text-align: center;
+      padding: 6px 0 22px;
+    }
+    .head h1 {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: clamp(23px, 6.4vw, 29px);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+    .logo {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto;
+      border-radius: 20px;
+      padding: 10px;
+      background: var(--surface-2);
+      border: 1px solid rgba(215, 168, 78, 0.32);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.7);
+      object-fit: contain;
+    }
+    .head .tagline {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ============ CARD ============ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 22px 18px 24px;
+    }
+
+    /* ============ FIELDS ============ */
+    .field { margin-bottom: 18px; }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .field .hint {
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 15px;
+      color: var(--text);
+      /* 16px keeps iOS Safari from zooming in on focus */
+      font-size: 16px;
+      font-family: inherit;
+      line-height: 1.5;
+      outline: none;
+      transition: var(--transition);
+      min-height: 52px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    textarea {
+      min-height: 148px;
+      resize: vertical;
+    }
+    input::placeholder, textarea::placeholder { color: #5a5a5a; }
+
+    input:focus, textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(215, 168, 78, 0.16);
+      background: #0f0e0c;
+    }
+
+    .field.invalid input,
+    .field.invalid textarea { border-color: var(--danger); }
+
+    .counter {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 11.5px;
+      color: var(--text-faint);
+      margin-top: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .counter.near { color: var(--gold); }
+    .counter.over { color: var(--danger); }
+
+    .error {
+      display: none;
+      font-size: 12.5px;
+      color: var(--danger);
+      margin-top: 6px;
+    }
+    .field.invalid .error { display: block; }
+
+    /* ============ RATING ============ */
+    .rating {
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      padding: 16px 12px 14px;
+      margin-bottom: 20px;
+    }
+    .rating > label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 2px;
+    }
+    .star {
+      /* Comfortably above the 44px touch-target floor */
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a3a;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+    .star svg { width: 30px; height: 30px; fill: currentColor; }
+    .star.on { color: var(--gold); }
+    .star:active { transform: scale(0.9); }
+    .rating.invalid { border-color: var(--danger); }
+
+    .rating-caption {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-top: 8px;
+      min-height: 18px;
+    }
+    .rating .error { text-align: center; }
+    .rating.invalid .error { display: block; }
+
+    /* ============ SUBMIT ============ */
+    .submit {
+      width: 100%;
+      min-height: 54px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+      color: #0d0c09;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: var(--transition);
+      box-shadow: 0 6px 20px rgba(215, 168, 78, 0.24);
+    }
+    .submit:active { transform: scale(0.985); }
+    .submit[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .spinner {
+      width: 17px;
+      height: 17px;
+      border: 2px solid rgba(0, 0, 0, 0.25);
+      border-top-color: #0d0c09;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .submit.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .form-error {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: rgba(255, 123, 114, 0.10);
+      border: 1px solid rgba(255, 123, 114, 0.35);
+      color: #ffb3ad;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .form-error.show { display: block; }
+
+    /* ============ SUCCESS ============ */
+    .success {
+      display: none;
+      text-align: center;
+      padding: 30px 14px 26px;
+    }
+    .success.show { display: block; }
+    .success-icon {
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: rgba(74, 222, 128, 0.12);
+      border: 2px solid var(--success);
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 3; }
+    .success h2 {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 23px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .success p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+    .success .stars-recap {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .success .stars-recap svg { width: 22px; height: 22px; fill: currentColor; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 12px 24px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 14.5px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .btn-ghost:active { border-color: var(--gold); color: var(--gold); }
+
+    /* ============ FOOTER LINK ============ */
+    .foot {
+      text-align: center;
+      padding: 26px 0 6px;
+    }
+    /* The success card carries its own "Visit DG Travels" button —
+       hide the footer copy so the link is not shown twice. */
+    .shell.done .foot { display: none; }
+    .visit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 18px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--gold);
+      border-bottom: 1px solid rgba(215, 168, 78, 0.4);
+      border-radius: 4px;
+    }
+    .visit-link svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .visit-link:active { color: var(--gold-light); }
+
+    .foot .legal {
+      margin-top: 14px;
+      font-size: 11.5px;
+      color: var(--text-faint);
+      line-height: 1.6;
+    }
+
+    /* ============ SMALL PHONES ============ */
+    @media (max-width: 360px) {
+      body { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
+      .card { padding: 18px 14px 20px; }
+      .logo { width: 72px; height: 72px; border-radius: 18px; }
+      .star { width: 46px; height: 46px; }
+      .star svg { width: 27px; height: 27px; }
+    }
+
+    /* ============ LANDSCAPE ============ */
+    @media (max-height: 460px) and (orientation: landscape) {
+      .head { padding-bottom: 14px; }
+      .logo { width: 58px; height: 58px; border-radius: 14px; padding: 7px; }
+      .head h1 { font-size: 21px; margin-bottom: 10px; }
+      .head .tagline { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="shell">
+
+    <!-- ================= HEADER ================= -->
+    <header class="head">
+      <h1>Your Feedback Matters to Us</h1>
+      <img src="LOGO/DG - 1.png" alt="DG Travels" class="logo" width="82" height="82">
+      <p class="tagline">Thank you for travelling with DG Travels.<br>Tell us how your journey went.</p>
+    </header>
+
+    <!-- ================= FORM ================= -->
+    <div class="card">
+      <form id="feedbackForm" novalidate>
+
+        <div class="field" id="fieldName">
+          <label for="name">Enter Your Name</label>
+          <input type="text" id="name" name="name" maxlength="80"
+                 placeholder="e.g. Sarah Jenkins"
+                 autocomplete="name" autocapitalize="words" required>
+          <p class="error" id="errName">Please enter your name.</p>
+        </div>
+
+        <div class="field" id="fieldEmail">
+          <label for="email">Enter Your Email</label>
+          <input type="email" id="email" name="email" maxlength="160"
+                 placeholder="you@example.com"
+                 autocomplete="email" autocapitalize="none" autocorrect="off"
+                 inputmode="email" spellcheck="false" required>
+          <p class="error" id="errEmail">Please enter a valid email address.</p>
+        </div>
+
+        <div class="field" id="fieldMessage">
+          <label for="message">
+            Type Your Feedback
+            <span class="hint">— max 500 characters</span>
+          </label>
+          <textarea id="message" name="message" maxlength="500"
+                    placeholder="How was the vehicle, the driving, and the overall journey?"
+                    required></textarea>
+          <div class="counter" id="counter" aria-live="polite">0 / 500</div>
+          <p class="error" id="errMessage">Please write your feedback.</p>
+        </div>
+
+        <!-- Honeypot: hidden from people, tempting to bots -->
+        <div style="position:absolute;left:-9999px" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="rating" id="fieldRating">
+          <label id="ratingLabel">Rate Us</label>
+          <div class="stars" id="stars" role="radiogroup" aria-labelledby="ratingLabel"></div>
+          <div class="rating-caption" id="ratingCaption">Tap a star to rate</div>
+          <p class="error" id="errRating">Please select a star rating.</p>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="submitLabel">Submit</span>
+        </button>
+
+        <div class="form-error" id="formError" role="alert"></div>
+      </form>
+
+      <!-- ================= SUCCESS STATE ================= -->
+      <div class="success" id="success" role="status">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stars-recap" id="starsRecap" aria-hidden="true"></div>
+        <h2>Thank you!</h2>
+        <p id="successText">Your feedback has been sent to Isum and is now live on the DG&nbsp;Travels website.</p>
+        <a class="btn-ghost" href="index.html">Visit DG Travels</a>
+      </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="foot">
+      <a class="visit-link" href="index.html">
+        Visit DG Travels
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <p class="legal">
+        DG Travels Sri Lanka · Ahangama, Galle<br>
+        Your email is used only to verify your review — it is never published.
+      </p>
+    </footer>
+
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var MAX = 500;
+      var CAPTIONS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+      var STAR_PATH = 'M12 2.6l2.9 5.88 6.49.95-4.7 4.58 1.11 6.46L12 17.42 6.2 20.47l1.11-6.46-4.7-4.58 6.49-.95z';
+
+      var form = document.getElementById('feedbackForm');
+      var success = document.getElementById('success');
+      var submitBtn = document.getElementById('submitBtn');
+      var submitLabel = document.getElementById('submitLabel');
+      var formError = document.getElementById('formError');
+      var counter = document.getElementById('counter');
+      var message = document.getElementById('message');
+      var starsBox = document.getElementById('stars');
+      var caption = document.getElementById('ratingCaption');
+      var rating = 0;
+
+      function starSvg() {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg>';
+      }
+
+      // ---------- Star rating ----------
+      for (var i = 1; i <= 5; i++) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'star';
+        b.dataset.value = String(i);
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', 'false');
+        b.setAttribute('aria-label', i + (i === 1 ? ' star' : ' stars'));
+        b.innerHTML = starSvg();
+        starsBox.appendChild(b);
+      }
+      var starEls = starsBox.querySelectorAll('.star');
+
+      function paint(value) {
+        for (var i = 0; i < starEls.length; i++) {
+          var on = i < value;
+          starEls[i].classList.toggle('on', on);
+          starEls[i].setAttribute('aria-checked', String(i + 1 === value));
+        }
+      }
+
+      starsBox.addEventListener('click', function (e) {
+        var btn = e.target.closest('.star');
+        if (!btn) return;
+        rating = Number(btn.dataset.value);
+        paint(rating);
+        caption.textContent = CAPTIONS[rating];
+        document.getElementById('fieldRating').classList.remove('invalid');
+      });
+
+      // ---------- Character counter ----------
+      function updateCounter() {
+        var len = message.value.length;
+        counter.textContent = len + ' / ' + MAX;
+        counter.className = 'counter' + (len >= MAX ? ' over' : len >= MAX - 50 ? ' near' : '');
+      }
+      message.addEventListener('input', updateCounter);
+      updateCounter();
+
+      // ---------- Validation ----------
+      function setInvalid(id, isInvalid, text) {
+        var field = document.getElementById(id);
+        field.classList.toggle('invalid', isInvalid);
+        if (text) {
+          var err = field.querySelector('.error');
+          if (err) err.textContent = text;
+        }
+      }
+
+      // Clear a field's error as soon as the passenger starts fixing it
+      ['name', 'email', 'message'].forEach(function (id) {
+        document.getElementById(id).addEventListener('input', function () {
+          var map = { name: 'fieldName', email: 'fieldEmail', message: 'fieldMessage' };
+          document.getElementById(map[id]).classList.remove('invalid');
+        });
+      });
+
+      function validate() {
+        var name = document.getElementById('name').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var text = message.value.trim();
+        var ok = true;
+        var firstBad = null;
+
+        if (!name) { setInvalid('fieldName', true, 'Please enter your name.'); ok = false; firstBad = firstBad || 'name'; }
+        else setInvalid('fieldName', false);
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+          setInvalid('fieldEmail', true, 'Please enter a valid email address.'); ok = false; firstBad = firstBad || 'email';
+        } else setInvalid('fieldEmail', false);
+
+        if (!text) { setInvalid('fieldMessage', true, 'Please write your feedback.'); ok = false; firstBad = firstBad || 'message'; }
+        else if (text.length > MAX) { setInvalid('fieldMessage', true, 'Please keep your feedback under ' + MAX + ' characters.'); ok = false; firstBad = firstBad || 'message'; }
+        else setInvalid('fieldMessage', false);
+
+        if (!rating) { setInvalid('fieldRating', true); ok = false; firstBad = firstBad || 'stars'; }
+        else setInvalid('fieldRating', false);
+
+        if (firstBad) {
+          var el = document.getElementById(firstBad === 'stars' ? 'fieldRating' : firstBad);
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (firstBad !== 'stars' && el.focus) el.focus({ preventScroll: true });
+        }
+        return { ok: ok, name: name, email: email, message: text };
+      }
+
+      // ---------- Submit ----------
+      function setLoading(on) {
+        submitBtn.disabled = on;
+        submitBtn.classList.toggle('loading', on);
+        submitLabel.textContent = on ? 'Sending…' : 'Submit';
+      }
+
+      function showFormError(text) {
+        formError.textContent = text;
+        formError.classList.add('show');
+        formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        formError.classList.remove('show');
+
+        var data = validate();
+        if (!data.ok) return;
+
+        setLoading(true);
+
+        fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            message: data.message,
+            rating: rating,
+            website: document.getElementById('website').value
+          })
+        })
+          .then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (body) {
+              return { ok: res.ok, body: body };
+            });
+          })
+          .then(function (r) {
+            if (!r.ok) {
+              // Surface per-field errors the server caught
+              if (r.body && r.body.fields) {
+                var map = { name: 'fieldName', email: 'fieldEmail', message: 'fieldMessage', rating: 'fieldRating' };
+                Object.keys(r.body.fields).forEach(function (k) {
+                  if (map[k]) setInvalid(map[k], true, r.body.fields[k]);
+                });
+              }
+              throw new Error((r.body && r.body.error) || 'Something went wrong. Please try again.');
+            }
+
+            // Success
+            var recap = '';
+            for (var i = 0; i < rating; i++) recap += starSvg();
+            document.getElementById('starsRecap').innerHTML = recap;
+            form.style.display = 'none';
+            success.classList.add('show');
+            document.querySelector('.shell').classList.add('done');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          })
+          .catch(function (err) {
+            setLoading(false);
+            var offline = (typeof navigator !== 'undefined' && navigator.onLine === false);
+            showFormError(offline
+              ? 'You appear to be offline. Please reconnect and try again.'
+              : err.message);
+          });
+      });
+    })();
+  </script>
+</body>
+</html>
