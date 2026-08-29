@@ -1,0 +1,3278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0c0a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>DG Travels | Private Transport & Island-Wide Tours in Sri Lanka</title>
+  <meta name="description" content="DG Travels provides private transport, CMB airport transfers, surf trips, and custom tours across Sri Lanka. Owned and guided by Isum Sejan Gunasekara, based in Ahangama, Galle.">
+  <!-- Favicon Links for All Browsers & Devices -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="LOGO/DG_Travels_favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="LOGO/DG - 1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="LOGO/DG - 1.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="LOGO/DG - 1.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons for UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Local QR Code Library -->
+  <script src="assets/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #080807;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1911 0%, #080807 80%);
+      --surface: #13120f;
+      --surface-2: #191712;
+      --surface-3: #221f18;
+      --surface-glass: rgba(19, 18, 15, 0.92);
+      --field: #0e0d0a;
+      --field-border: rgba(255, 255, 255, 0.12);
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.22);
+      
+      --text: #f7f4ec;
+      --text-muted: #a49d8f;
+      --text-faint: #6c6659;
+      
+      --gold: #d7a84e;
+      --gold-light: #f3c96f;
+      --gold-deep: #a87e32;
+      --gold-glow: rgba(215, 168, 78, 0.35);
+      --gold-wash: rgba(215, 168, 78, 0.10);
+      
+      --green: #25D366;
+      
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --maxw: 1160px;
+      
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+      /* Keep anchor jumps clear of the sticky header on mobile */
+      scroll-padding-top: 76px;
+    }
+    body {
+      background: var(--bg);
+      background-image: var(--bg-gradient);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Ambient Background Rain Canvas */
+    #brandRainCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100vh;
+      height: 100dvh; /* Stable through mobile URL-bar show/hide */
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.65;
+    }
+
+    /* Wrap all main content above canvas */
+    .app-root {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ================= 1. LUXURY SPLASH / PRELOADER SCREEN ================= */
+    #preloader {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #070706;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+    }
+    #preloader.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .preloader-logo-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .preloader-glow-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--gold);
+      border-right-color: var(--gold-light);
+      animation: spinRing 1.6s linear infinite;
+    }
+    .preloader-glow-ring-2 {
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      border-radius: 50%;
+      border: 1px dashed rgba(215, 168, 78, 0.3);
+      animation: spinRingRev 3.2s linear infinite;
+    }
+    @keyframes spinRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spinRingRev {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .preloader-logo {
+      width: 90px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 25px var(--gold-glow));
+      animation: logoPulse 1.6s ease-in-out infinite alternate;
+    }
+    @keyframes logoPulse {
+      0% { transform: scale(0.95); filter: drop-shadow(0 0 15px rgba(215, 168, 78, 0.2)); }
+      100% { transform: scale(1.05); filter: drop-shadow(0 0 35px rgba(215, 168, 78, 0.6)); }
+    }
+    .preloader-text {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .preloader-sub {
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      color: var(--gold);
+      margin-top: 3px;
+    }
+    .preloader-bar-bg {
+      width: 160px;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      margin-top: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .preloader-bar-fill {
+      position: absolute;
+      top: 0; left: 0; height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold-deep), var(--gold-light));
+      border-radius: 999px;
+      animation: fillBar 1s ease-out forwards;
+    }
+    @keyframes fillBar {
+      0% { width: 0%; }
+      60% { width: 80%; }
+      100% { width: 100%; }
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Baloo 2', sans-serif;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    a { text-decoration: none; color: inherit; -webkit-tap-highlight-color: transparent; }
+    button { font-family: inherit; cursor: pointer; border: none; outline: none; -webkit-tap-highlight-color: transparent; }
+    /* Visible focus for keyboard & switch-control users on touch devices */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, .vehicle-card:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    img, svg { display: block; max-width: 100%; }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 1.5px;
+      background: var(--gold);
+    }
+
+    .section-title {
+      font-size: clamp(28px, 5vw, 38px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: clamp(14px, 3.5vw, 16px);
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    /* Route Dash Divider */
+    .route-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: var(--maxw);
+      margin: 18px auto;
+      padding: 0 20px;
+      opacity: 0.5;
+    }
+    .route-divider .pin {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex: none;
+      box-shadow: 0 0 0 3px var(--gold-wash);
+    }
+    .route-divider .dash {
+      flex: 1;
+      height: 0;
+      border-top: 2px dashed var(--border-strong);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14.5px;
+      transition: var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+      min-height: 48px;
+      touch-action: manipulation;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+      color: #0d0c09;
+      box-shadow: 0 4px 18px rgba(215, 168, 78, 0.3);
+    }
+    .btn-gold:hover, .btn-gold:active {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(215, 168, 78, 0.45);
+      background: linear-gradient(135deg, #ffe08a 0%, var(--gold-light) 100%);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+    }
+    .btn-outline:hover, .btn-outline:active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-wash);
+      transform: translateY(-2px);
+    }
+    .btn-whatsapp {
+      background: var(--green);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
+    }
+    .btn-whatsapp:hover, .btn-whatsapp:active {
+      background: #20ba59;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(37, 211, 102, 0.4);
+    }
+
+    /* Top Announcement Bar */
+    .top-bar {
+      background: rgba(215, 168, 78, 0.08);
+      border-bottom: 1px solid rgba(215, 168, 78, 0.16);
+      font-size: 12.5px;
+      padding: 7px 0;
+      color: var(--gold-light);
+    }
+    .top-bar .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .top-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 500;
+    }
+    .top-info span { display: inline-flex; align-items: center; gap: 5px; }
+    .top-info i { color: var(--gold); font-size: 11px; }
+
+    /* Header Nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .nav .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-logo-img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+    .brand-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: 0.16em;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .brand-title span.sub {
+      font-size: 10px;
+      letter-spacing: 0.26em;
+      color: var(--gold);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+    .nav-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-qr-nav {
+      background: var(--surface-3);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 38px;
+      transition: var(--transition);
+    }
+    .btn-qr-nav:hover, .btn-qr-nav:active {
+      background: var(--gold);
+      color: #000;
+    }
+
+    /* Mobile Hamburger Menu Button */
+    .mobile-menu-toggle {
+      display: none;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Mobile Slide-Out Drawer */
+    .mobile-drawer {
+      position: fixed;
+      top: 0; right: -100%;
+      width: min(300px, 85vw);
+      height: 100vh;
+      height: 100dvh;
+      background: var(--surface);
+      border-left: 1px solid var(--border-strong);
+      z-index: 999;
+      padding: 24px 20px;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      padding-right: max(20px, env(safe-area-inset-right));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+      /* Short screens (landscape phones) must still reach every link */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.7);
+      /* Hidden (not just off-screen) so its links stay out of the tab order
+         and the screen-reader tree; the delay lets it finish sliding out. */
+      visibility: hidden;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.3s;
+    }
+    .mobile-drawer.open {
+      right: 0;
+      visibility: visible;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0s;
+    }
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .drawer-close {
+      font-size: 22px;
+      color: var(--text-muted);
+      background: none;
+      width: 44px;
+      height: 44px;
+      margin-right: -10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+    .drawer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .drawer-links a {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      min-height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+    }
+    .drawer-links a i { color: var(--gold); width: 20px; flex: none; }
+    .drawer-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      height: 100dvh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 998;
+      display: none;
+    }
+    .drawer-backdrop.open { display: block; }
+
+    /* ================= 2. HERO SECTION & SCROLL-ZOOM LOGO ================= */
+    .hero {
+      padding: 36px 0 30px;
+      text-align: center;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Hero Logo Container with Dynamic Scroll Scaling */
+    .hero-logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 18px;
+      perspective: 1000px;
+    }
+    .hero-logo-center {
+      width: clamp(100px, 25vw, 135px);
+      height: clamp(100px, 25vw, 135px);
+      background: var(--surface-2);
+      border: 1.5px solid rgba(215, 168, 78, 0.35);
+      border-radius: 24px;
+      padding: 14px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.6), 0 0 25px var(--gold-glow);
+      transition: transform 0.1s linear, opacity 0.2s ease;
+      will-change: transform;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 6vw, 46px);
+      font-weight: 800;
+      max-width: 860px;
+      margin: 0 auto 14px;
+      letter-spacing: -0.01em;
+      padding: 0 10px;
+    }
+    .hero h1 span.highlight {
+      background: linear-gradient(135deg, #fff 20%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero .lede {
+      max-width: 640px;
+      margin: 0 auto 24px;
+      color: var(--text-muted);
+      font-size: clamp(14.5px, 3.5vw, 16px);
+      line-height: 1.6;
+      padding: 0 10px;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    /* Trust Stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .stat-box { text-align: center; }
+    .stat-num {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: clamp(20px, 4vw, 24px);
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .stat-sep {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+    }
+
+    /* Booking Section */
+    .booking { padding: 24px 0 50px; }
+    .steps-pill {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      font-weight: 700;
+    }
+    .step-item span.num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--surface-3);
+      color: var(--gold);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 1px solid rgba(215, 168, 78, 0.3);
+    }
+    .booking-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: clamp(20px, 4vw, 34px);
+      max-width: 960px;
+      margin: 0 auto;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .booking-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* Google Map Location Picker Row */
+    .route-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr 0.9fr 0.9fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-group label span.label-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .form-group label i { color: var(--gold); font-size: 11px; }
+    .map-helper-btn {
+      font-size: 10.5px;
+      color: var(--gold-light);
+      background: var(--surface-3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid rgba(215, 168, 78, 0.25);
+      transition: var(--transition);
+      touch-action: manipulation;
+    }
+    .map-helper-btn:hover {
+      background: var(--gold);
+      color: #000;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--field);
+      border: 1px solid var(--field-border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+      min-height: 46px;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-wash);
+      background: #151410;
+    }
+    .form-input::placeholder { color: var(--text-faint); }
+    .form-select option { background: #141310; color: #fff; }
+
+    /* Vehicle Fleet Cards */
+    .vehicle-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .vehicle-section-head h3 { font-size: 17px; font-weight: 700; }
+    .vehicle-section-head span { font-size: 12px; color: var(--text-muted); }
+
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .vehicle-card {
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .vehicle-card:hover, .vehicle-card:active {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      background: var(--surface-3);
+    }
+    .vehicle-card.selected {
+      border-color: var(--gold);
+      background: rgba(215, 168, 78, 0.08);
+      box-shadow: 0 6px 18px rgba(215, 168, 78, 0.15);
+    }
+    .vehicle-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      background: var(--gold-wash);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--gold);
+    }
+    .vehicle-icon {
+      font-size: 24px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      transition: var(--transition);
+    }
+    .vehicle-card.selected .vehicle-icon {
+      color: var(--gold);
+      transform: scale(1.06);
+    }
+    .vehicle-badge-type {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+    .vehicle-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--text);
+    }
+    .vehicle-specs {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .vehicle-quote-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-light);
+      background: var(--surface-3);
+      padding: 3px 7px;
+      border-radius: 5px;
+      border: 1px solid rgba(215, 168, 78, 0.2);
+    }
+
+    .booking-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .price-estimate-box {
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+    .price-estimate-box strong {
+      color: var(--text);
+      font-size: 14.5px;
+    }
+    .price-note-sub {
+      font-size: 11.5px;
+      color: var(--gold);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .booking-btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Popular Tour Routes */
+    .packages { padding: 40px 0; }
+    .pkg-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .pkg-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    .pkg-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--gold);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+    }
+    .pkg-header {
+      padding: 18px 20px 14px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+    .pkg-tag {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .pkg-title { font-size: 18px; font-weight: 700; }
+    .pkg-body {
+      padding: 18px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .pkg-list {
+      list-style: none;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .pkg-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .pkg-list li i { color: var(--gold); font-size: 11px; }
+    .pkg-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pkg-price { font-size: 13px; color: var(--gold); font-weight: 600; }
+
+    /* Driver Profile & Multilingual Section */
+    .about-driver { padding: 50px 0; }
+    .driver-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: clamp(24px, 4vw, 36px);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+    .driver-badge-card {
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 18px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .driver-avatar {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: var(--gold-wash);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--gold);
+    }
+    .driver-name { font-size: 19px; font-weight: 700; margin-bottom: 3px; }
+    .driver-role {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .driver-location-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .driver-details h3 { font-size: clamp(22px, 4vw, 26px); font-weight: 700; margin-bottom: 12px; }
+    .driver-details p {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      margin-bottom: 16px;
+      line-height: 1.65;
+    }
+    .languages-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      background: var(--surface);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .languages-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .lang-pill {
+      background: var(--surface-3);
+      border: 1px solid var(--border-strong);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .driver-perks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .driver-perk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .driver-perk i { color: var(--gold); font-size: 13px; width: 16px; }
+
+    /* QR Code & Passenger Feedback Section */
+    .feedback-section {
+      padding: 50px 0 80px;
+      position: relative;
+    }
+    .feedback-container {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* In-Vehicle QR Code Standee Card */
+    .qr-standee-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: 28px 22px;
+      text-align: center;
+      position: sticky;
+      top: 86px;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+    }
+    .qr-standee-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: var(--gold);
+    }
+    .qr-box-frame {
+      background: #ffffff;
+      padding: 14px;
+      border-radius: 14px;
+      display: inline-block;
+      margin: 16px auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #qrcode img { margin: 0 auto; max-width: 100%; height: auto; }
+    .qr-instruction {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.45;
+    }
+    .qr-instruction strong { color: var(--text); }
+    .qr-btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-qr-action {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 38px;
+      transition: var(--transition);
+      touch-action: manipulation;
+    }
+    .btn-qr-action:hover, .btn-qr-action:active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--surface-3);
+    }
+
+    /* Customer Feedback Form Card */
+    .feedback-form-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-xl);
+      padding: clamp(20px, 4vw, 32px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+    }
+    .feedback-form-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .feedback-form-header h2 { font-size: 26px; font-weight: 700; }
+    .feedback-form-header .line {
+      width: 44px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 2px;
+      margin: 8px auto;
+    }
+    .feedback-form-header p { font-size: 13px; color: var(--text-muted); }
+
+    .f-field { margin-bottom: 16px; }
+    .f-field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .f-input-icon { position: relative; }
+    .f-input-icon input {
+      width: 100%;
+      background: var(--field);
+      border: 1px solid var(--field-border);
+      border-radius: 999px;
+      padding: 12px 40px 12px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+      min-height: 46px;
+    }
+    .f-input-icon textarea {
+      width: 100%;
+      background: var(--field);
+      border: 1px solid var(--field-border);
+      border-radius: var(--radius-md);
+      padding: 12px 40px 12px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      min-height: 100px;
+      transition: var(--transition);
+    }
+    .f-input-icon input:focus, .f-input-icon textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px var(--gold-wash);
+      background: #161510;
+    }
+    .f-input-icon i {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      pointer-events: none;
+      font-size: 13px;
+    }
+    .f-input-icon.textarea-icon i {
+      top: auto;
+      bottom: 14px;
+      transform: none;
+    }
+    .f-error {
+      color: #ff7b72;
+      font-size: 11.5px;
+      margin-top: 4px;
+      display: none;
+    }
+    .f-error.show { display: block; }
+
+    /* Interactive Star Rating */
+    .rating-group {
+      text-align: center;
+      margin: 18px 0 22px;
+      background: var(--surface-2);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .rating-group label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .star-btn {
+      background: transparent;
+      padding: 6px;
+      font-size: clamp(24px, 5vw, 28px);
+      color: var(--text-faint);
+      transition: transform 0.15s ease, color 0.15s ease;
+      cursor: pointer;
+      min-width: 40px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .star-btn:hover, .star-btn:active { transform: scale(1.15); }
+    .star-btn.active, .star-btn.hovered { color: var(--gold); }
+    .rating-caption {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-top: 5px;
+      height: 16px;
+    }
+
+    /* Feedback Submission Success Message */
+    .feedback-success {
+      display: none;
+      text-align: center;
+      padding: 26px 8px;
+    }
+    .feedback-success.show { display: block; }
+    .success-icon {
+      width: 58px;
+      height: 58px;
+      background: var(--gold-wash);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--gold);
+      margin: 0 auto 14px;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 0 0 rgba(215, 168, 78, 0.4); }
+      to { box-shadow: 0 0 0 10px rgba(215, 168, 78, 0); }
+    }
+    .feedback-success h3 { font-size: 20px; margin-bottom: 6px; }
+    .feedback-success p {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    /* Live Feedback Scroller & Showcase */
+    .reviews-showcase {
+      margin-top: 50px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+    }
+    .reviews-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .reviews-stat-summary {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .big-score {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .score-details { display: flex; flex-direction: column; }
+    .score-stars {
+      color: var(--gold);
+      font-size: 13px;
+      display: flex;
+      gap: 2px;
+    }
+    .score-count {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Review Cards Grid */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .review-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      position: relative;
+    }
+    .review-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      background: var(--surface-2);
+    }
+    .review-card.newly-added {
+      border-color: var(--gold);
+      background: rgba(215, 168, 78, 0.06);
+      animation: highlightCard 2s ease-out;
+    }
+    @keyframes highlightCard {
+      from { transform: scale(1.02); box-shadow: 0 0 20px var(--gold-glow); }
+      to { transform: scale(1); box-shadow: none; }
+    }
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .reviewer-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--surface-3);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .reviewer-meta h4 {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .reviewer-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .review-stars {
+      color: var(--gold);
+      font-size: 11.5px;
+      display: flex;
+      gap: 2px;
+    }
+    .review-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+    .review-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-faint);
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .verified-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #5cdb95;
+      font-weight: 600;
+    }
+
+    /* Fullscreen QR Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      /* Landscape phones: let a tall card scroll instead of trapping the user */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius-xl);
+      padding: 30px 24px;
+      max-width: 420px;
+      width: 100%;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      position: relative;
+      animation: modalPop 0.25s ease-out;
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-close {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 20px;
+      color: var(--text-muted);
+      background: none;
+      width: 44px; height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { color: var(--gold); }
+    .modal-qr-frame {
+      background: #fff;
+      padding: 14px;
+      border-radius: 14px;
+      display: inline-block;
+      margin: 16px 0;
+      max-width: 100%;
+    }
+
+    /* Floating WhatsApp & Call Buttons */
+    .floating-actions {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      right: calc(20px + env(safe-area-inset-right));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 90;
+    }
+    .float-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      transition: var(--transition);
+      text-decoration: none;
+      touch-action: manipulation;
+    }
+    .float-btn.whatsapp { background: var(--green); }
+    .float-btn.call { background: var(--gold-deep); }
+    .float-btn:hover, .float-btn:active { transform: scale(1.08); }
+    .float-tooltip {
+      position: absolute;
+      right: 60px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .float-btn:hover .float-tooltip { opacity: 1; right: 64px; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      background: #0d0c0a;
+      padding: 44px 0 24px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 36px;
+      margin-bottom: 36px;
+    }
+    .footer-about p {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin: 12px 0 18px;
+      line-height: 1.6;
+    }
+    .footer-col h4 {
+      font-size: 15.5px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--gold);
+    }
+    .footer-links {
+      list-style: none;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .footer-contact-item i { color: var(--gold); font-size: 13px; margin-top: 3px; }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    /* ================= ADVANCED RESPONSIVE DESIGN (MOBILE & TABLETS) ================= */
+    @media (max-width: 992px) {
+      .route-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .fleet-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .pkg-grid { grid-template-columns: 1fr; gap: 16px; }
+      .driver-card { grid-template-columns: 1fr; text-align: center; gap: 24px; }
+      .driver-avatar { margin: 0 auto 14px; }
+      .languages-badge-row { justify-content: center; }
+      .driver-perks { text-align: left; }
+      
+      /* Mobile Feedback Ordering: Form First, Standee Second */
+      .feedback-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .feedback-form-card {
+        order: 1;
+        width: 100%;
+      }
+      .qr-standee-card {
+        order: 2;
+        width: 100%;
+        /* relative, not static — the ::before gold accent is absolutely
+           positioned and would otherwise escape to an ancestor */
+        position: relative;
+        top: auto;
+      }
+      .footer-grid { grid-template-columns: 1fr; gap: 26px; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .mobile-menu-toggle { display: flex; }
+      .nav .wrap { height: 62px; gap: 10px; }
+      .top-bar { font-size: 11.5px; padding: 6px 0; }
+      .top-bar .wrap { justify-content: center; text-align: center; gap: 4px; }
+
+      /* --- Header must never exceed the viewport width --- */
+      .nav-brand { min-width: 0; flex: 1 1 auto; }
+      .brand-title { min-width: 0; font-size: 15px; letter-spacing: 0.12em; }
+      .brand-title span.sub { font-size: 9px; letter-spacing: 0.2em; }
+      .brand-logo-img { height: 36px; flex: none; }
+      .nav-cta-group { flex: none; gap: 8px; }
+      /* "Show QR" also lives in the drawer and its own section — drop the duplicate */
+      .btn-qr-nav { display: none; }
+      /* Collapse the WhatsApp pill to a round icon button.
+         font-size:0 zeroes the "WhatsApp" text node without removing it
+         from the accessibility tree. */
+      .nav-cta-group .btn-whatsapp {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
+        padding: 0 !important;
+        border-radius: 50%;
+        font-size: 0 !important;
+        gap: 0;
+      }
+      .nav-cta-group .btn-whatsapp i { font-size: 18px; }
+      .mobile-menu-toggle { width: 44px; height: 44px; flex: none; }
+
+      .hero { padding: 24px 0 20px; }
+      .hero-logo-center { width: 105px; height: 105px; border-radius: 20px; padding: 12px; }
+      .hero-stats { gap: 12px; justify-content: space-around; padding: 12px 14px; }
+      .stat-sep { display: none; }
+      .stat-box { flex: 1 1 42%; padding: 6px 0; }
+      
+      /* Prevent iOS Safari from forcing auto-zoom on input focus */
+      .form-input, .form-select, .f-input-icon input, .f-input-icon textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 0 16px; }
+      .section-title { font-size: 26px; }
+      .section-subtitle { font-size: 13.5px; margin-bottom: 22px; }
+      
+      .route-grid { grid-template-columns: 1fr; gap: 10px; }
+      
+      /* App-like Fleet Row Cards for Mobile */
+      .fleet-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      /* App-style row: emblem column + stacked text column.
+         Children are placed explicitly — auto-placement scattered them
+         across rows and crushed the spec text into the icon column. */
+      .vehicle-card {
+        padding: 14px 40px 14px 14px;
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        grid-template-rows: auto auto auto auto;
+        align-items: center;
+        column-gap: 12px;
+        row-gap: 2px;
+      }
+      .vehicle-card.selected::after {
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+      }
+      .vehicle-icon {
+        grid-column: 1;
+        grid-row: 1 / span 4;
+        justify-self: center;
+        margin-bottom: 0;
+        font-size: 26px;
+      }
+      .vehicle-badge-type {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 9.5px;
+        margin-bottom: 0;
+      }
+      .vehicle-title {
+        grid-column: 2;
+        grid-row: 2;
+        font-size: 15px;
+        margin-bottom: 0;
+      }
+      .vehicle-specs {
+        grid-column: 2;
+        grid-row: 3;
+        font-size: 11.5px;
+        margin-bottom: 0;
+      }
+      .vehicle-quote-badge {
+        grid-column: 2;
+        grid-row: 4;
+        justify-self: start;
+        font-size: 10px;
+        padding: 3px 6px;
+        margin-top: 5px;
+      }
+
+      .booking-card { padding: 18px 14px; border-radius: var(--radius-lg); }
+      .steps-pill { display: none; } /* Simplified for clean mobile view */
+      
+      .hero h1 { font-size: 27px; }
+      .hero .lede { font-size: 14px; }
+      .hero-actions { flex-direction: column; width: 100%; gap: 10px; }
+      .hero-actions .btn { width: 100%; }
+      
+      .booking-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+      .booking-btn-group { flex-direction: column; width: 100%; gap: 8px; }
+      .booking-btn-group .btn, .booking-btn-group button, .booking-btn-group a { width: 100%; }
+      
+      .driver-card { padding: 20px 14px; border-radius: var(--radius-lg); }
+      .driver-perks { grid-template-columns: 1fr; gap: 8px; }
+      
+      .feedback-form-card { padding: 20px 14px; border-radius: var(--radius-lg); }
+      .qr-standee-card { padding: 20px 14px; border-radius: var(--radius-lg); }
+      .reviews-grid { grid-template-columns: 1fr; gap: 14px; }
+      .review-card { padding: 16px 14px; }
+      
+      .floating-actions {
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        right: calc(14px + env(safe-area-inset-right));
+        gap: 8px;
+      }
+      .float-btn { width: 48px; height: 48px; font-size: 19px; }
+      .float-tooltip { display: none; }
+
+      .modal-card { padding: 24px 16px; border-radius: var(--radius-lg); }
+
+      .stars-row { gap: 6px; }
+
+      /* Footer reads better centered on a narrow column */
+      .footer-bottom { justify-content: center; text-align: center; }
+      footer { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+
+      /* Keep the last CTA clear of the floating action buttons */
+      .feedback-section { padding-bottom: 96px; }
+    }
+
+    /* --- Comfortable touch targets on any finger-driven device ---
+       Keyed to the input method rather than a width, so tablets and
+       large phones get them too. --- */
+    @media (hover: none) and (pointer: coarse) {
+      .map-helper-btn {
+        font-size: 11px;
+        padding: 8px 10px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .form-group label { gap: 8px; min-height: 36px; }
+      .btn-qr-action { min-height: 44px; padding: 10px 16px; font-size: 12.5px; }
+      .qr-btn-row { gap: 10px; }
+      .qr-btn-row .btn-qr-action { flex: 1 1 auto; justify-content: center; }
+      .footer-links li { margin-bottom: 2px; }
+      .footer-links a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 0;
+        min-height: 44px;
+      }
+      .star-btn { min-width: 46px; min-height: 46px; padding: 8px; }
+      .nav-brand { padding: 6px 0; }
+      .drawer-close, .modal-close { width: 44px; height: 44px; }
+      .pkg-footer .btn { min-height: 44px; }
+
+      /* Hover transforms just stick on touch — drop them */
+      .pkg-card:hover, .review-card:hover, .vehicle-card:hover { transform: none; }
+      .btn-gold:hover, .btn-outline:hover, .btn-whatsapp:hover { transform: none; }
+    }
+
+    /* --- Landscape phones: short viewports need tighter vertical rhythm --- */
+    @media (max-height: 480px) and (orientation: landscape) {
+      .hero { padding: 16px 0 14px; }
+      .hero-logo-center { width: 74px; height: 74px; padding: 8px; border-radius: 16px; }
+      .hero-badge { margin-bottom: 12px; }
+      .preloader-logo-wrap { width: 96px; height: 96px; margin-bottom: 12px; }
+      .preloader-logo { width: 62px; }
+      .modal-card { padding: 20px 18px; }
+      .modal-qr-frame { margin: 10px 0; }
+    }
+
+    /* --- Respect the OS "reduce motion" setting --- */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      #brandRainCanvas { display: none; }
+      .btn:hover, .btn:active,
+      .vehicle-card:hover, .vehicle-card:active,
+      .pkg-card:hover, .review-card:hover { transform: none !important; }
+    }
+
+    @media (max-width: 380px) {
+      .wrap { padding: 0 12px; }
+      .btn { padding: 11px 16px; font-size: 13.5px; }
+      .hero h1 { font-size: 24px; }
+      .big-score { font-size: 32px; }
+
+      /* Header: brand shrinks first so the CTAs always fit */
+      .brand-title { font-size: 13.5px; letter-spacing: 0.08em; }
+      .brand-title span.sub { font-size: 8.5px; letter-spacing: 0.16em; }
+      .brand-logo-img { height: 32px; }
+      .nav .wrap { gap: 8px; }
+      .nav-cta-group { gap: 6px; }
+
+      /* Announcement bar: one fact per line rather than a cramped jumble */
+      .top-bar { font-size: 10.5px; }
+      .top-info { gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+      .hero-badge { font-size: 10.5px; padding: 6px 12px; }
+      .stat-label { font-size: 10.5px; }
+      .section-title { font-size: 23px; }
+      .feedback-form-header h2 { font-size: 22px; }
+      .driver-name { font-size: 17px; }
+      .stars-row { gap: 2px; }
+      .star-btn { min-width: 42px; min-height: 42px; font-size: 23px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= AMBIENT DG TRAVELS LOGO RAIN CANVAS ================= -->
+  <canvas id="brandRainCanvas"></canvas>
+
+  <div class="app-root">
+    <!-- ================= LUXURY SPLASH / PRELOADER SCREEN ================= -->
+    <div id="preloader">
+      <div class="preloader-logo-wrap">
+        <div class="preloader-glow-ring"></div>
+        <div class="preloader-glow-ring-2"></div>
+        <img src="LOGO/DG - 1.png" alt="DG Travels Logo" class="preloader-logo">
+      </div>
+      <div class="preloader-text">
+        DG TRAVELS
+        <span class="preloader-sub">SRI LANKA</span>
+      </div>
+      <div class="preloader-bar-bg">
+        <div class="preloader-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- ================= TOP ANNOUNCEMENT BAR ================= -->
+    <div class="top-bar">
+      <div class="wrap">
+        <div class="top-info">
+          <span><i class="fa-solid fa-location-dot"></i> Base: Ahangama, Galle · Island-Wide</span>
+          <span><i class="fa-solid fa-phone"></i> +94 77 826 1901</span>
+        </div>
+        <div class="top-info">
+          <span><i class="fa-solid fa-clock"></i> 24/7 Island Dispatch & Airport Transfers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= HEADER NAVIGATION ================= -->
+    <header class="nav">
+      <div class="wrap">
+        <a href="#" class="nav-brand">
+          <img src="LOGO/DG - 1.png" alt="DG Travels Logo" class="brand-logo-img">
+          <div class="brand-title">
+            DG TRAVELS
+            <span class="sub">SRI LANKA</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="nav-links">
+          <a href="#booking"><i class="fa-solid fa-car"></i> Fleet & Booking</a>
+          <a href="#tours"><i class="fa-solid fa-map-location-dot"></i> Popular Tours</a>
+          <a href="#about"><i class="fa-solid fa-user-shield"></i> About Driver</a>
+          <a href="#feedback"><i class="fa-solid fa-star"></i> Reviews & QR</a>
+        </nav>
+
+        <div class="nav-cta-group">
+          <button type="button" class="btn-qr-nav" id="openQrModalBtn">
+            <i class="fa-solid fa-qrcode"></i> Show QR
+          </button>
+          <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20would%20like%20to%20inquire%20about%20a%20private%20ride%20or%20tour." target="_blank" class="btn btn-whatsapp" style="padding: 8px 16px; font-size: 13px; min-height: 38px;">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </a>
+          <!-- Mobile Drawer Trigger -->
+          <button type="button" class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Slide-In Navigation Drawer -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <div class="mobile-drawer" id="mobileDrawer">
+      <div>
+        <div class="drawer-header">
+          <div class="nav-brand">
+            <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:36px;">
+            <div class="brand-title" style="font-size:15px;">
+              DG TRAVELS
+              <span class="sub">SRI LANKA</span>
+            </div>
+          </div>
+          <button type="button" class="drawer-close" id="drawerCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="drawer-links">
+          <a href="#booking" class="drawer-link"><i class="fa-solid fa-car"></i> Fleet & Booking</a>
+          <a href="#tours" class="drawer-link"><i class="fa-solid fa-map-location-dot"></i> Popular Tours</a>
+          <a href="#about" class="drawer-link"><i class="fa-solid fa-user-shield"></i> About Driver</a>
+          <a href="#feedback" class="drawer-link"><i class="fa-solid fa-star"></i> Reviews & QR</a>
+          <a href="#feedback" class="drawer-link" id="drawerShowQrBtn"><i class="fa-solid fa-qrcode"></i> In-Vehicle QR Standee</a>
+        </div>
+      </div>
+
+      <div>
+        <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp" style="width:100%; margin-bottom:10px;">
+          <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+        </a>
+        <a href="tel:+94778261901" class="btn btn-outline" style="width:100%;">
+          <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
+        </a>
+      </div>
+    </div>
+
+    <!-- ================= HERO SECTION (WITH DYNAMIC SCROLL-ZOOM LOGO) ================= -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-badge">
+          <i class="fa-solid fa-gem"></i> Premium Private Transport · English & Japanese Speaking Host
+        </div>
+
+        <!-- Big Scroll-Interactive Hero Logo -->
+        <div class="hero-logo-container">
+          <img src="LOGO/DG - 1.png" alt="DG Travels Emblem" class="hero-logo-center" id="heroLogo">
+        </div>
+
+        <h1>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
+        <p class="lede">
+          Personalized, safe, and luxurious private transport for foreign tourists, surf travelers, and local guests. Operating from Ahangama, Galle across all scenic destinations in Sri Lanka.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#booking" class="btn btn-gold">
+            <i class="fa-solid fa-calendar-check"></i> Plan Your Ride & Get Quote
+          </a>
+          <a href="#feedback" class="btn btn-outline">
+            <i class="fa-solid fa-star"></i> Passenger Feedback & QR
+          </a>
+        </div>
+
+        <!-- Trust Stats Bar -->
+        <div class="hero-stats">
+          <div class="stat-box">
+            <div class="stat-num">4+</div>
+            <div class="stat-label">Years Experience (Est. 2022)</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-box">
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">On-Call Island Dispatch</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-box">
+            <div class="stat-num">4 Languages</div>
+            <div class="stat-label">English · 日本語 · සිංහල · தமிழ்</div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-box">
+            <div class="stat-num">4.9 ★</div>
+            <div class="stat-label">Customer Satisfaction</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
+
+    <!-- ================= BOOKING & FLEET CALCULATOR (CUSTOM QUOTE ON INQUIRY) ================= -->
+    <section class="booking" id="booking">
+      <div class="wrap">
+        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Flexible Route & Fleet</div>
+        <h2 class="section-title">Where Are You Headed Today?</h2>
+        <p class="section-subtitle">Enter any hotel, villa, airport, or pinpoint on Google Maps. Select your vehicle to receive an instant direct quote tailored to your trip.</p>
+
+        <div class="steps-pill">
+          <div class="step-item"><span class="num">01</span> Enter Pickup & Destination</div>
+          <div class="step-item"><span class="num">02</span> Choose Vehicle</div>
+          <div class="step-item"><span class="num">03</span> Instant Quote & Confirm</div>
+        </div>
+
+        <div class="booking-card">
+          <!-- Route Grid Inputs with Google Map Pinpoint Links -->
+          <div class="route-grid">
+            <div class="form-group">
+              <label for="pickup">
+                <span class="label-text"><i class="fa-solid fa-location-crosshairs"></i> Pickup Location</span>
+                <button type="button" class="map-helper-btn" id="openPickupMapBtn" title="Search hotel or location on Google Maps">
+                  <i class="fa-solid fa-map-pin"></i> Google Map
+                </button>
+              </label>
+              <input type="text" id="pickup" class="form-input" placeholder="e.g. CMB Airport / Villa / Hotel in Ahangama" value="Bandaranaike Airport (CMB)">
+            </div>
+
+            <div class="form-group">
+              <label for="dropoff">
+                <span class="label-text"><i class="fa-solid fa-location-dot"></i> Destination</span>
+                <button type="button" class="map-helper-btn" id="openDropoffMapBtn" title="Search destination on Google Maps">
+                  <i class="fa-solid fa-map-pin"></i> Google Map
+                </button>
+              </label>
+              <input type="text" id="dropoff" class="form-input" placeholder="e.g. Hotel in Galle, Ella, Mirissa, Weligama" value="Ahangama, Galle">
+            </div>
+
+            <div class="form-group">
+              <label for="rideDate">
+                <span class="label-text"><i class="fa-solid fa-calendar-days"></i> Travel Date</span>
+              </label>
+              <input type="date" id="rideDate" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label for="passengers">
+                <span class="label-text"><i class="fa-solid fa-users"></i> Travelers</span>
+              </label>
+              <select id="passengers" class="form-select">
+                <option value="1-2">1–2 Passengers</option>
+                <option value="3-4">3–4 Passengers</option>
+                <option value="5-8">5–8 Passengers</option>
+                <option value="Family / Group">Family / Surf Group</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fleet Grid: Toyota Aqua, Honda Vezel, Toyota Prius, Toyota KDH -->
+          <div class="vehicle-section-head">
+            <h3>Choose Your Vehicle</h3>
+            <span>Tap to select category</span>
+          </div>
+
+          <div class="fleet-grid" id="fleetGrid">
+            <!-- 1. Toyota Aqua -->
+            <div class="vehicle-card selected" data-vehicle="Toyota Aqua" data-type="Hatchback">
+              <div class="vehicle-icon"><i class="fa-solid fa-car-side"></i></div>
+              <span class="vehicle-badge-type">Hatchback</span>
+              <div class="vehicle-title">Toyota Aqua</div>
+              <div class="vehicle-specs">1–3 Pax · 2 Bags<br>Hybrid · Full A/C · City & Coast</div>
+              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Best Value Rate</div>
+            </div>
+
+            <!-- 2. Honda Vezel -->
+            <div class="vehicle-card" data-vehicle="Honda Vezel" data-type="Compact SUV">
+              <div class="vehicle-icon"><i class="fa-solid fa-car"></i></div>
+              <span class="vehicle-badge-type">Compact SUV</span>
+              <div class="vehicle-title">Honda Vezel</div>
+              <div class="vehicle-specs">1–4 Pax · 3 Bags<br>High Clearance · Luxury Interior · A/C</div>
+              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Elevated Comfort</div>
+            </div>
+
+            <!-- 3. Toyota Prius -->
+            <div class="vehicle-card" data-vehicle="Toyota Prius" data-type="Premium Sedan">
+              <div class="vehicle-icon"><i class="fa-solid fa-car-rear"></i></div>
+              <span class="vehicle-badge-type">Premium Hybrid</span>
+              <div class="vehicle-title">Toyota Prius</div>
+              <div class="vehicle-specs">1–3 Pax · 3 Bags<br>Ultra Smooth Ride · Silent · A/C</div>
+              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Premium Smooth</div>
+            </div>
+
+            <!-- 4. Toyota KDH -->
+            <div class="vehicle-card" data-vehicle="Toyota KDH Van" data-type="Luxury Van">
+              <div class="vehicle-icon"><i class="fa-solid fa-van-shuttle"></i></div>
+              <span class="vehicle-badge-type">Luxury Van</span>
+              <div class="vehicle-title">Toyota KDH</div>
+              <div class="vehicle-specs">1–8/9 Pax · 6–8 Bags + Surfboards<br>High Roof · Dual A/C · Reclining</div>
+              <div class="vehicle-quote-badge"><i class="fa-solid fa-tag"></i> Spacious Group & Surf</div>
+            </div>
+          </div>
+
+          <!-- Booking Confirmation & WhatsApp Action -->
+          <div class="booking-actions">
+            <div class="price-estimate-box">
+              Selected: <strong id="selectedVehicleText">Toyota Aqua</strong> &bull;
+              Route: <strong id="selectedRouteText">Airport CMB &rarr; Ahangama, Galle</strong>
+              <div class="price-note-sub">
+                <i class="fa-solid fa-circle-info"></i> Rates are tailored dynamically based on your exact route & schedule.
+              </div>
+            </div>
+            <div class="booking-btn-group">
+              <button type="button" class="btn btn-whatsapp" id="bookWhatsAppBtn">
+                <i class="fa-brands fa-whatsapp"></i> Get Quote & Book via WhatsApp
+              </button>
+              <a href="tel:+94778261901" class="btn btn-outline">
+                <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= POPULAR TOURS SECTION ================= -->
+    <section class="packages" id="tours">
+      <div class="wrap">
+        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Island-Wide Excursions</div>
+        <h2 class="section-title">Popular Sri Lanka Tour Routes</h2>
+        <p class="section-subtitle">Tailored scenic road trips and transfers with flexible stops for photography, tea factory visits, wildlife safaris, and beach spots.</p>
+
+        <div class="pkg-grid">
+          <!-- Tour 1 -->
+          <div class="pkg-card">
+            <div class="pkg-header">
+              <span class="pkg-tag">Southern Coast & Surf</span>
+              <div class="pkg-title">Galle, Ahangama & Mirissa</div>
+            </div>
+            <div class="pkg-body">
+              <ul class="pkg-list">
+                <li><i class="fa-solid fa-circle-check"></i> Historic Galle Dutch Fort UNESCO World Heritage</li>
+                <li><i class="fa-solid fa-circle-check"></i> Ahangama & Midigama Surf Breaks & Stilt Fishermen</li>
+                <li><i class="fa-solid fa-circle-check"></i> Turtle Conservation Project & Madu River Boat Safari</li>
+                <li><i class="fa-solid fa-circle-check"></i> Mirissa Coconut Tree Hill & Whale Watching Excursions</li>
+              </ul>
+              <div class="pkg-footer">
+                <span class="pkg-price"><i class="fa-solid fa-route"></i> Flexible Day Trips</span>
+                <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Galle%20%26%20Southern%20Coast%20Tour." target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on WhatsApp</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tour 2 -->
+          <div class="pkg-card">
+            <div class="pkg-header">
+              <span class="pkg-tag">Hill Country & Waterfalls</span>
+              <div class="pkg-title">Ella, Nuwara Eliya & Kandy</div>
+            </div>
+            <div class="pkg-body">
+              <ul class="pkg-list">
+                <li><i class="fa-solid fa-circle-check"></i> Nine Arch Bridge & Little Adam's Peak, Ella</li>
+                <li><i class="fa-solid fa-circle-check"></i> Ceylon Tea Plantations & Waterfalls Scenic Drive</li>
+                <li><i class="fa-solid fa-circle-check"></i> Temple of the Sacred Tooth Relic, Kandy</li>
+                <li><i class="fa-solid fa-circle-check"></i> Mountain Train Coordination & Pickup</li>
+              </ul>
+              <div class="pkg-footer">
+                <span class="pkg-price"><i class="fa-solid fa-route"></i> Multi-Day Excursions</span>
+                <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Hill%20Country%20%26%20Ella%20Tour." target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on WhatsApp</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tour 3 -->
+          <div class="pkg-card">
+            <div class="pkg-header">
+              <span class="pkg-tag">Cultural Triangle & Wildlife</span>
+              <div class="pkg-title">Sigiriya Fortress & Safari</div>
+            </div>
+            <div class="pkg-body">
+              <ul class="pkg-list">
+                <li><i class="fa-solid fa-circle-check"></i> Sigiriya Ancient Lion Rock Fortress & Pidurangala</li>
+                <li><i class="fa-solid fa-circle-check"></i> Dambulla Golden Cave Temples</li>
+                <li><i class="fa-solid fa-circle-check"></i> Minneriya / Yala National Park Elephant Safari</li>
+                <li><i class="fa-solid fa-circle-check"></i> Authentic Sri Lankan Village Cuisine Experiences</li>
+              </ul>
+              <div class="pkg-footer">
+                <span class="pkg-price"><i class="fa-solid fa-route"></i> Custom Itinerary</span>
+                <a href="https://wa.me/94778261901?text=Hi%20Isum,%20I'm%20interested%20in%20the%20Sigiriya%20%26%20Safari%20Tour." target="_blank" class="btn btn-outline" style="padding: 7px 16px; font-size: 13px;">Inquire on WhatsApp</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
+
+    <!-- ================= ABOUT DRIVER & MULTILINGUAL SECTION ================= -->
+    <section class="about-driver" id="about">
+      <div class="wrap">
+        <div class="driver-card">
+          <div class="driver-badge-card">
+            <div class="driver-avatar">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="driver-name">Isum Sejan Gunasekara</div>
+            <div class="driver-role">Owner & Chauffeur Host</div>
+            <div class="driver-location-tag">
+              <i class="fa-solid fa-location-dot"></i> Ahangama, Galle
+            </div>
+          </div>
+
+          <div class="driver-details">
+            <div class="eyebrow" style="margin-bottom:8px;">Meet Your Chauffeur</div>
+            <h3>Personalized Island-Wide Travel with DG Travels</h3>
+            <p>
+              Hello and welcome! Founded in 2022, DG Travels is built on reliability, immaculate vehicles, and personalized attention. Based right in coastal Ahangama, Galle, I take pride in providing smooth airport pickups, flexible day trips, and comprehensive island tours across Sri Lanka. Whether you are arriving for world-class surfing, scenic hill country trekking, or cultural sightseeing, you can expect punctuality and a warm Sri Lankan welcome.
+            </p>
+
+            <!-- Languages Spoken -->
+            <div class="languages-badge-row">
+              <span class="languages-label"><i class="fa-solid fa-language"></i> Fluent Languages:</span>
+              <span class="lang-pill">🇬🇧 English</span>
+              <span class="lang-pill">🇯🇵 Japanese (日本語)</span>
+              <span class="lang-pill">🇱🇰 Sinhala (සිංහල)</span>
+              <span class="lang-pill">🇮🇳 Tamil (தமிழ்)</span>
+            </div>
+
+            <div class="driver-perks">
+              <div class="driver-perk"><i class="fa-solid fa-shield-halved"></i> 100% Safe & Defensive Driving</div>
+              <div class="driver-perk"><i class="fa-solid fa-plane-arrival"></i> On-Time Flight Tracking & Meet</div>
+              <div class="driver-perk"><i class="fa-solid fa-snowflake"></i> Fully Air-Conditioned Clean Fleet</div>
+              <div class="driver-perk"><i class="fa-solid fa-clock"></i> 24/7 On-Call Support & Assistance</div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a href="tel:+94778261901" class="btn btn-gold">
+                <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
+              </a>
+              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp">
+                <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
+
+    <!-- ================= QR CODE & DYNAMIC FEEDBACK SECTION ================= -->
+    <section class="feedback-section" id="feedback">
+      <div class="wrap">
+        <div class="eyebrow" style="display:table; margin:0 auto 10px;">Passenger Reviews & QR Code</div>
+        <h2 class="section-title">We Value Your Feedback</h2>
+        <p class="section-subtitle">Finished your ride or tour with DG Travels? Scan the QR code or fill out the form below to share your experience with us.</p>
+
+        <div class="feedback-container">
+          <!-- In-Vehicle QR Code Standee Card -->
+          <div class="qr-standee-card">
+            <div class="eyebrow" style="margin-bottom:6px;">In-Vehicle QR Code</div>
+            <h3 style="font-size:22px; font-weight:700;">Scan to Leave a Review</h3>
+            
+            <div class="qr-box-frame">
+              <div id="qrcode"></div>
+            </div>
+
+            <p class="qr-instruction">
+              <strong>For Passengers:</strong> Point your phone camera at this QR code to quickly open this feedback form on your device.
+            </p>
+
+            <div class="qr-btn-row">
+              <button type="button" class="btn-qr-action" id="enlargeQrBtn">
+                <i class="fa-solid fa-expand"></i> Full Screen QR
+              </button>
+              <button type="button" class="btn-qr-action" id="copyLinkBtn">
+                <i class="fa-solid fa-link"></i> Copy Review Link
+              </button>
+            </div>
+          </div>
+
+          <!-- Customer Feedback Submission Form -->
+          <div class="feedback-form-card">
+            <div class="feedback-form-header">
+              <h2>Share Your Experience</h2>
+              <div class="line"></div>
+              <p>Your review helps us maintain the highest standard of service for every traveler.</p>
+            </div>
+
+            <!-- Form Body -->
+            <form id="feedbackForm">
+              <!-- 1. Name Field -->
+              <div class="f-field">
+                <label for="fbName">Your Name *</label>
+                <div class="f-input-icon">
+                  <input type="text" id="fbName" placeholder="e.g. Sarah Jenkins" required>
+                  <i class="fa-regular fa-user"></i>
+                </div>
+                <p class="f-error" id="nameError">Please enter your name.</p>
+              </div>
+
+              <!-- 2. Email Field -->
+              <div class="f-field">
+                <label for="fbEmail">Your Email *</label>
+                <div class="f-input-icon">
+                  <input type="email" id="fbEmail" placeholder="example@email.com" required>
+                  <i class="fa-regular fa-envelope"></i>
+                </div>
+                <p class="f-error" id="emailError">Please enter a valid email address.</p>
+              </div>
+
+              <!-- 3. Route / Country Field (Optional) -->
+              <div class="f-field">
+                <label for="fbRoute">Trip Route / Country (optional)</label>
+                <div class="f-input-icon">
+                  <input type="text" id="fbRoute" placeholder="e.g. Airport CMB to Ahangama · UK Traveler">
+                  <i class="fa-solid fa-route"></i>
+                </div>
+              </div>
+
+              <!-- 4. Feedback Message (Moved UP above rating) -->
+              <div class="f-field">
+                <label for="fbMessage">Type your feedback here *</label>
+                <div class="f-input-icon textarea-icon">
+                  <textarea id="fbMessage" placeholder="Share your experience regarding vehicle comfort, punctuality, driver friendliness, and the journey..." required></textarea>
+                  <i class="fa-solid fa-pen"></i>
+                </div>
+                <p class="f-error" id="messageError">Please share your feedback message.</p>
+              </div>
+
+              <!-- 5. Star Rating Block (At the last row below feedback message) -->
+              <div class="rating-group">
+                <label>Rating *</label>
+                <div class="stars-row" id="starsRow" role="radiogroup" aria-label="Star Rating">
+                  <button type="button" class="star-btn" data-value="1" aria-label="1 star"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="2" aria-label="2 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="3" aria-label="3 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="4" aria-label="4 stars"><i class="fa-solid fa-star"></i></button>
+                  <button type="button" class="star-btn" data-value="5" aria-label="5 stars"><i class="fa-solid fa-star"></i></button>
+                </div>
+                <div class="rating-caption" id="ratingCaption">Tap to rate your experience</div>
+                <p class="f-error" id="ratingError" style="margin-top:4px;">Please select a star rating.</p>
+              </div>
+
+              <button type="submit" class="btn btn-gold" id="submitFeedbackBtn" style="width:100%;">
+                <i class="fa-solid fa-paper-plane"></i> Send Feedback
+              </button>
+            </form>
+
+            <!-- Success State -->
+            <div class="feedback-success" id="feedbackSuccess">
+              <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <h3>Thank You for Your Feedback!</h3>
+              <p>Your review has been successfully stored with the exact Date & Time, and is now featured in our live verified customer reviews showcase below.</p>
+              <button type="button" class="btn btn-outline" id="submitAnotherBtn">
+                <i class="fa-solid fa-plus"></i> Submit Another Response
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= LIVE FEEDBACK SHOWCASE ================= -->
+        <div class="reviews-showcase">
+          <div class="reviews-header">
+            <div>
+              <div class="eyebrow" style="margin-bottom:4px;">Real Passenger Stories</div>
+              <h3 style="font-size: 24px; font-weight: 700;">Verified Customer Reviews</h3>
+            </div>
+
+            <div class="reviews-stat-summary">
+              <div class="big-score" id="averageScore">4.9</div>
+              <div class="score-details">
+                <div class="score-stars">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="score-count" id="totalReviewsCount">Based on verified reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Cards Grid -->
+          <div class="reviews-grid" id="reviewsGrid">
+            <!-- Dynamically populated from localStorage with exact Date & Time -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FULLSCREEN QR MODAL ================= -->
+    <div class="modal-overlay" id="qrModal">
+      <div class="modal-card">
+        <button type="button" class="modal-close" id="closeQrModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        <div class="eyebrow" style="margin-bottom:6px;">DG Travels Sri Lanka</div>
+        <h3 style="font-size:22px; font-weight:700;">Passenger Feedback QR</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Scan with any phone camera</p>
+
+        <div class="modal-qr-frame">
+          <div id="modalQrCode"></div>
+        </div>
+
+        <div style="font-size:13.5px; font-weight:700; color:var(--gold); margin-bottom:14px;">
+          Owner: Isum Sejan Gunasekara · +94 77 826 1901
+        </div>
+
+        <button type="button" class="btn btn-gold" id="modalCloseActionBtn" style="width:100%;">
+          Close QR Code
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= FLOATING ACTIONS ================= -->
+    <div class="floating-actions">
+      <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20want%20to%20book%20a%20private%20ride." target="_blank" class="float-btn whatsapp" aria-label="WhatsApp Us">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="float-tooltip">Chat on WhatsApp</span>
+      </a>
+      <a href="tel:+94778261901" class="float-btn call" aria-label="Call Us">
+        <i class="fa-solid fa-phone"></i>
+        <span class="float-tooltip">Call +94 77 826 1901</span>
+      </a>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-about">
+            <div class="nav-brand" style="margin-bottom: 12px;">
+              <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:40px;">
+              <div class="brand-title">
+                DG TRAVELS
+                <span class="sub">SRI LANKA</span>
+              </div>
+            </div>
+            <p>
+              Private island-wide transport, airport transfers, surf trips, and customized tourist excursions across Sri Lanka. Committed to safety, punctuality, and genuine Sri Lankan hospitality since 2022.
+            </p>
+            <div style="display:flex; gap:10px;">
+              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp" style="padding:8px 16px; font-size:13px; min-height:38px;">
+                <i class="fa-brands fa-whatsapp"></i> +94 77 826 1901
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-col">
+            <h4>Quick Navigation</h4>
+            <ul class="footer-links">
+              <li><a href="#booking"><i class="fa-solid fa-angle-right"></i> Fleet & Booking</a></li>
+              <li><a href="#tours"><i class="fa-solid fa-angle-right"></i> Tour Packages</a></li>
+              <li><a href="#about"><i class="fa-solid fa-angle-right"></i> Driver Profile</a></li>
+              <li><a href="#feedback"><i class="fa-solid fa-angle-right"></i> Passenger Feedback</a></li>
+              <li><a href="#feedback"><i class="fa-solid fa-angle-right"></i> Scan Review QR</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>Contact & Base</h4>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-user"></i>
+              <div>
+                <strong>Isum Sejan Gunasekara</strong><br>
+                Managing Owner & Chauffeur Host
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <div>
+                <strong>Ahangama, Galle</strong><br>
+                Southern Province, Sri Lanka
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <div>
+                <strong>+94 77 826 1901</strong><br>
+                Available on Call & WhatsApp 24/7
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div>&copy; <span id="currentYear"></span> DG Travels Sri Lanka. All Rights Reserved.</div>
+          <div>Designed with luxury dark aesthetics & dynamic passenger QR feedback.</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= APPLICATION LOGIC SCRIPT ================= -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ================= 1. AMBIENT DG TRAVELS LOGO RAIN PARTICLES =================
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const canvas = document.getElementById('brandRainCanvas');
+      if (canvas && !prefersReducedMotion) {
+        const ctx = canvas.getContext('2d');
+        let width = 0, height = 0;
+
+        // Size the backing store to the device pixel ratio so the emblems
+        // stay crisp on phone displays, capped at 2x to protect the GPU.
+        function sizeCanvas() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          width = window.innerWidth;
+          height = window.innerHeight;
+          canvas.width = Math.floor(width * dpr);
+          canvas.height = Math.floor(height * dpr);
+          canvas.style.width = width + 'px';
+          canvas.style.height = height + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        sizeCanvas();
+
+        // On mobile the URL bar collapsing fires resize constantly and only
+        // changes height. Re-size on width changes (i.e. rotation) only.
+        let lastWidth = window.innerWidth;
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          if (window.innerWidth === lastWidth) {
+            height = window.innerHeight;
+            return;
+          }
+          lastWidth = window.innerWidth;
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(sizeCanvas, 150);
+        }, { passive: true });
+
+        // Offscreen transparent logo renderer (removes black background dynamically)
+        let transparentLogoReady = false;
+        const offCanvas = document.createElement('canvas');
+        const offCtx = offCanvas.getContext('2d');
+        const logoImg = new Image();
+        logoImg.src = 'LOGO/DG - 1.png';
+        logoImg.onload = () => {
+          offCanvas.width = logoImg.width;
+          offCanvas.height = logoImg.height;
+          offCtx.drawImage(logoImg, 0, 0);
+          try {
+            const imgData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i], g = data[i+1], b = data[i+2];
+              const brightness = Math.max(r, g, b);
+              if (brightness < 40) {
+                data[i+3] = 0; // Transparent background
+              } else {
+                // Tint to luxury warm gold
+                data[i] = 243;
+                data[i+1] = 201;
+                data[i+2] = 111;
+                data[i+3] = Math.min(255, brightness * 1.1);
+              }
+            }
+            offCtx.putImageData(imgData, 0, 0);
+            transparentLogoReady = true;
+          } catch (e) {
+            transparentLogoReady = false;
+          }
+        };
+
+        // Particle class that renders gentle falling translucent DG emblems and gold sparkles
+        const particles = [];
+        // Lighter density on phones — fewer composited emblems means less
+        // battery burn and a steadier frame rate on mid-range hardware.
+        const particleCount = window.innerWidth < 480 ? 12
+                            : window.innerWidth < 768 ? 20
+                            : 34;
+
+        class BrandParticle {
+          constructor() {
+            this.reset(true);
+          }
+
+          reset(initial = false) {
+            this.x = Math.random() * width;
+            this.y = initial ? Math.random() * height : -70;
+            this.size = Math.random() * 28 + 18; // Size of floating DG logo
+            this.speedY = Math.random() * 0.8 + 0.4; // Gentle downward rainfall drift
+            this.speedX = Math.sin(Math.random() * Math.PI * 2) * 0.35; // Gentle horizontal drift
+            this.opacity = Math.random() * 0.16 + 0.05; // Ambient luxury watermark opacity
+            this.rotation = (Math.random() - 0.5) * 0.4;
+            this.rotSpeed = (Math.random() - 0.5) * 0.005;
+            this.pulseAngle = Math.random() * Math.PI * 2;
+            this.pulseSpeed = Math.random() * 0.03 + 0.015;
+            this.type = Math.random() > 0.3 ? 'logo' : (Math.random() > 0.5 ? 'text' : 'sparkle');
+          }
+
+          update() {
+            this.y += this.speedY;
+            this.x += this.speedX + Math.sin(this.pulseAngle) * 0.2;
+            this.rotation += this.rotSpeed;
+            this.pulseAngle += this.pulseSpeed;
+
+            if (this.y > height + 80 || this.x < -60 || this.x > width + 60) {
+              this.reset(false);
+            }
+          }
+
+          draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
+
+            // Gentle popping/breathing scale
+            const popScale = 1 + Math.sin(this.pulseAngle) * 0.12;
+            ctx.scale(popScale, popScale);
+            ctx.globalAlpha = this.opacity;
+
+            if (this.type === 'logo') {
+              if (transparentLogoReady) {
+                // Draw clean transparent PNG logo
+                const s = this.size;
+                ctx.drawImage(offCanvas, -s / 2, -s / 2, s, s);
+              } else {
+                // Clean vector fallback if image loading
+                ctx.strokeStyle = '#d7a84e';
+                ctx.lineWidth = 1.8;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                const s = this.size;
+                // 'D' bracket on left
+                ctx.beginPath();
+                ctx.moveTo(s * 0.1, -s * 0.4);
+                ctx.lineTo(-s * 0.35, -s * 0.4);
+                ctx.lineTo(-s * 0.35, s * 0.4);
+                ctx.lineTo(s * 0.1, s * 0.4);
+                ctx.stroke();
+
+                // 'G' oval on right interlocking
+                ctx.beginPath();
+                ctx.ellipse(s * 0.05, 0, s * 0.35, s * 0.4, 0, Math.PI * 1.7, Math.PI * 0.8, false);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(s * 0.35, 0);
+                ctx.lineTo(s * 0.05, 0);
+                ctx.stroke();
+              }
+            } else if (this.type === 'text') {
+              ctx.font = '700 9.5px "Baloo 2", sans-serif';
+              ctx.fillStyle = '#f3c96f';
+              ctx.letterSpacing = '0.22em';
+              ctx.textAlign = 'center';
+              ctx.fillText('DG TRAVELS', 0, 0);
+            } else {
+              // Ambient soft golden sparkle
+              ctx.fillStyle = '#d7a84e';
+              ctx.beginPath();
+              ctx.arc(0, 0, Math.random() * 2 + 1.2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            ctx.restore();
+          }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new BrandParticle());
+        }
+
+        // Fully stop the loop when the tab is backgrounded rather than
+        // idling a rAF every frame — meaningful on battery-powered devices.
+        let rafId = null;
+
+        function animateRain() {
+          ctx.clearRect(0, 0, width, height);
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+          }
+          rafId = requestAnimationFrame(animateRain);
+        }
+        function startRain() {
+          if (rafId === null) rafId = requestAnimationFrame(animateRain);
+        }
+        function stopRain() {
+          if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) stopRain(); else startRain();
+        });
+        startRain();
+      }
+
+
+      // ================= 2. MOBILE DRAWER NAVIGATION =================
+
+      // iOS Safari keeps scrolling the page behind an overlay when only
+      // `overflow: hidden` is set, so pin the body and restore the offset.
+      let lockedScrollY = 0;
+      function lockBodyScroll() {
+        lockedScrollY = window.scrollY || window.pageYOffset;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${lockedScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+      }
+      function unlockBodyScroll() {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        // 'instant' bypasses html{scroll-behavior:smooth}, which would
+        // otherwise animate (and visibly lose) the restored position.
+        window.scrollTo({ top: lockedScrollY, left: 0, behavior: 'instant' });
+      }
+
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileDrawer = document.getElementById('mobileDrawer');
+      const drawerBackdrop = document.getElementById('drawerBackdrop');
+      const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+      const drawerLinks = document.querySelectorAll('.drawer-link');
+      const drawerShowQrBtn = document.getElementById('drawerShowQrBtn');
+
+      function openDrawer() {
+        if (mobileDrawer) mobileDrawer.classList.add('open');
+        if (drawerBackdrop) drawerBackdrop.classList.add('open');
+        lockBodyScroll();
+      }
+      function closeDrawer() {
+        if (mobileDrawer) mobileDrawer.classList.remove('open');
+        if (drawerBackdrop) drawerBackdrop.classList.remove('open');
+        unlockBodyScroll();
+      }
+
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openDrawer);
+      if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+      if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+      drawerLinks.forEach(link => link.addEventListener('click', closeDrawer));
+      if (drawerShowQrBtn) {
+        drawerShowQrBtn.addEventListener('click', () => {
+          closeDrawer();
+          openQrModal();
+        });
+      }
+
+      // ================= 3. PRELOADER FADE OUT =================
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            preloader.classList.add('fade-out');
+          }, 700);
+        });
+        setTimeout(() => {
+          if (!preloader.classList.contains('fade-out')) {
+            preloader.classList.add('fade-out');
+          }
+        }, 1300);
+      }
+
+      // ================= 4. DYNAMIC HERO LOGO ZOOM-OUT ON SCROLL =================
+      const heroLogo = document.getElementById('heroLogo');
+      if (heroLogo && !prefersReducedMotion) {
+        // Touch scrolling fires far more often than the screen refreshes, so
+        // coalesce the style writes into one per frame to keep scrolling smooth.
+        let heroTicking = false;
+
+        function updateHeroLogo() {
+          heroTicking = false;
+          const scrollY = window.scrollY || window.pageYOffset;
+          const maxScroll = 320;
+          const scrollProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+          const scale = 1 - (scrollProgress * 0.30);
+          const opacity = 1 - (scrollProgress * 0.15);
+
+          heroLogo.style.transform = `scale(${scale})`;
+          heroLogo.style.opacity = opacity;
+        }
+
+        window.addEventListener('scroll', () => {
+          if (!heroTicking) {
+            heroTicking = true;
+            requestAnimationFrame(updateHeroLogo);
+          }
+        }, { passive: true });
+      }
+
+      // Set current year in footer
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      // Set default date to today
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const dateInput = document.getElementById('rideDate');
+      if (dateInput) {
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      // ================= 5. GOOGLE MAP HELPER BUTTONS =================
+      const openPickupMapBtn = document.getElementById('openPickupMapBtn');
+      const openDropoffMapBtn = document.getElementById('openDropoffMapBtn');
+      const pickupInput = document.getElementById('pickup');
+      const dropoffInput = document.getElementById('dropoff');
+
+      if (openPickupMapBtn) {
+        openPickupMapBtn.addEventListener('click', () => {
+          const val = encodeURIComponent(pickupInput.value.trim() || 'Bandaranaike International Airport Sri Lanka');
+          window.open(`https://www.google.com/maps/search/?api=1&query=${val}`, '_blank');
+        });
+      }
+
+      if (openDropoffMapBtn) {
+        openDropoffMapBtn.addEventListener('click', () => {
+          const val = encodeURIComponent(dropoffInput.value.trim() || 'Ahangama Galle Sri Lanka');
+          window.open(`https://www.google.com/maps/search/?api=1&query=${val}`, '_blank');
+        });
+      }
+
+      // ================= 6. FLEET & BOOKING LOGIC =================
+      const vehicleCards = document.querySelectorAll('.vehicle-card');
+      let selectedVehicle = 'Toyota Aqua';
+
+      vehicleCards.forEach(card => {
+        card.addEventListener('click', () => {
+          vehicleCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedVehicle = card.dataset.vehicle;
+          updateBookingSummary();
+        });
+      });
+
+      const selectedVehicleText = document.getElementById('selectedVehicleText');
+      const selectedRouteText = document.getElementById('selectedRouteText');
+
+      function updateBookingSummary() {
+        const p = pickupInput.value.trim() || 'Pickup Location';
+        const d = dropoffInput.value.trim() || 'Destination';
+        if (selectedVehicleText) selectedVehicleText.textContent = selectedVehicle;
+        if (selectedRouteText) selectedRouteText.innerHTML = `${escapeHtml(p)} &rarr; ${escapeHtml(d)}`;
+      }
+
+      pickupInput.addEventListener('input', updateBookingSummary);
+      dropoffInput.addEventListener('input', updateBookingSummary);
+      updateBookingSummary();
+
+      // WhatsApp Booking Button Action
+      const bookWhatsAppBtn = document.getElementById('bookWhatsAppBtn');
+      if (bookWhatsAppBtn) {
+        bookWhatsAppBtn.addEventListener('click', () => {
+          const p = pickupInput.value.trim() || 'Not specified';
+          const d = dropoffInput.value.trim() || 'Not specified';
+          const dt = dateInput ? dateInput.value : 'Flexible';
+          const pax = document.getElementById('passengers').value;
+
+          const message = `Hello Isum (DG Travels), I would like to request an instant quote:%0A%0A` +
+            `🚗 *Vehicle:* ${selectedVehicle}%0A` +
+            `📍 *Pickup:* ${p}%0A` +
+            `🏁 *Destination:* ${d}%0A` +
+            `📅 *Date:* ${dt}%0A` +
+            `👥 *Travelers:* ${pax}%0A%0A` +
+            `Please let me know availability and best quote for this ride. Thank you!`;
+
+          const waUrl = `https://wa.me/94778261901?text=${message}`;
+          window.open(waUrl, '_blank');
+        });
+      }
+
+      // ================= 7. DYNAMIC QR CODE GENERATOR =================
+      const feedbackUrl = window.location.href.split('#')[0] + '#feedback';
+      
+      // Render In-Card QR
+      const qrEl = document.getElementById('qrcode');
+      if (qrEl && typeof QRCode !== 'undefined') {
+        qrEl.innerHTML = '';
+        const qrSize = Math.min(160, window.innerWidth - 80);
+        new QRCode(qrEl, {
+          text: feedbackUrl,
+          width: qrSize,
+          height: qrSize,
+          colorDark: "#141310",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+
+      // Render Modal QR
+      const modalQrEl = document.getElementById('modalQrCode');
+      if (modalQrEl && typeof QRCode !== 'undefined') {
+        modalQrEl.innerHTML = '';
+        const modalQrSize = Math.min(210, window.innerWidth - 80);
+        new QRCode(modalQrEl, {
+          text: feedbackUrl,
+          width: modalQrSize,
+          height: modalQrSize,
+          colorDark: "#141310",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+
+      // Modal Controls
+      const qrModal = document.getElementById('qrModal');
+      const openQrModalBtn = document.getElementById('openQrModalBtn');
+      const enlargeQrBtn = document.getElementById('enlargeQrBtn');
+      const closeQrModalBtn = document.getElementById('closeQrModalBtn');
+      const modalCloseActionBtn = document.getElementById('modalCloseActionBtn');
+
+      function openQrModal() {
+        if (qrModal) qrModal.classList.add('active');
+        lockBodyScroll();
+      }
+      function closeQrModal() {
+        if (qrModal) qrModal.classList.remove('active');
+        unlockBodyScroll();
+      }
+
+      if (openQrModalBtn) openQrModalBtn.addEventListener('click', openQrModal);
+      if (enlargeQrBtn) enlargeQrBtn.addEventListener('click', openQrModal);
+      if (closeQrModalBtn) closeQrModalBtn.addEventListener('click', closeQrModal);
+      if (modalCloseActionBtn) modalCloseActionBtn.addEventListener('click', closeQrModal);
+      if (qrModal) {
+        qrModal.addEventListener('click', (e) => {
+          if (e.target === qrModal) closeQrModal();
+        });
+      }
+
+      // Copy Link Button
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
+      if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(feedbackUrl).then(() => {
+            const originalHtml = copyLinkBtn.innerHTML;
+            copyLinkBtn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--gold);"></i> Copied Link!';
+            setTimeout(() => {
+              copyLinkBtn.innerHTML = originalHtml;
+            }, 2000);
+          }).catch(() => {
+            prompt('Review Link:', feedbackUrl);
+          });
+        });
+      }
+
+      // ================= 8. STAR RATING SYSTEM =================
+      const starButtons = document.querySelectorAll('#starsRow .star-btn');
+      const ratingCaption = document.getElementById('ratingCaption');
+      let currentRating = 0;
+
+      const ratingCaptions = {
+        1: "1 Star — Disappointing",
+        2: "2 Stars — Fair",
+        3: "3 Stars — Good",
+        4: "4 Stars — Very Good",
+        5: "5 Stars — Outstanding & Highly Recommended!"
+      };
+
+      function paintStars(ratingVal) {
+        starButtons.forEach(btn => {
+          const val = parseInt(btn.dataset.value, 10);
+          if (val <= ratingVal) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+
+      starButtons.forEach(btn => {
+        const val = parseInt(btn.dataset.value, 10);
+
+        btn.addEventListener('mouseenter', () => {
+          starButtons.forEach(b => {
+            const bVal = parseInt(b.dataset.value, 10);
+            if (bVal <= val) {
+              b.classList.add('hovered');
+            } else {
+              b.classList.remove('hovered');
+            }
+          });
+          if (ratingCaption) ratingCaption.textContent = ratingCaptions[val] || '';
+        });
+
+        btn.addEventListener('click', () => {
+          currentRating = val;
+          paintStars(currentRating);
+          document.getElementById('ratingError').classList.remove('show');
+          if (ratingCaption) ratingCaption.textContent = ratingCaptions[currentRating];
+        });
+      });
+
+      const starsRow = document.getElementById('starsRow');
+      if (starsRow) {
+        starsRow.addEventListener('mouseleave', () => {
+          starButtons.forEach(b => b.classList.remove('hovered'));
+          paintStars(currentRating);
+          if (ratingCaption) {
+            ratingCaption.textContent = currentRating > 0 ? ratingCaptions[currentRating] : 'Tap to rate your experience';
+          }
+        });
+      }
+
+      // ================= 9. FEEDBACK STORAGE & LIVE REVIEWS =================
+      const STORAGE_KEY = 'dg_travels_customer_reviews';
+
+      // Initial authentic reviews for DG Travels
+      const defaultReviews = [
+        {
+          id: 'fb-1',
+          name: 'Charlotte & David Miller',
+          email: 'c.miller.uk@gmail.com',
+          route: 'Airport CMB to Ahangama · UK',
+          rating: 5,
+          message: 'Isum was waiting for us right on time at Colombo airport with a clear nameboard after our long flight. The Toyota KDH van was spotless, air conditioning was cool, and his driving on the expressway was smooth and relaxing. Fantastic welcome to Sri Lanka!',
+          dateTime: '28 Aug 2026, 04:30 PM'
+        },
+        {
+          id: 'fb-2',
+          name: 'Kenji & Yoko Tanaka',
+          email: 'yoko.tanaka@tokyo-travel.jp',
+          route: 'Galle to Ella Tour · Japan',
+          rating: 5,
+          message: '日本語で話してくれてとても親切でした！ (Isum spoke Japanese with us and was extremely kind and attentive!) His Honda Vezel was very clean and comfortable for our hill country tour to Ella. Highly recommended!',
+          dateTime: '24 Aug 2026, 11:15 AM'
+        },
+        {
+          id: 'fb-3',
+          name: 'Lukas Schneider',
+          email: 'lukas.schneider@web.de',
+          route: 'Ahangama Surf & Mirissa · Germany',
+          rating: 5,
+          message: 'Best driver in Sri Lanka! Isum took us on multiple day trips around Ahangama and Weligama. He knows all the best surf points, scenic viewpoints, and local spots. Super polite, punctual, and safe driver.',
+          dateTime: '20 Aug 2026, 06:10 PM'
+        },
+        {
+          id: 'fb-4',
+          name: 'Kavinda & Nimalka Perera',
+          email: 'kavinda.p@outlook.com',
+          route: 'Colombo to Yala Safari · Local Family',
+          rating: 5,
+          message: 'Excellent private hire service for our family vacation. The van was very comfortable with plenty of luggage room. Isum was courteous, on-time, and handled the entire route with great care.',
+          dateTime: '15 Aug 2026, 08:45 PM'
+        }
+      ];
+
+      function getStoredReviews() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed;
+            }
+          }
+        } catch (e) {
+          console.error('Error reading localStorage', e);
+        }
+        return defaultReviews;
+      }
+
+      function saveReviews(reviews) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+        } catch (e) {
+          console.error('Error saving to localStorage', e);
+        }
+      }
+
+      function renderReviews() {
+        const reviews = getStoredReviews();
+        const reviewsGrid = document.getElementById('reviewsGrid');
+        const averageScoreEl = document.getElementById('averageScore');
+        const totalReviewsCountEl = document.getElementById('totalReviewsCount');
+
+        if (!reviewsGrid) return;
+
+        // Calculate average
+        const totalStars = reviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0);
+        const avg = reviews.length ? (totalStars / reviews.length).toFixed(1) : '5.0';
+
+        if (averageScoreEl) averageScoreEl.textContent = avg;
+        if (totalReviewsCountEl) {
+          totalReviewsCountEl.textContent = `Based on ${reviews.length} verified traveler ${reviews.length === 1 ? 'review' : 'reviews'}`;
+        }
+
+        reviewsGrid.innerHTML = '';
+
+        reviews.forEach((review, idx) => {
+          const card = document.createElement('div');
+          card.className = `review-card ${idx === 0 && review.isNew ? 'newly-added' : ''}`;
+
+          // Initials
+          const initials = review.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase() || 'DG';
+
+          // Star icons
+          let starsHtml = '';
+          const rVal = Math.min(5, Math.max(1, parseInt(review.rating, 10) || 5));
+          for (let i = 1; i <= 5; i++) {
+            starsHtml += i <= rVal 
+              ? '<i class="fa-solid fa-star"></i>' 
+              : '<i class="fa-regular fa-star" style="color:var(--text-faint);"></i>';
+          }
+
+          card.innerHTML = `
+            <div>
+              <div class="review-top">
+                <div class="reviewer-info">
+                  <div class="reviewer-avatar">${escapeHtml(initials)}</div>
+                  <div class="reviewer-meta">
+                    <h4>${escapeHtml(review.name)}</h4>
+                    <div class="reviewer-tag">
+                      <i class="fa-solid fa-location-dot" style="color:var(--gold); font-size:10px;"></i>
+                      ${escapeHtml(review.route || 'Verified Passenger')}
+                    </div>
+                  </div>
+                </div>
+                <div class="review-stars">
+                  ${starsHtml}
+                </div>
+              </div>
+              <p class="review-body">"${escapeHtml(review.message)}"</p>
+            </div>
+            <div class="review-footer">
+              <span class="verified-pill"><i class="fa-solid fa-circle-check"></i> Verified Passenger</span>
+              <span><i class="fa-regular fa-clock"></i> ${escapeHtml(review.dateTime)}</span>
+            </div>
+          `;
+
+          reviewsGrid.appendChild(card);
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function formatCurrentDateTime() {
+        const now = new Date();
+        const options = { 
+          day: 'numeric', 
+          month: 'short', 
+          year: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        };
+        return now.toLocaleString('en-US', options);
+      }
+
+      // Initial Render
+      renderReviews();
+
+      // ================= 10. FEEDBACK FORM SUBMISSION =================
+      const feedbackForm = document.getElementById('feedbackForm');
+      const feedbackSuccess = document.getElementById('feedbackSuccess');
+      const submitAnotherBtn = document.getElementById('submitAnotherBtn');
+
+      if (feedbackForm) {
+        feedbackForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const nameInput = document.getElementById('fbName');
+          const emailInput = document.getElementById('fbEmail');
+          const routeInput = document.getElementById('fbRoute');
+          const messageInput = document.getElementById('fbMessage');
+
+          const nameVal = nameInput.value.trim();
+          const emailVal = emailInput.value.trim();
+          const routeVal = routeInput.value.trim() || 'Sri Lanka Tour';
+          const messageVal = messageInput.value.trim();
+
+          let isValid = true;
+
+          // Validation
+          if (!nameVal) {
+            document.getElementById('nameError').classList.add('show');
+            isValid = false;
+          } else {
+            document.getElementById('nameError').classList.remove('show');
+          }
+
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(emailVal)) {
+            document.getElementById('emailError').classList.add('show');
+            isValid = false;
+          } else {
+            document.getElementById('emailError').classList.remove('show');
+          }
+
+          if (currentRating === 0) {
+            document.getElementById('ratingError').classList.add('show');
+            isValid = false;
+          } else {
+            document.getElementById('ratingError').classList.remove('show');
+          }
+
+          if (!messageVal) {
+            document.getElementById('messageError').classList.add('show');
+            isValid = false;
+          } else {
+            document.getElementById('messageError').classList.remove('show');
+          }
+
+          if (!isValid) return;
+
+          // Create new review object with exact Date & Time
+          const newReview = {
+            id: 'fb-' + Date.now(),
+            name: nameVal,
+            email: emailVal,
+            route: routeVal,
+            rating: currentRating,
+            message: messageVal,
+            dateTime: formatCurrentDateTime(),
+            isNew: true
+          };
+
+          // Prepend to stored reviews
+          const reviews = getStoredReviews();
+          reviews.unshift(newReview);
+          saveReviews(reviews);
+
+          // Update reviews grid
+          renderReviews();
+
+          // Show success state
+          feedbackForm.style.display = 'none';
+          if (feedbackSuccess) feedbackSuccess.classList.add('show');
+
+          // Scroll reviews showcase into view smoothly
+          setTimeout(() => {
+            const showcase = document.querySelector('.reviews-showcase');
+            if (showcase) {
+              showcase.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 400);
+        });
+      }
+
+      if (submitAnotherBtn) {
+        submitAnotherBtn.addEventListener('click', () => {
+          feedbackForm.reset();
+          currentRating = 0;
+          paintStars(0);
+          if (ratingCaption) ratingCaption.textContent = 'Tap to rate your experience';
+          if (feedbackSuccess) feedbackSuccess.classList.remove('show');
+          feedbackForm.style.display = 'block';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

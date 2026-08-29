@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DG Travels — Private Transport, Island-Wide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a09;
+    --surface:#131211;
+    --surface-2:#18160f;
+    --field:#161511;
+    --border:rgba(255,255,255,0.14);
+    --border-strong:rgba(255,255,255,0.28);
+    --text:#f3f0e8;
+    --text-muted:#9a9488;
+    --text-faint:#6b6659;
+    --gold:#d7a84e;
+    --gold-bright:#e8bb63;
+    --gold-deep:#a97f36;
+    --gold-wash:rgba(215,168,78,0.12);
+    --radius-lg:22px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --maxw:1140px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:'Baloo 2',sans-serif;
+    margin:0;
+    color:var(--text);
+  }
+  p{margin:0;}
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .eyebrow{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- route-dash divider (signature motif) ---------- */
+  .route-divider{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 28px;
+  }
+  .route-divider .pin{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--gold);
+    flex:none;
+    box-shadow:0 0 0 4px var(--gold-wash);
+  }
+  .route-divider .dash{
+    flex:1;
+    height:0;
+    border-top:2px dashed var(--border-strong);
+  }
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(10,10,9,0.78);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:72px;
+  }
+  .nav-mark{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .nav-mark svg{width:26px;height:20px;}
+  .nav-word{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.18em;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:28px;
+    font-size:14px;
+    font-weight:500;
+  }
+  .nav-links a{
+    text-decoration:none;
+    color:var(--text-muted);
+    transition:color .15s ease;
+  }
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    border:1px solid var(--gold);
+    color:var(--gold) !important;
+    padding:9px 18px;
+    border-radius:999px;
+    font-weight:600;
+  }
+  .nav-cta:hover{
+    background:var(--gold);
+    color:var(--bg) !important;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:76px 0 0;
+    text-align:center;
+  }
+  .mark{
+    width:92px;
+    height:72px;
+    margin:0 auto 18px;
+    color:var(--text);
+  }
+  .wordmark{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.5em;
+    color:var(--text-muted);
+    text-indent:0.5em; /* balance the trailing tracking */
+    margin-bottom:34px;
+  }
+  .hero h1{
+    font-size:44px;
+    font-weight:700;
+    max-width:640px;
+    margin:0 auto;
+    line-height:1.18;
+  }
+  .hero .lede{
+    max-width:460px;
+    margin:18px auto 0;
+    color:var(--text-muted);
+    font-size:16px;
+  }
+
+  /* ---------- booking card ---------- */
+  .booking{
+    padding:46px 0 8px;
+  }
+  .steps{
+    display:flex;
+    justify-content:center;
+    gap:26px;
+    margin-bottom:18px;
+  }
+  .step{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    font-weight:600;
+  }
+  .step em{
+    font-style:normal;
+    color:var(--gold);
+  }
+
+  .booking-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    max-width:840px;
+    margin:0 auto;
+    padding:30px;
+  }
+
+  .route-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 170px;
+    gap:14px;
+    align-items:end;
+    position:relative;
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.05em;
+    color:var(--text-muted);
+    margin-bottom:8px;
+  }
+  .field .pin-label{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+  }
+  .field .pin-label .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--gold);
+    flex:none;
+  }
+  .field .pin-label.dest .dot{
+    background:transparent;
+    border:1.5px solid var(--gold);
+  }
+  .input, select.input{
+    width:100%;
+    background:var(--field);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:13px 18px;
+    color:var(--text);
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+    appearance:none;
+  }
+  .input::placeholder{color:var(--text-faint);}
+  .input:focus-visible, select.input:focus-visible, textarea.input:focus-visible{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px var(--gold-wash);
+  }
+  .field-connector{
+    position:absolute;
+    left:9px;
+    top:38px;
+    bottom:18px;
+    width:0;
+    border-left:2px dashed var(--border-strong);
+    display:none;
+  }
+
+  .vehicle-heading{
+    margin-top:32px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .vehicle-heading h3{font-size:16px;font-weight:600;}
+  .vehicle-heading span{font-size:12px;color:var(--text-faint);}
+
+  .vehicle-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+  }
+  .vehicle{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:16px 12px;
+    text-align:left;
+    color:var(--text);
+    transition:border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .vehicle:hover{border-color:var(--border-strong);transform:translateY(-2px);}
+  .vehicle svg{width:100%;height:34px;color:var(--text-muted);margin-bottom:10px;}
+  .vehicle.is-selected{
+    border-color:var(--gold);
+    background:var(--gold-wash);
+  }
+  .vehicle.is-selected svg{color:var(--gold);}
+  .vehicle-name{font-weight:600;font-size:14px;margin-bottom:2px;}
+  .vehicle-meta{font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+  .vehicle-price{font-size:12px;color:var(--gold);font-weight:600;}
+
+  .vehicle-note{
+    font-size:11.5px;
+    color:var(--text-faint);
+    margin-top:10px;
+  }
+
+  .book-actions{
+    margin-top:26px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .btn-primary{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    background:var(--text);
+    color:#141310;
+    border:none;
+    padding:14px 26px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:14px;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-primary:hover{background:var(--gold-bright);}
+  .btn-primary:active{transform:scale(0.98);}
+  .book-status{
+    font-size:13px;
+    color:var(--text-muted);
+  }
+  .book-status.is-ok{color:var(--gold);}
+
+  /* ---------- trust strip ---------- */
+  .trust{
+    padding:40px 0;
+    display:flex;
+    justify-content:center;
+    gap:38px;
+    flex-wrap:wrap;
+    text-align:center;
+  }
+  .trust-item{font-size:13px;color:var(--text-muted);}
+  .trust-item strong{
+    display:block;
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    color:var(--text);
+    font-weight:700;
+  }
+
+  /* ---------- feedback ---------- */
+  .feedback{
+    padding:20px 0 90px;
+  }
+  .feedback-wrap{
+    max-width:520px;
+    margin:0 auto;
+  }
+  .feedback-head{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .feedback-head .eyebrow{display:block;margin-bottom:10px;}
+  .feedback-head h2{font-size:28px;font-weight:700;}
+  .feedback-head .underline{
+    width:52px;height:3px;background:var(--gold);
+    border-radius:3px;
+    margin:16px auto 0;
+  }
+  .feedback-head p{
+    margin-top:14px;
+    color:var(--text-muted);
+    font-size:14px;
+  }
+
+  .feedback-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:28px;
+  }
+  .f-field{margin-bottom:18px;}
+  .f-field label{
+    display:block;
+    font-size:13px;
+    color:var(--text-muted);
+    margin-bottom:8px;
+  }
+  .input-icon{position:relative;}
+  .input-icon .input{padding-right:46px;}
+  .input-icon svg{
+    position:absolute;
+    right:16px;top:50%;
+    transform:translateY(-50%);
+    width:17px;height:17px;
+    color:var(--text-faint);
+    pointer-events:none;
+  }
+  textarea.input{
+    border-radius:var(--radius-md);
+    resize:vertical;
+    min-height:100px;
+    padding-right:40px;
+  }
+  .textarea-wrap{position:relative;}
+  .textarea-wrap svg{
+    position:absolute;
+    right:14px;bottom:12px;
+    width:15px;height:15px;
+    color:var(--text-faint);
+    pointer-events:none;
+  }
+  .f-error{
+    font-size:12px;
+    color:#e08a6b;
+    margin-top:6px;
+    display:none;
+  }
+  .f-error.show{display:block;}
+
+  .rating-block{text-align:center;margin:22px 0 24px;}
+  .rating-block > label{
+    display:block;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:12px;
+  }
+  .stars{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+  }
+  .star-btn{
+    background:none;
+    border:none;
+    padding:4px;
+    line-height:0;
+  }
+  .star-btn svg{width:30px;height:30px;color:var(--gold);transition:transform .1s ease;}
+  .star-btn:hover svg{transform:scale(1.08);}
+
+  .feedback-card .btn-primary{
+    width:100%;
+    justify-content:center;
+  }
+
+  .thanks{
+    display:none;
+    text-align:center;
+    padding:20px 0 6px;
+  }
+  .thanks.show{display:block;}
+  .thanks svg{width:40px;height:40px;color:var(--gold);margin:0 auto 14px;}
+  .thanks h3{font-size:18px;margin-bottom:6px;}
+  .thanks p{color:var(--text-muted);font-size:13.5px;margin-bottom:16px;}
+  .thanks button{
+    background:none;
+    border:1px solid var(--border-strong);
+    color:var(--text);
+    padding:9px 18px;
+    border-radius:999px;
+    font-size:13px;
+  }
+  .form-body.hide{display:none;}
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:1px solid var(--border);
+    padding:36px 0 28px;
+  }
+  .foot-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .foot-brand{display:flex;align-items:center;gap:10px;}
+  .foot-brand svg{width:20px;height:16px;color:var(--text-muted);}
+  .foot-brand span{
+    font-family:'Baloo 2',sans-serif;
+    font-size:13px;
+    letter-spacing:0.16em;
+    color:var(--text-muted);
+  }
+  .foot-contact{
+    display:flex;
+    gap:20px;
+    font-size:13px;
+    color:var(--text-muted);
+  }
+  .foot-note{
+    text-align:center;
+    margin-top:24px;
+    font-size:11.5px;
+    color:var(--text-faint);
+    letter-spacing:0.04em;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:860px){
+    .vehicle-grid{grid-template-columns:repeat(2,1fr);}
+    .route-row{grid-template-columns:1fr;}
+    .hero h1{font-size:34px;}
+    .steps{gap:14px;flex-wrap:wrap;}
+    .nav-links{gap:16px;}
+  }
+  @media (max-width:520px){
+    .vehicle-grid{grid-template-columns:1fr 1fr;}
+    .booking-card{padding:20px;}
+    .hero{padding-top:56px;}
+    .hero h1{font-size:28px;}
+    .nav-links a:not(.nav-cta){display:none;}
+    .foot-row{flex-direction:column;align-items:flex-start;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <div class="wrap">
+    <div class="nav-mark">
+      <svg viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60,20 L20,20 L20,120 L60,120" stroke="currentColor" stroke-width="11" stroke-linecap="square" stroke-linejoin="round"/>
+        <path d="M168.3,37.9 A50,50 0 1 1 168.3,102.1" stroke="currentColor" stroke-width="11" stroke-linecap="round" fill="none"/>
+        <path d="M172,70 L126,70" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-word">DG TRAVELS</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#book">Book a ride</a>
+      <a href="#feedback">Feedback</a>
+      <a class="nav-cta" href="#book">Get a quote</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <svg class="mark" viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60,20 L20,20 L20,120 L60,120" stroke="currentColor" stroke-width="10" stroke-linecap="square" stroke-linejoin="round"/>
+      <path d="M168.3,37.9 A50,50 0 1 1 168.3,102.1" stroke="currentColor" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <path d="M172,70 L126,70" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+    </svg>
+    <div class="wordmark">TRAVELS</div>
+    <h1>Where are you headed today?</h1>
+    <p class="lede">Give us your route, pick a vehicle, and we'll take it from there — the same personal service DG Travels has run on for years.</p>
+  </div>
+</section>
+
+<!-- ================= BOOKING ================= -->
+<section class="booking" id="book">
+  <div class="wrap">
+    <div class="steps">
+      <div class="step"><em>01</em> Route</div>
+      <div class="step"><em>02</em> Vehicle</div>
+      <div class="step"><em>03</em> We follow up</div>
+    </div>
+
+    <div class="booking-card">
+      <div class="route-row">
+        <div class="field">
+          <label class="pin-label"><span class="dot"></span>Pickup</label>
+          <input class="input" list="places" placeholder="e.g. Bandaranaike Airport (CMB)">
+        </div>
+        <div class="field">
+          <label class="pin-label dest"><span class="dot"></span>Destination</label>
+          <input class="input" list="places" placeholder="e.g. Kandy">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input class="input" type="date">
+        </div>
+        <datalist id="places">
+          <option value="Colombo">
+          <option value="Bandaranaike Airport (CMB)">
+          <option value="Kandy">
+          <option value="Galle">
+          <option value="Negombo">
+          <option value="Ella">
+          <option value="Nuwara Eliya">
+          <option value="Sigiriya">
+          <option value="Anuradhapura">
+          <option value="Mirissa">
+          <option value="Bentota">
+          <option value="Trincomalee">
+          <option value="Jaffna">
+        </datalist>
+      </div>
+
+      <div class="vehicle-heading">
+        <h3>Choose your vehicle</h3>
+        <span>Tap to select</span>
+      </div>
+
+      <div class="vehicle-grid" role="radiogroup" aria-label="Choose your vehicle">
+        <button type="button" class="vehicle" role="radio" aria-checked="false" data-vehicle="Sedan">
+          <svg viewBox="0 0 64 40" fill="none"><path d="M5,27 L9,27 C11,19 17,15 25,15 L34,15 C40,15 44,18 47,23 L57,23 C59,23 60,25 60,27 L60,30 L5,30 Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="17" cy="31" r="4.4" stroke="currentColor" stroke-width="2.2"/><circle cx="48" cy="31" r="4.4" stroke="currentColor" stroke-width="2.2"/></svg>
+          <div class="vehicle-name">Sedan</div>
+          <div class="vehicle-meta">1–3 pax · 2 bags</div>
+          <div class="vehicle-price">from LKR 4,500*</div>
+        </button>
+
+        <button type="button" class="vehicle" role="radio" aria-checked="false" data-vehicle="Van">
+          <svg viewBox="0 0 64 40" fill="none"><path d="M5,12 L5,29 L59,29 L59,17 L50,12 Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M35,12 L35,29" stroke="currentColor" stroke-width="1.6"/><path d="M44,17 L44,29" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="30" r="4.4" stroke="currentColor" stroke-width="2.2"/><circle cx="48" cy="30" r="4.4" stroke="currentColor" stroke-width="2.2"/></svg>
+          <div class="vehicle-name">Van (KDH)</div>
+          <div class="vehicle-meta">1–8 pax · 6 bags</div>
+          <div class="vehicle-price">from LKR 7,500*</div>
+        </button>
+
+        <button type="button" class="vehicle" role="radio" aria-checked="false" data-vehicle="SUV / Jeep">
+          <svg viewBox="0 0 64 40" fill="none"><path d="M4,26 L6,26 C7,17 13,13 21,13 L42,13 C48,13 52,17 53,26 L59,26 L59,29 L4,29 Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12,13 L10,7 M46,13 L48,7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="15" cy="30" r="4.4" stroke="currentColor" stroke-width="2.2"/><circle cx="46" cy="30" r="4.4" stroke="currentColor" stroke-width="2.2"/></svg>
+          <div class="vehicle-name">SUV / Jeep</div>
+          <div class="vehicle-meta">1–5 pax · hill roads</div>
+          <div class="vehicle-price">from LKR 9,000*</div>
+        </button>
+
+        <button type="button" class="vehicle" role="radio" aria-checked="false" data-vehicle="Mini Coach">
+          <svg viewBox="0 0 64 40" fill="none"><path d="M3,11 L3,29 L61,29 L61,15 C61,12.8 59.2,11 57,11 Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11,11 L11,29 M20,11 L20,29 M29,11 L29,29 M38,11 L38,29 M47,11 L47,29" stroke="currentColor" stroke-width="1.3"/><circle cx="14" cy="30" r="4.2" stroke="currentColor" stroke-width="2.2"/><circle cx="50" cy="30" r="4.2" stroke="currentColor" stroke-width="2.2"/></svg>
+          <div class="vehicle-name">Mini Coach</div>
+          <div class="vehicle-meta">10–20 pax · groups</div>
+          <div class="vehicle-price">from LKR 15,000*</div>
+        </button>
+      </div>
+      <p class="vehicle-note">*Sample fleet and pricing — swap in your own vehicles and rates before this goes live.</p>
+
+      <div class="book-actions">
+        <button class="btn-primary" id="checkBtn" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Check availability
+        </button>
+        <span class="book-status" id="bookStatus"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
+
+<!-- ================= TRUST ================= -->
+<section class="trust">
+  <div class="trust-item"><strong>10+ yrs</strong>on the road</div>
+  <div class="trust-item"><strong>13</strong>districts covered</div>
+  <div class="trust-item"><strong>24/7</strong>on call</div>
+</section>
+
+<div class="route-divider"><span class="pin"></span><span class="dash"></span><span class="pin"></span></div>
+
+<!-- ================= FEEDBACK ================= -->
+<section class="feedback" id="feedback">
+  <div class="wrap">
+    <div class="feedback-wrap">
+      <div class="feedback-head">
+        <span class="eyebrow">After your trip</span>
+        <h2>We value your feedback</h2>
+        <div class="underline"></div>
+        <p>Finished your ride? Let us know how it went — it's how we keep the standard up.</p>
+      </div>
+
+      <div class="feedback-card">
+        <div class="form-body" id="formBody">
+          <div class="f-field">
+            <label for="email">Enter your email</label>
+            <div class="input-icon">
+              <input class="input" id="email" type="email" placeholder="example@email.com">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18v12H3z" stroke="currentColor" stroke-width="1.7"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="1.7"/></svg>
+            </div>
+            <p class="f-error" id="emailError">Enter a valid email so we can follow up if needed.</p>
+          </div>
+
+          <div class="f-field">
+            <label for="mobile">Enter your mobile no (optional)</label>
+            <div class="input-icon">
+              <input class="input" id="mobile" type="tel" placeholder="07X XXX XXXX">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M11 18h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <div class="f-field">
+            <label for="message">Type your feedback here</label>
+            <div class="textarea-wrap">
+              <textarea class="input" id="message" placeholder="Share your thoughts..."></textarea>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 21l3.6-1 11-11-2.6-2.6-11 11L3 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div class="rating-block">
+            <label>Rating</label>
+            <div class="stars" role="radiogroup" aria-label="Star rating" id="stars">
+              <button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="1 star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></button>
+              <button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="2 stars" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></button>
+              <button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="3 stars" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></button>
+              <button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="4 stars" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></button>
+              <button class="star-btn" type="button" role="radio" aria-checked="false" aria-label="5 stars" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2L3 9.5l6.4-.6z"/></svg></button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="sendBtn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Send
+          </button>
+        </div>
+
+        <div class="thanks" id="thanks">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.6 2.6L16 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>Thank you!</h3>
+          <p>Your feedback means a lot — it helps us keep DG Travels the way you remember it.</p>
+          <button type="button" id="resetBtn">Send another response</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-brand">
+        <svg viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60,20 L20,20 L20,120 L60,120" stroke="currentColor" stroke-width="11" stroke-linecap="square" stroke-linejoin="round"/>
+          <path d="M168.3,37.9 A50,50 0 1 1 168.3,102.1" stroke="currentColor" stroke-width="11" stroke-linecap="round" fill="none"/>
+          <path d="M172,70 L126,70" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+        </svg>
+        <span>DG TRAVELS</span>
+      </div>
+      <div class="foot-contact">
+        <span>+94 7X XXX XXXX</span>
+        <span>WhatsApp</span>
+        <span>Colombo, Sri Lanka</span>
+      </div>
+    </div>
+    <p class="foot-note">Website sketch — for internal review, not yet published.</p>
+  </div>
+</footer>
+
+<script>
+  // ---- vehicle selection ----
+  const vehicles = document.querySelectorAll('.vehicle');
+  vehicles.forEach(v => {
+    v.addEventListener('click', () => {
+      vehicles.forEach(o => { o.classList.remove('is-selected'); o.setAttribute('aria-checked','false'); });
+      v.classList.add('is-selected');
+      v.setAttribute('aria-checked','true');
+    });
+  });
+
+  // ---- booking check ----
+  const checkBtn = document.getElementById('checkBtn');
+  const bookStatus = document.getElementById('bookStatus');
+  checkBtn.addEventListener('click', () => {
+    const selected = document.querySelector('.vehicle.is-selected');
+    if (!selected) {
+      bookStatus.textContent = 'Pick a vehicle so we know what to check for.';
+      bookStatus.classList.remove('is-ok');
+      return;
+    }
+    bookStatus.textContent = `Got it — we'll text you availability and price for the ${selected.dataset.vehicle}.`;
+    bookStatus.classList.add('is-ok');
+  });
+
+  // ---- star rating ----
+  const starBtns = document.querySelectorAll('.star-btn');
+  let rating = 0;
+  function paintStars(upTo){
+    starBtns.forEach(b => {
+      const v = Number(b.dataset.val);
+      b.querySelector('svg').style.fill = v <= upTo ? 'currentColor' : 'none';
+      b.setAttribute('aria-checked', v === rating ? 'true' : 'false');
+    });
+  }
+  starBtns.forEach(b => {
+    b.addEventListener('mouseenter', () => paintStars(Number(b.dataset.val)));
+    b.addEventListener('click', () => { rating = Number(b.dataset.val); paintStars(rating); });
+  });
+  document.getElementById('stars').addEventListener('mouseleave', () => paintStars(rating));
+
+  // ---- feedback submit ----
+  const sendBtn = document.getElementById('sendBtn');
+  const emailInput = document.getElementById('email');
+  const emailError = document.getElementById('emailError');
+  const formBody = document.getElementById('formBody');
+  const thanks = document.getElementById('thanks');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  sendBtn.addEventListener('click', () => {
+    if (!validEmail(emailInput.value)) {
+      emailError.classList.add('show');
+      emailInput.focus();
+      return;
+    }
+    emailError.classList.remove('show');
+    formBody.classList.add('hide');
+    thanks.classList.add('show');
+  });
+
+  resetBtn.addEventListener('click', () => {
+    emailInput.value = '';
+    document.getElementById('mobile').value = '';
+    document.getElementById('message').value = '';
+    rating = 0; paintStars(0);
+    formBody.classList.remove('hide');
+    thanks.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>
