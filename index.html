@@ -419,42 +419,6 @@
     .stat-num { font-variant-numeric: tabular-nums; }
 
     /* ---------- Top bar ---------- */
-    .top-bar {
-      border-bottom: 1px solid var(--line);
-      font-size: 12.5px;
-      color: var(--text-2);
-      background: var(--bg);
-    }
-
-    .top-bar .wrap {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      height: 40px;
-    }
-
-    .top-info {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-    }
-
-    .top-info span {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .top-tel {
-      color: inherit;
-      transition: color 0.18s var(--ease);
-    }
-
-    .top-tel:hover {
-      color: var(--text);
-    }
-
     /* ---------- Header ---------- */
     .nav {
       position: sticky;
@@ -546,6 +510,23 @@
       border-color: var(--text-2);
       color: var(--text);
     }
+
+    /* Only shown on phones, where the floating call button is hidden and
+       the header is the only place a number is reachable in one tap. */
+    .btn-call-nav {
+      display: none;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      font-size: 16px;
+      color: var(--text);
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+    }
+    .btn-call-nav:hover { border-color: var(--accent); color: var(--accent); }
 
     .mobile-menu-toggle {
       display: none;
@@ -649,16 +630,53 @@
     }
 
     .hero-logo-container {
-      margin-bottom: 34px;
+      margin-bottom: 36px;
     }
 
-    .hero-logo-center {
-      width: 76px;
-      height: 76px;
+    /* The gold line is a conic gradient rotating behind the mark; the logo
+       itself sits on top and masks all but a 2px rim, so what you see is a
+       highlight travelling around the border. One rotating element, so it
+       composites on the GPU and costs nothing to run. */
+    .logo-frame {
+      position: relative;
+      width: 112px;
+      height: 112px;
       margin: 0 auto;
+      padding: 2px;
+      border-radius: 18px;
+      background: var(--line);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .logo-frame::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 170%;
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      background: conic-gradient(from 0deg,
+          transparent 0 52%,
+          rgba(201, 169, 97, 0.22) 68%,
+          var(--accent) 82%,
+          #f3e2b6 89%,
+          var(--accent) 93%,
+          transparent 100%);
+      animation: logoTrace 4s linear infinite;
+      z-index: 0;
+    }
+    @keyframes logoTrace { to { rotate: 360deg; } }
+
+    .hero-logo-center {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
       object-fit: contain;
-      border: 1px solid var(--line);
-      border-radius: var(--r);
+      border-radius: 16px;
+      background: #000;
     }
 
     .hero-badge {
@@ -1948,7 +1966,8 @@
         display: none;
       }
 
-      .mobile-menu-toggle {
+      .mobile-menu-toggle,
+      .btn-call-nav {
         display: flex;
       }
 
@@ -1959,25 +1978,6 @@
       .nav .wrap {
         height: var(--nav-h);
         gap: 12px;
-      }
-
-      .top-bar {
-        font-size: 11.5px;
-      }
-
-      .top-bar .wrap {
-        justify-content: center;
-        height: auto;
-        padding-top: 8px;
-        padding-bottom: 8px;
-      }
-
-      .top-info:last-child {
-        display: none;
-      }
-
-      .top-info {
-        gap: 16px;
       }
 
       /* Header must never exceed the viewport */
@@ -2244,16 +2244,6 @@
         font-size: 29px;
       }
 
-      /* Two facts wrapped to four lines here — keep the phone number,
-         which is the only actionable one, and drop the rest. */
-      .top-info span:not(:last-child) {
-        display: none;
-      }
-
-      .top-info {
-        gap: 0;
-      }
-
       .btn {
         font-size: 13.5px;
         padding: 12px 14px;
@@ -2324,10 +2314,12 @@
         padding: 40px 0 36px;
       }
 
-      .hero-logo-center {
-        width: 54px;
-        height: 54px;
+      .logo-frame {
+        width: 78px;
+        height: 78px;
+        border-radius: 14px;
       }
+      .hero-logo-center { border-radius: 12px; }
 
       .hero-logo-container {
         margin-bottom: 22px;
@@ -2337,6 +2329,13 @@
     @media (prefers-reduced-motion: reduce) {
       html {
         scroll-behavior: auto;
+      }
+
+      /* Hold the gold line still rather than removing it */
+      .logo-frame::before {
+        animation: none;
+        background: var(--accent);
+        opacity: 0.5;
       }
 
       /* Skip the splash entirely rather than flashing it */
@@ -2379,19 +2378,6 @@
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <div class="app-root">
-    <!-- ================= TOP ANNOUNCEMENT BAR ================= -->
-    <div class="top-bar">
-      <div class="wrap">
-        <div class="top-info">
-          <span>Base:Galle · Island-Wide</span>
-          <span><a href="tel:+94778261901" class="top-tel">+94 77 826 1901</a></span>
-        </div>
-        <div class="top-info">
-          <span>24/7 Island Dispatch & Airport Transfers</span>
-        </div>
-      </div>
-    </div>
-
     <!-- ================= HEADER NAVIGATION ================= -->
     <header class="nav">
       <div class="wrap">
@@ -2418,6 +2404,9 @@
           <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20would%20like%20to%20inquire%20about%20a%20private%20ride%20or%20tour."
             target="_blank" class="btn btn-sm btn-whatsapp">
             <i class="fa-brands fa-whatsapp"></i> WhatsApp
+          </a>
+          <a href="tel:+94778261901" class="btn-call-nav" aria-label="Call +94 77 826 1901">
+            <i class="fa-solid fa-phone"></i>
           </a>
           <!-- Mobile Drawer Trigger -->
           <button type="button" class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open Navigation Menu">
@@ -2469,7 +2458,9 @@
 
         <!-- Big Scroll-Interactive Hero Logo -->
         <div class="hero-logo-container" data-reveal>
-          <img src="LOGO/DG - 1.png" alt="DG Travels Emblem" class="hero-logo-center" id="heroLogo">
+          <div class="logo-frame">
+            <img src="LOGO/DG - 1.png" alt="DG Travels Emblem" class="hero-logo-center" id="heroLogo">
+          </div>
         </div>
 
         <h1 data-reveal>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
