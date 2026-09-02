@@ -37,11 +37,11 @@
        No glows, no gradients on text, no ambient decoration.
        ============================================================ */
 
-    /* Registering the angle makes it interpolate; without @property support
-       the wedge simply holds still and the contour stays put. */
-    @property --dg-angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
+    /* Registering the position makes it interpolate; without @property
+       support the band simply holds still and the contour stays put. */
+    @property --dg-x {
+      syntax: '<percentage>';
+      initial-value: -20%;
       /* Inherited so a single animation on .logo-mark drives both the
          trailing sweep and the leading dot, keeping them exactly in step. */
       inherits: true;
@@ -79,7 +79,7 @@
       --nav-h: 72px;
 
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
-      --dg-angle: 0deg;
+      --dg-x: -20%;
     }
 
     *,
@@ -688,8 +688,9 @@
     /* ---------- Hero mark ----------
        No frame or plate: the artwork is transparent and sits straight on
        the page. A fine silver contour is generated from the art itself (see
-       the #dgContour SVG filter) and a rotating wedge lights a moving
-       section of it, so the line travels around the DG monogram. */
+       the #dgContour SVG filter) and a travelling band lights a moving
+       slice of it, so the light sweeps left to right across the DG
+       monogram. */
     .logo-mark {
       animation: dgSweep 4.5s linear infinite;
       position: relative;
@@ -722,28 +723,33 @@
       opacity: 0.6;
     }
 
-    /* 2 — the travelling highlight: same contour, revealed through a
-       rotating wedge. --dg-angle is registered below so it can animate. */
+    /* 2 — the travelling highlight: same contour, revealed through a band
+       that slides left to right. --dg-x is registered above so it can
+       animate. */
     .logo-sweep {
       position: absolute;
       inset: 0;
-      -webkit-mask-image: conic-gradient(from var(--dg-angle),
-          transparent 0 8%, #000 20%, #000 26%, transparent 40%, transparent 100%);
-      mask-image: conic-gradient(from var(--dg-angle),
-          transparent 0 8%, #000 20%, #000 26%, transparent 40%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg,
+          transparent calc(var(--dg-x) - 22%), #000 calc(var(--dg-x) - 12%),
+          #000 calc(var(--dg-x) - 6%), transparent calc(var(--dg-x) + 6%));
+      mask-image: linear-gradient(90deg,
+          transparent calc(var(--dg-x) - 22%), #000 calc(var(--dg-x) - 12%),
+          #000 calc(var(--dg-x) - 6%), transparent calc(var(--dg-x) + 6%));
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
     }
 
-    /* 2b — the dot: a narrow wedge right at the leading edge of the sweep,
-       so a bright point rides at the head of the travelling line. */
+    /* 2b — the dot: a narrow band right at the leading edge of the sweep,
+       so a bright point rides at the head of the travelling light. */
     .logo-head {
       position: absolute;
       inset: 0;
-      -webkit-mask-image: conic-gradient(from var(--dg-angle),
-          transparent 0 35.5%, #000 38%, #000 39.5%, transparent 42%, transparent 100%);
-      mask-image: conic-gradient(from var(--dg-angle),
-          transparent 0 35.5%, #000 38%, #000 39.5%, transparent 42%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg,
+          transparent calc(var(--dg-x) + 3%), #000 calc(var(--dg-x) + 5.5%),
+          #000 calc(var(--dg-x) + 7%), transparent calc(var(--dg-x) + 9.5%));
+      mask-image: linear-gradient(90deg,
+          transparent calc(var(--dg-x) + 3%), #000 calc(var(--dg-x) + 5.5%),
+          #000 calc(var(--dg-x) + 7%), transparent calc(var(--dg-x) + 9.5%));
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
     }
@@ -760,7 +766,7 @@
     /* 3 — the artwork itself, above both contour layers */
     .logo-art { position: relative; }
 
-    @keyframes dgSweep { to { --dg-angle: 360deg; } }
+    @keyframes dgSweep { to { --dg-x: 130%; } }
 
     .hero-badge {
       display: block;
