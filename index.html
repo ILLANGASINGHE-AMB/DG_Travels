@@ -326,7 +326,20 @@
        rises into place as the splash fades: the two cross over rather than
        one simply vanishing. `splashing` is only ever set by script, so with
        JS off the page is visible from the start. */
+    /* Ambient gold dust drifting behind the page — sits under everything,
+       never intercepts clicks. */
+    #ambientCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .app-root {
+      position: relative;
+      z-index: 1;
       opacity: 1;
       transform: none;
       transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
@@ -390,6 +403,37 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .preloader-logo-wrap {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preloader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--accent);
+      border-right-color: var(--accent-hi);
+      animation: preloaderSpin 1.6s linear infinite;
+    }
+
+    .preloader-ring-2 {
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px dashed rgba(201, 169, 97, 0.3);
+      animation: preloaderSpin 3.2s linear infinite reverse;
+    }
+
+    @keyframes preloaderSpin {
+      to { transform: rotate(360deg); }
     }
 
     .preloader-logo {
@@ -1960,6 +2004,15 @@
       position: relative;
     }
 
+    .modal-overlay.active .modal-card {
+      animation: modalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     .modal-card h3 {
       font-size: 18px;
       font-weight: 600;
@@ -2017,6 +2070,7 @@
     }
 
     .float-btn {
+      position: relative;
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -2056,7 +2110,32 @@
     }
 
     .float-tooltip {
-      display: none;
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      background: var(--surface-2);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+
+    .float-btn:hover .float-tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    @media (hover: none) {
+      .float-tooltip {
+        display: none;
+      }
     }
 
     /* ---------- Footer ---------- */
@@ -2642,7 +2721,11 @@
        blocked bundle can never leave a visitor staring at a covered page. -->
   <div id="preloader" aria-hidden="true">
     <div class="preloader-inner">
-      <img src="LOGO/DG - 1.png" alt="" class="preloader-logo" width="72" height="72">
+      <div class="preloader-logo-wrap">
+        <div class="preloader-ring"></div>
+        <div class="preloader-ring-2"></div>
+        <img src="LOGO/DG - 1.png" alt="" class="preloader-logo" width="72" height="72">
+      </div>
       <div class="preloader-word">
         DG TRAVELS
         <span>SRI LANKA</span>
@@ -2673,6 +2756,8 @@
   </svg>
 
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <canvas id="ambientCanvas" aria-hidden="true"></canvas>
 
   <div class="app-root">
     <!-- ================= HEADER NAVIGATION ================= -->
@@ -3274,6 +3359,71 @@
       // renders static and fully visible.
       if (!prefersReducedMotion) {
         document.documentElement.classList.add('js-anim');
+
+        // --- Ambient gold dust drifting behind the page ---
+        (function () {
+          const canvas = document.getElementById('ambientCanvas');
+          if (!canvas || !canvas.getContext) return;
+          const ctx = canvas.getContext('2d');
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          let w, h;
+
+          function resize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          }
+          resize();
+          window.addEventListener('resize', resize, { passive: true });
+
+          function makeParticle() {
+            return {
+              x: Math.random() * w,
+              y: Math.random() * h,
+              r: Math.random() * 1.5 + 0.6,
+              speed: Math.random() * 0.22 + 0.06,
+              drift: (Math.random() - 0.5) * 0.12,
+              baseAlpha: Math.random() * 0.3 + 0.1,
+              twinkle: Math.random() * Math.PI * 2,
+              twinkleSpeed: Math.random() * 0.018 + 0.006
+            };
+          }
+
+          const count = w < 768 ? 16 : 30;
+          const particles = [];
+          for (let i = 0; i < count; i++) particles.push(makeParticle());
+
+          let tabVisible = !document.hidden;
+          document.addEventListener('visibilitychange', function () {
+            tabVisible = !document.hidden;
+          });
+
+          function tick() {
+            if (tabVisible) {
+              ctx.clearRect(0, 0, w, h);
+              for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.y -= p.speed;
+                p.x += p.drift;
+                p.twinkle += p.twinkleSpeed;
+                if (p.y < -8) { p.y = h + 8; p.x = Math.random() * w; }
+                if (p.x < -8) p.x = w + 8;
+                if (p.x > w + 8) p.x = -8;
+                const alpha = p.baseAlpha * (0.55 + 0.45 * Math.sin(p.twinkle));
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(201, 169, 97, ' + alpha.toFixed(3) + ')';
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+            requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        })();
 
         // --- Scroll reveals ---
         const revealEls = document.querySelectorAll('[data-reveal]');
