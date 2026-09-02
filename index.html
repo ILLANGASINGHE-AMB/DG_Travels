@@ -203,6 +203,8 @@
 
     /* ---------- Buttons ---------- */
     .btn {
+      position: relative;
+      overflow: hidden;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -219,8 +221,30 @@
          overflowing its box on a narrow phone. */
       white-space: normal;
       text-wrap: balance;
-      transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
+      transition: background-color 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease),
+        transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
       touch-action: manipulation;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+
+    .btn:hover::before {
+      left: 130%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
     }
 
     .btn-gold {
@@ -230,6 +254,7 @@
 
     .btn-gold:hover {
       background: var(--accent-hi);
+      box-shadow: 0 10px 24px rgba(201, 169, 97, 0.35);
     }
 
     .btn-outline {
@@ -240,6 +265,7 @@
     .btn-outline:hover {
       border-color: var(--text-2);
       background: rgba(255, 255, 255, 0.03);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
     }
 
     /* WhatsApp keeps its brand cue as a tint, not a neon slab —
@@ -253,6 +279,7 @@
     .btn-whatsapp:hover {
       background: rgba(37, 211, 102, 0.16);
       border-color: rgba(37, 211, 102, 0.5);
+      box-shadow: 0 10px 22px rgba(37, 211, 102, 0.2);
     }
 
     .btn-sm {
@@ -371,6 +398,7 @@
       object-fit: contain;
       border: 1px solid var(--line);
       border-radius: var(--r);
+      animation: preloaderPulse 1.6s ease-in-out infinite;
     }
 
     .preloader-word {
@@ -428,23 +456,30 @@
        so content is never stranded invisible if the script fails. */
     .js-anim [data-reveal] {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(22px) scale(0.96);
     }
     .js-anim [data-reveal].in {
       opacity: 1;
       transform: none;
-      transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+      transition: opacity 0.6s var(--ease), transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     /* Children of a revealed group come in one after another */
     .js-anim [data-reveal-stagger] > * {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(18px) scale(0.94);
     }
     .js-anim [data-reveal-stagger].in > * {
       opacity: 1;
       transform: none;
-      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      transition: opacity 0.55s var(--ease), transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
+    @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    @keyframes wiggle { 0%, 100% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(-9deg) scale(1.08); } }
+    @keyframes pulseRing { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(1.7); opacity: 0; } }
+    @keyframes gradientShift { 0%, 100% { background-position: 0% center; } 50% { background-position: 100% center; } }
+    @keyframes blobDrift { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(26px, 18px) scale(1.08); } }
+    @keyframes preloaderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
     /* Header gains a hairline + tighter height once you leave the top */
     .nav { transition: height 0.25s var(--ease), background-color 0.25s var(--ease); }
@@ -466,7 +501,7 @@
       pointer-events: none;
     }
 
-    .btn:active { transform: translateY(1px); }
+    .btn:active { transform: translateY(1px) scale(0.97); }
     .vehicle-card:active { transform: scale(0.99); }
     .stat-num { font-variant-numeric: tabular-nums; }
 
@@ -502,6 +537,12 @@
       object-fit: contain;
       border: 1px solid var(--line);
       border-radius: var(--r-sm);
+      transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+
+    .nav-brand:hover .brand-logo-img {
+      animation: wiggle 0.5s ease-in-out;
+      border-color: var(--accent);
     }
 
     .brand-title {
@@ -530,12 +571,29 @@
     }
 
     .nav-links a {
+      position: relative;
+      display: inline-block;
       color: var(--text-2);
       transition: color 0.18s var(--ease);
     }
 
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 100%;
+      bottom: -5px;
+      height: 2px;
+      background: var(--accent);
+      transition: right 0.25s var(--ease);
+    }
+
     .nav-links a:hover {
       color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      right: 0;
     }
 
     .nav-cta-group {
@@ -555,12 +613,13 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--text-2);
-      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease), transform 0.18s var(--ease);
     }
 
     .btn-qr-nav:hover {
-      border-color: var(--text-2);
+      border-color: var(--accent);
       color: var(--text);
+      transform: translateY(-2px);
     }
 
     /* Only shown on phones, where the floating call button is hidden and
@@ -677,8 +736,42 @@
 
     /* ---------- Hero ---------- */
     .hero {
+      position: relative;
+      overflow: clip;
       padding: 84px 0 72px;
       text-align: center;
+    }
+
+    .hero .wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Soft drifting accent blobs behind the hero content */
+    .hero::before,
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(10px);
+    }
+
+    .hero::before {
+      top: -140px;
+      left: -120px;
+      background: radial-gradient(circle, rgba(201, 169, 97, 0.16), transparent 70%);
+      animation: blobDrift 13s ease-in-out infinite;
+    }
+
+    .hero::after {
+      bottom: -160px;
+      right: -130px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent 70%);
+      animation: blobDrift 16s ease-in-out infinite reverse;
     }
 
     .hero-logo-container {
@@ -788,7 +881,12 @@
     }
 
     .hero h1 .highlight {
-      color: var(--accent);
+      background: linear-gradient(90deg, var(--accent), var(--accent-hi), var(--accent));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 4s ease-in-out infinite;
     }
 
     .hero .lede {
@@ -821,6 +919,15 @@
       padding: 26px 16px;
       text-align: center;
       border-right: 1px solid var(--line);
+      transition: transform 0.25s var(--ease);
+    }
+
+    .stat-box:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-box:hover .stat-num {
+      color: var(--accent);
     }
 
     .stat-box:last-child {
@@ -833,6 +940,7 @@
       letter-spacing: -0.02em;
       color: var(--text);
       line-height: 1.2;
+      transition: color 0.25s var(--ease);
     }
 
     .stat-label {
@@ -1102,11 +1210,18 @@
       cursor: pointer;
       user-select: none;
       touch-action: manipulation;
-      transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
+      transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease),
+        transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
     }
 
     .vehicle-card:hover {
       border-color: var(--line-strong);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .vehicle-card:hover:active {
+      transform: translateY(-1px) scale(0.98);
     }
 
     .vehicle-card.selected {
@@ -1134,6 +1249,7 @@
 
     .vehicle-card.selected .vehicle-icon {
       color: var(--accent);
+      animation: floatY 2.4s ease-in-out infinite;
     }
 
     .vehicle-badge-type {
@@ -1217,11 +1333,16 @@
       display: flex;
       flex-direction: column;
       padding: 32px 28px;
-      transition: background-color 0.2s var(--ease);
+      position: relative;
+      z-index: 0;
+      transition: background-color 0.2s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
 
     .pkg-card:hover {
       background: var(--surface);
+      transform: translateY(-6px) scale(1.015);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+      z-index: 1;
     }
 
     .pkg-header {
@@ -1313,6 +1434,12 @@
       border-radius: var(--r-lg);
       padding: 30px 24px;
       text-align: center;
+      transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+
+    .driver-badge-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
     }
 
     .driver-avatar {
@@ -1326,6 +1453,7 @@
       justify-content: center;
       font-size: 24px;
       color: var(--text-3);
+      animation: floatY 3.2s ease-in-out infinite;
     }
 
     .driver-name {
@@ -1461,6 +1589,11 @@
       border-radius: var(--r);
       display: inline-block;
       margin: 26px auto 22px;
+      transition: transform 0.3s var(--ease);
+    }
+
+    .qr-box-frame:hover {
+      transform: scale(1.04) rotate(-1deg);
     }
 
     #qrcode {
@@ -1507,12 +1640,13 @@
       font-size: 13px;
       font-weight: 500;
       color: var(--text-2);
-      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease), transform 0.18s var(--ease);
     }
 
     .btn-qr-action:hover {
-      border-color: var(--text-2);
+      border-color: var(--accent);
       color: var(--text);
+      transform: translateY(-2px);
     }
 
     .feedback-cta-card {
@@ -1662,12 +1796,15 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 20px;
-      transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease);
+      transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease),
+        transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
 
     .review-card:hover {
       background: var(--surface-2);
       border-color: var(--line-strong);
+      transform: translateY(-5px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
     }
 
     .review-top {
@@ -1895,6 +2032,17 @@
     .float-btn.whatsapp {
       background: var(--green);
       color: #05240f;
+      position: relative;
+    }
+
+    .float-btn.whatsapp::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      animation: pulseRing 2.2s ease-out infinite;
+      pointer-events: none;
     }
 
     .float-btn.call {
@@ -1904,7 +2052,7 @@
     }
 
     .float-btn:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px) scale(1.08);
     }
 
     .float-tooltip {
@@ -1954,12 +2102,14 @@
     }
 
     .footer-links a {
+      display: inline-block;
       color: var(--text-2);
-      transition: color 0.18s var(--ease);
+      transition: color 0.18s var(--ease), transform 0.18s var(--ease);
     }
 
     .footer-links a:hover {
-      color: var(--text);
+      color: var(--accent);
+      transform: translateX(5px);
     }
 
     .footer-links a i {
