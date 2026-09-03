@@ -1580,8 +1580,16 @@
     }
 
     .lang-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 13.5px;
       color: var(--text-2);
+    }
+
+    .lang-pill .flag {
+      font-size: 14px;
+      line-height: 1;
     }
 
     .lang-pill+.lang-pill::before {
@@ -3179,10 +3187,10 @@
             <!-- Languages Spoken -->
             <div class="languages-badge-row">
               <span class="languages-label"><i class="fa-solid fa-language"></i> Fluent Languages:</span>
-              <span class="lang-pill">English</span>
-              <span class="lang-pill">Japanese (日本語)</span>
-              <span class="lang-pill">Sinhala (සිංහල)</span>
-              <span class="lang-pill">Tamil (தமிழ்)</span>
+              <span class="lang-pill"><span class="flag" aria-hidden="true">🇬🇧</span> English</span>
+              <span class="lang-pill"><span class="flag" aria-hidden="true">🇯🇵</span> Japanese (日本語)</span>
+              <span class="lang-pill"><span class="flag" aria-hidden="true">🇱🇰</span> Sinhala (සිංහල)</span>
+              <span class="lang-pill"><span class="flag" aria-hidden="true">🇮🇳</span> Tamil (தமிழ்)</span>
             </div>
 
             <div class="driver-perks">
