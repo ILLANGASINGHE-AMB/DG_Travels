@@ -2739,6 +2739,168 @@
         transform: none;
       }
     }
+
+    /* ============================================================
+       OWNER LOGIN — always present, tiny, and inert for visitors.
+       The editor's own styling lives in assets/admin.css and is only
+       fetched once an admin has signed in.
+       ============================================================ */
+
+    /* A section the owner has switched off. This is the visitor rule;
+       admin.css overrides it so the owner still sees the section,
+       dimmed and labelled, while logged in. */
+    .dg-section-off {
+      display: none !important;
+    }
+
+    /* Both login buttons carry display:flex from their own class, which
+       would otherwise beat the UA's [hidden] rule. */
+    [data-login-btn][hidden] {
+      display: none;
+    }
+
+    .btn-login-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 38px;
+      padding: 0 15px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      background: transparent;
+      color: var(--text-2);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease), transform 0.18s var(--ease);
+    }
+
+    .btn-login-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .login-card {
+      max-width: 400px;
+      text-align: left;
+    }
+
+    .login-card .login-head {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .login-card .login-icon {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
+      font-size: 17px;
+    }
+
+    .login-field {
+      margin-bottom: 14px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 11px 13px;
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      transition: border-color 0.18s var(--ease);
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .login-error {
+      display: none;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      background: rgba(255, 123, 114, 0.09);
+      border: 1px solid rgba(255, 123, 114, 0.35);
+      border-radius: var(--r);
+      color: var(--danger);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .login-error.ok {
+      background: rgba(201, 169, 97, 0.09);
+      border-color: rgba(201, 169, 97, 0.35);
+      color: var(--accent);
+    }
+
+    .login-submit {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .login-submit.loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .login-forgot {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text-3);
+      font: inherit;
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: color 0.18s var(--ease);
+    }
+
+    .login-forgot:hover {
+      color: var(--accent);
+    }
+
+    .login-note {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--text-3);
+      text-align: center;
+    }
+
+    /* On phones the header is already tight; the drawer carries the
+       Log In button instead — same breakpoint that drops "Show QR". */
+    @media (max-width: 768px) {
+      .btn-login-nav {
+        display: none;
+      }
+    }
   </style>
 
   <script>
@@ -2821,30 +2983,35 @@
     <header class="nav">
       <div class="wrap">
         <a href="#" class="nav-brand">
-          <img src="LOGO/DG - 1.png" alt="DG Travels Logo" class="brand-logo-img">
+          <img src="LOGO/DG - 1.png" alt="DG Travels Logo" class="brand-logo-img" data-cms-src="brand.logo">
           <div class="brand-title">
-            DG TRAVELS
-            <span class="sub">SRI LANKA</span>
+            <span data-cms-text="brand.name">DG TRAVELS</span>
+            <span class="sub" data-cms-text="brand.sub">SRI LANKA</span>
           </div>
         </a>
 
         <!-- Desktop Navigation Links -->
         <nav class="nav-links">
-          <a href="#booking">Fleet & Booking</a>
-          <a href="#tours">Popular Tours</a>
-          <a href="#about">About Driver</a>
-          <a href="#feedback">Reviews & QR</a>
+          <a href="#booking" data-section-link="booking">Fleet & Booking</a>
+          <a href="#tours" data-section-link="tours">Popular Tours</a>
+          <a href="#about" data-section-link="about">About Driver</a>
+          <a href="#feedback" data-section-link="feedback">Reviews & QR</a>
         </nav>
 
         <div class="nav-cta-group">
+          <!-- Owner sign-in. Hidden until /api/config confirms Supabase is
+               configured, so it never appears as a dead button. -->
+          <button type="button" class="btn-login-nav" data-login-btn hidden>
+            <i class="fa-solid fa-lock"></i> <span data-login-label>Log In</span>
+          </button>
           <button type="button" class="btn-qr-nav" id="openQrModalBtn">
             <i class="fa-solid fa-qrcode"></i> Show QR
           </button>
           <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20would%20like%20to%20inquire%20about%20a%20private%20ride%20or%20tour."
-            target="_blank" class="btn btn-sm btn-whatsapp">
+            target="_blank" class="btn btn-sm btn-whatsapp" data-cms-whatsapp>
             <i class="fa-brands fa-whatsapp"></i> WhatsApp
           </a>
-          <a href="tel:+94778261901" class="btn-call-nav" aria-label="Call +94 77 826 1901">
+          <a href="tel:+94778261901" class="btn-call-nav" aria-label="Call +94 77 826 1901" data-cms-phone>
             <i class="fa-solid fa-phone"></i>
           </a>
           <!-- Mobile Drawer Trigger -->
@@ -2861,39 +3028,43 @@
       <div>
         <div class="drawer-header">
           <div class="nav-brand">
-            <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:36px;">
+            <img src="LOGO/DG - 1.png" alt="DG Travels" class="brand-logo-img" style="height:36px;"
+              data-cms-src="brand.logo">
             <div class="brand-title">
-              DG TRAVELS
-              <span class="sub">SRI LANKA</span>
+              <span data-cms-text="brand.name">DG TRAVELS</span>
+              <span class="sub" data-cms-text="brand.sub">SRI LANKA</span>
             </div>
           </div>
           <button type="button" class="drawer-close" id="drawerCloseBtn"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
         <div class="drawer-links">
-          <a href="#booking" class="drawer-link">Fleet & Booking</a>
-          <a href="#tours" class="drawer-link">Popular Tours</a>
-          <a href="#about" class="drawer-link">About Driver</a>
-          <a href="#feedback" class="drawer-link">Reviews & QR</a>
+          <a href="#booking" class="drawer-link" data-section-link="booking">Fleet & Booking</a>
+          <a href="#tours" class="drawer-link" data-section-link="tours">Popular Tours</a>
+          <a href="#about" class="drawer-link" data-section-link="about">About Driver</a>
+          <a href="#feedback" class="drawer-link" data-section-link="feedback">Reviews & QR</a>
           <a href="#feedback" class="drawer-link" id="drawerShowQrBtn">In-Vehicle QR
             Standee</a>
         </div>
       </div>
 
       <div>
-        <a href="https://wa.me/94778261901" target="_blank" class="btn btn-block btn-whatsapp">
+        <a href="https://wa.me/94778261901" target="_blank" class="btn btn-block btn-whatsapp" data-cms-whatsapp>
           <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
         </a>
-        <a href="tel:+94778261901" class="btn btn-block btn-outline">
-          <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
+        <a href="tel:+94778261901" class="btn btn-block btn-outline" data-cms-phone>
+          <i class="fa-solid fa-phone"></i> Call <span data-cms-text="contact.phone">+94 77 826 1901</span>
         </a>
+        <button type="button" class="btn btn-block btn-outline" data-login-btn hidden style="margin-top:10px;">
+          <i class="fa-solid fa-lock"></i> <span data-login-label>Log In</span>
+        </button>
       </div>
     </div>
 
     <!-- ================= HERO SECTION (WITH DYNAMIC SCROLL-ZOOM LOGO) ================= -->
-    <section class="hero">
+    <section class="hero" data-section="hero">
       <div class="wrap">
-        <p class="hero-badge" data-reveal>Premium Private Transport</p>
+        <p class="hero-badge" data-reveal data-cms-text="hero.badge">Premium Private Transport</p>
 
         <!-- Big Scroll-Interactive Hero Logo -->
         <div class="hero-logo-container" data-reveal>
@@ -2902,19 +3073,21 @@
                  1. a dim gold contour, always visible
                  2. the same contour, revealed by a rotating wedge -> the light travels
                  3. the logo itself, on top -->
-            <img src="LOGO/DG_logo_Tp.png" alt="" aria-hidden="true" class="logo-contour">
+            <img src="LOGO/DG_logo_Tp.png" alt="" aria-hidden="true" class="logo-contour"
+              data-cms-src="brand.hero_logo">
             <div class="logo-sweep" aria-hidden="true">
-              <img src="LOGO/DG_logo_Tp.png" alt="">
+              <img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo">
             </div>
             <div class="logo-head" aria-hidden="true">
-              <img src="LOGO/DG_logo_Tp.png" alt="">
+              <img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo">
             </div>
-            <img src="LOGO/DG_logo_Tp.png" alt="DG Travels" class="logo-art">
+            <img src="LOGO/DG_logo_Tp.png" alt="DG Travels" class="logo-art" data-cms-src="brand.hero_logo">
           </div>
         </div>
 
-        <h1 data-reveal>Experience Sri Lanka with <span class="highlight">DG Travels</span></h1>
-        <p class="lede" data-reveal>
+        <h1 data-reveal><span data-cms-text="hero.title">Experience Sri Lanka with</span>
+          <span class="highlight" data-cms-text="hero.title_accent">DG Travels</span></h1>
+        <p class="lede" data-reveal data-cms-text="hero.lede">
           Personalized, safe, and luxurious private transport for foreign tourists, surf travelers, and local guests.
           Operating from Galle across all scenic destinations in Sri Lanka.
         </p>
@@ -2931,23 +3104,23 @@
         <!-- Trust Stats Bar -->
         <div class="hero-stats" data-reveal data-reveal-stagger>
           <div class="stat-box">
-            <div class="stat-num">4+</div>
-            <div class="stat-label">Years Experience (Est. 2022)</div>
+            <div class="stat-num" data-cms-text="hero.stat1_num">4+</div>
+            <div class="stat-label" data-cms-text="hero.stat1_label">Years Experience (Est. 2022)</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-box">
-            <div class="stat-num">24/7</div>
-            <div class="stat-label">On-Call Island Dispatch</div>
+            <div class="stat-num" data-cms-text="hero.stat2_num">24/7</div>
+            <div class="stat-label" data-cms-text="hero.stat2_label">On-Call Island Dispatch</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-box">
-            <div class="stat-num">4 Languages</div>
-            <div class="stat-label">English · 日本語 · සිංහල · தமிழ்</div>
+            <div class="stat-num" data-cms-text="hero.stat3_num">4 Languages</div>
+            <div class="stat-label" data-cms-text="hero.stat3_label">English · 日本語 · සිංහල · தமிழ්</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-box">
-            <div class="stat-num">4 Vehicles</div>
-            <div class="stat-label">Hatchback to 9-Seat Van</div>
+            <div class="stat-num" data-cms-text="hero.stat4_num">4 Vehicles</div>
+            <div class="stat-label" data-cms-text="hero.stat4_label">Hatchback to 9-Seat Van</div>
           </div>
         </div>
       </div>
@@ -2955,11 +3128,11 @@
 
 
     <!-- ================= BOOKING & FLEET CALCULATOR (CUSTOM QUOTE ON INQUIRY) ================= -->
-    <section class="booking" id="booking">
+    <section class="booking" id="booking" data-section="booking">
       <div class="wrap">
-        <div class="eyebrow" data-reveal>Flexible Route & Fleet</div>
-        <h2 class="section-title" data-reveal>Where Are You Headed Today?</h2>
-        <p class="section-subtitle" data-reveal>Start typing a hotel, villa or airport and pick it from the Google Maps suggestions.
+        <div class="eyebrow" data-reveal data-cms-text="booking.eyebrow">Flexible Route & Fleet</div>
+        <h2 class="section-title" data-reveal data-cms-text="booking.title">Where Are You Headed Today?</h2>
+        <p class="section-subtitle" data-reveal data-cms-text="booking.subtitle">Start typing a hotel, villa or airport and pick it from the Google Maps suggestions.
           We work out the distance for you and send it straight to WhatsApp.</p>
 
         <div class="steps-pill" data-reveal data-reveal-stagger>
@@ -3079,14 +3252,16 @@
     </section>
 
     <!-- ================= POPULAR TOURS SECTION ================= -->
-    <section class="packages" id="tours">
+    <section class="packages" id="tours" data-section="tours">
       <div class="wrap">
-        <div class="eyebrow" data-reveal>Island-Wide Excursions</div>
-        <h2 class="section-title" data-reveal>Popular Sri Lanka Tour Routes</h2>
-        <p class="section-subtitle" data-reveal>Tailored scenic road trips and transfers with flexible stops for photography, tea
+        <div class="eyebrow" data-reveal data-cms-text="tours.eyebrow">Island-Wide Excursions</div>
+        <h2 class="section-title" data-reveal data-cms-text="tours.title">Popular Sri Lanka Tour Routes</h2>
+        <p class="section-subtitle" data-reveal data-cms-text="tours.subtitle">Tailored scenic road trips and transfers with flexible stops for photography, tea
           factory visits, wildlife safaris, and beach spots.</p>
 
-        <div class="pkg-grid" data-reveal data-reveal-stagger>
+        <!-- Replaced wholesale from the `tours` table when one has rows;
+             the three cards below are the fallback the page ships with. -->
+        <div class="pkg-grid" id="tourGrid" data-reveal data-reveal-stagger>
           <!-- Tour 1 -->
           <div class="pkg-card">
             <div class="pkg-header">
@@ -3158,25 +3333,26 @@
 
 
     <!-- ================= ABOUT DRIVER & MULTILINGUAL SECTION ================= -->
-    <section class="about-driver" id="about">
+    <section class="about-driver" id="about" data-section="about">
       <div class="wrap">
         <div class="driver-card" data-reveal data-reveal-stagger>
           <div class="driver-badge-card">
             <div class="driver-avatar" id="driverAvatarBtn" role="button" tabindex="0"
                  aria-label="View larger photo of Isum Sejan Gunasekara">
-              <img src="pfp_DG.jpg" alt="Isum Sejan Gunasekara, Owner &amp; Chauffeur Host">
+              <img src="pfp_DG.jpg" alt="Isum Sejan Gunasekara, Owner &amp; Chauffeur Host"
+                data-cms-src="about.photo">
             </div>
-            <div class="driver-name">Isum Sejan Gunasekara</div>
-            <div class="driver-role">Owner & Chauffeur Host</div>
+            <div class="driver-name" data-cms-text="about.name">Isum Sejan Gunasekara</div>
+            <div class="driver-role" data-cms-text="about.role">Owner & Chauffeur Host</div>
             <div class="driver-location-tag">
-              <i class="fa-solid fa-location-dot"></i>Galle
+              <i class="fa-solid fa-location-dot"></i><span data-cms-text="about.location">Galle</span>
             </div>
           </div>
 
           <div class="driver-details">
             <div class="eyebrow" data-reveal>Meet Your Chauffeur</div>
-            <h3>Personalized Island-Wide Travel with DG Travels</h3>
-            <p>
+            <h3 data-cms-text="about.title">Personalized Island-Wide Travel with DG Travels</h3>
+            <p data-cms-text="about.bio">
               Hello and welcome! Founded in 2022, DG Travels is built on reliability, immaculate vehicles, and
               personalized attention. Based right in coastal Ahangama, Galle, I take pride in providing smooth airport
               pickups, flexible day trips, and comprehensive island tours across Sri Lanka. Whether you are arriving for
@@ -3201,10 +3377,10 @@
             </div>
 
             <div class="btn-row">
-              <a href="tel:+94778261901" class="btn btn-gold">
-                <i class="fa-solid fa-phone"></i> Call +94 77 826 1901
+              <a href="tel:+94778261901" class="btn btn-gold" data-cms-phone>
+                <i class="fa-solid fa-phone"></i> Call <span data-cms-text="contact.phone">+94 77 826 1901</span>
               </a>
-              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp">
+              <a href="https://wa.me/94778261901" target="_blank" class="btn btn-whatsapp" data-cms-whatsapp>
                 <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
               </a>
             </div>
@@ -3215,11 +3391,11 @@
 
 
     <!-- ================= QR CODE & DYNAMIC FEEDBACK SECTION ================= -->
-    <section class="feedback-section" id="feedback">
+    <section class="feedback-section" id="feedback" data-section="feedback">
       <div class="wrap">
-        <div class="eyebrow" data-reveal>Passenger Reviews & QR Code</div>
-        <h2 class="section-title" data-reveal>We Value Your Feedback</h2>
-        <p class="section-subtitle" data-reveal>Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap
+        <div class="eyebrow" data-reveal data-cms-text="feedback.eyebrow">Passenger Reviews & QR Code</div>
+        <h2 class="section-title" data-reveal data-cms-text="feedback.title">We Value Your Feedback</h2>
+        <p class="section-subtitle" data-reveal data-cms-text="feedback.subtitle">Finished your ride or tour with DG Travels? Scan the QR code in the vehicle, or tap
           the button below, to share your experience with us.</p>
 
         <div class="feedback-container" data-reveal data-reveal-stagger>
@@ -3330,7 +3506,53 @@
         <button type="button" class="modal-close" id="closePhotoModalBtn" aria-label="Close photo">
           <i class="fa-solid fa-xmark"></i>
         </button>
-        <img src="pfp_DG.jpg" alt="Isum Sejan Gunasekara, Owner &amp; Chauffeur Host">
+        <img src="pfp_DG.jpg" alt="Isum Sejan Gunasekara, Owner &amp; Chauffeur Host" data-cms-src="about.photo">
+      </div>
+    </div>
+
+    <!-- ================= OWNER LOGIN =================
+         Supabase Auth. Only accounts listed in public.admins can sign
+         in here — any other valid account is signed straight back out.
+         Wired up in assets/cms.js. -->
+    <div class="modal-overlay" id="loginModal">
+      <div class="modal-card login-card">
+        <button type="button" class="modal-close" id="closeLoginModalBtn" aria-label="Close login">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="login-head">
+          <div class="login-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <h3>Owner Log In</h3>
+          <p class="modal-sub">Sign in to edit this website.</p>
+        </div>
+
+        <div class="login-error" id="loginError" role="alert"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="login-field">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" autocomplete="username" required
+              placeholder="you@example.com">
+          </div>
+
+          <div class="login-field">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" autocomplete="current-password" required
+              placeholder="••••••••">
+          </div>
+
+          <button type="submit" class="btn btn-gold btn-block login-submit" id="loginSubmitBtn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In
+          </button>
+
+          <button type="button" class="login-forgot" id="loginForgotBtn">
+            Forgot your password?
+          </button>
+        </form>
+
+        <p class="login-note">
+          Visitors never need an account — this is the owner's entrance to the site editor.
+        </p>
       </div>
     </div>
 
@@ -3400,7 +3622,7 @@
             <div class="footer-contact-item">
               <i class="fa-solid fa-phone"></i>
               <div>
-                <strong>+94 77 826 1901</strong><br>
+                <strong data-cms-text="contact.phone">+94 77 826 1901</strong><br>
                 Available on Call & WhatsApp 24/7
               </div>
             </div>
@@ -3409,7 +3631,7 @@
 
         <div class="footer-bottom">
           <div>&copy; <span id="currentYear"></span> DG Travels Sri Lanka. All Rights Reserved.</div>
-          <div>Ahangama, Galle · Southern Province, Sri Lanka</div>
+          <div data-cms-text="footer.tagline">Ahangama, Galle · Southern Province, Sri Lanka</div>
         </div>
       </div>
     </footer>
@@ -3580,7 +3802,19 @@
             });
           }, { threshold: 0.5 });
 
-          document.querySelectorAll('.stat-num').forEach(function (el) { statObserver.observe(el); });
+          // Hold off until the published copy has landed. The animation
+          // captures the number it starts with and writes it back at the
+          // end, so counting a stat that is about to be replaced would
+          // undo the owner's edit a moment after it appeared.
+          let statsStarted = false;
+          function startStatCounters() {
+            if (statsStarted) return;
+            statsStarted = true;
+            document.querySelectorAll('.stat-num').forEach(function (el) { statObserver.observe(el); });
+          }
+          document.addEventListener('dg:ready', startStatCounters);
+          // …and start regardless if that never arrives.
+          setTimeout(startStatCounters, 2500);
         }
       }
 
@@ -3756,28 +3990,48 @@
         .catch(function () { /* no config endpoint: inputs stay plain */ });
 
       // ================= 5. BOOKING & WHATSAPP =================
-      const vehicleCards = document.querySelectorAll('.vehicle-card');
       const fleetGrid = document.getElementById('fleetGrid');
       // Nothing is preselected — the traveller chooses.
       let selectedVehicle = '';
 
       function selectVehicle(card) {
-        vehicleCards.forEach(function (c) {
+        if (!fleetGrid) return;
+        fleetGrid.querySelectorAll('.vehicle-card').forEach(function (c) {
           const on = c === card;
           c.classList.toggle('selected', on);
           c.setAttribute('aria-checked', String(on));
         });
         selectedVehicle = card.dataset.vehicle;
-        if (fleetGrid) fleetGrid.classList.remove('invalid');
+        fleetGrid.classList.remove('invalid');
         setError('errVehicle', false);
         updateBookingSummary();
       }
 
-      vehicleCards.forEach(function (card) {
-        card.addEventListener('click', function () { selectVehicle(card); });
-        card.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectVehicle(card); }
+      // Delegated rather than bound per card: the owner can add, rename or
+      // remove vehicles from the admin panel, which replaces this grid's
+      // markup outright. Listening on the container keeps those new cards
+      // selectable without any rebinding.
+      if (fleetGrid) {
+        fleetGrid.addEventListener('click', function (e) {
+          const card = e.target.closest('.vehicle-card');
+          if (card) selectVehicle(card);
         });
+        fleetGrid.addEventListener('keydown', function (e) {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          const card = e.target.closest('.vehicle-card');
+          if (!card) return;
+          e.preventDefault();
+          selectVehicle(card);
+        });
+      }
+
+      // A vehicle that is renamed or deleted while it is selected must not
+      // linger in the WhatsApp message.
+      document.addEventListener('dg:vehicles-rendered', function () {
+        if (!fleetGrid) return;
+        const still = fleetGrid.querySelector('.vehicle-card.selected');
+        selectedVehicle = still ? still.dataset.vehicle : '';
+        updateBookingSummary();
       });
 
       const selectedRouteText = document.getElementById('selectedRouteText');
@@ -3874,8 +4128,13 @@
             'Travel Date: ' + formatTravelDate(dateInputEl.value)
           ];
 
+          // The owner can change the business number from the admin panel.
+          const cms = window.DGCMS;
+          const waNumber = ((cms && cms.content.settings['contact.whatsapp']) || '94778261901')
+            .replace(/\D/g, '');
+
           window.open(
-            'https://wa.me/94778261901?text=' + encodeURIComponent(lines.join('\n')),
+            'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(lines.join('\n')),
             '_blank'
           );
         });
@@ -4130,6 +4389,13 @@
       loadReviews();
     });
   </script>
+
+  <!-- ================= SITE CONTENT & OWNER LOGIN =================
+       Loaded last so the page above is already interactive. Reads the
+       published content from Supabase and paints it over the copy
+       written into this file; if any of that fails, what you see above
+       is exactly what the visitor keeps. -->
+  <script src="assets/cms.js"></script>
 </body>
 
 </html>

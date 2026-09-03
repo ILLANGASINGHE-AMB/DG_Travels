@@ -8,13 +8,21 @@ index.html          Main website (reads reviews from /api/reviews)
 feedback.html       The page the QR code opens — name, email, feedback, rating
 api/feedback.js     POST — validates, saves to Supabase, emails you
 api/reviews.js      GET  — public review feed (never returns email addresses)
-api/config.js       GET  — public runtime config (Maps browser key)
+api/config.js       GET  — public runtime config (Maps + Supabase anon keys)
 api/distance.js     POST — driving distance for the booking form
 api/_supabase.js    Supabase REST helper
 api/_notify.js      Resend email helper
-supabase/schema.sql The table to create
+assets/cms.js       Site content + owner login (loads on every page view)
+assets/admin.js     The editor — only downloaded once an admin signs in
+assets/admin.css    Editor styling
+supabase/schema.sql       The feedback table
+supabase/admin-schema.sql The editable-content tables, auth rules and storage
 vercel.json         Clean URLs + security headers
 ```
+
+> Adding the owner Log In button and the site editor is a **separate, optional
+> setup** covered in [ADMIN.md](ADMIN.md). Skip it and the site works exactly as
+> described below.
 
 There are **no npm dependencies** — everything uses built-in `fetch`.
 
@@ -90,6 +98,7 @@ skip it. The server key never leaves Vercel.
 |---|---|
 | `SUPABASE_URL` | `https://xxxxx.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | your `service_role` key |
+| `SUPABASE_ANON_KEY` | your `anon` key — only needed for the owner login, see [ADMIN.md](ADMIN.md) |
 | `RESEND_API_KEY` | `re_...` |
 | `NOTIFY_EMAIL_TO` | the address that should receive alerts |
 | `GOOGLE_MAPS_BROWSER_KEY` | the referrer-restricted browser key (optional) |
@@ -198,3 +207,5 @@ Create a `.env.local` from `.env.example` first (see that file for the variable 
 | No address suggestions while typing | `GOOGLE_MAPS_BROWSER_KEY` missing, or the key's referrer restriction does not include your domain |
 | Message says "Distance: To be confirmed" | No Maps key set, or Routes API / Distance Matrix API is not enabled on it — check the function logs |
 | Maps billing warnings | Add the referrer restriction to the browser key and the API restriction to the server key |
+| No **Log In** button in the top bar | `SUPABASE_ANON_KEY` is missing in Vercel, or the site was not redeployed after adding it |
+| "This account is not an administrator" | The account exists but is not in `public.admins` — see [ADMIN.md](ADMIN.md) step 2 |
