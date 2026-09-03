@@ -494,16 +494,18 @@
     var modal = document.getElementById('loginModal');
     if (!modal) return;
     modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    if (window.dgLockBodyScroll) window.dgLockBodyScroll();
+    else document.body.style.overflow = 'hidden';
     var email = document.getElementById('loginEmail');
     if (email) setTimeout(function () { email.focus(); }, 60);
   }
 
   function closeLoginModal() {
     var modal = document.getElementById('loginModal');
-    if (!modal) return;
+    if (!modal || !modal.classList.contains('active')) return;
     modal.classList.remove('active');
-    document.body.style.overflow = '';
+    if (window.dgUnlockBodyScroll) window.dgUnlockBodyScroll();
+    else document.body.style.overflow = '';
     setLoginError('');
   }
 

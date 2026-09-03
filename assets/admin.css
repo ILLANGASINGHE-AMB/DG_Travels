@@ -683,5 +683,85 @@ html.dg-inline [data-cms-text].dg-saving { opacity: 0.5; }
   .dg-adminbar .dg-switch-label { display: none; }
   .dg-grid { grid-template-columns: 1fr; }
   .dg-field.half { grid-column: 1 / -1; }
-  .dg-panel { width: 100vw; }
+  /* 100vw includes the scrollbar gutter on a desktop-width tablet and
+     pushes the panel a few pixels off; 100% tracks the viewport exactly. */
+  .dg-panel { width: 100%; }
+}
+
+/* Under 16px, iOS Safari zooms the panel in on focus and never zooms back
+   out. Keyed to the input method so a landscape iPad is covered too. */
+@media (hover: none) and (pointer: coarse) {
+  .dg-input {
+    font-size: 16px;
+    padding: 11px 12px;
+  }
+}
+
+/* ---------------------------------------------------------
+   Phones. The owner edits the site from the same phone the
+   site is designed for, so the panel gets the same treatment.
+   --------------------------------------------------------- */
+@media (max-width: 600px) {
+  .dg-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .dg-btn.small {
+    min-height: 40px;
+  }
+
+  .dg-bar-btn {
+    min-height: 40px;
+  }
+
+  .dg-panel-body {
+    padding: 16px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dg-panel-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Tabs overflow their row once there are more than three; let them
+     scroll sideways rather than wrap into a second bar. */
+  .dg-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .dg-tabs::-webkit-scrollbar { display: none; }
+
+  .dg-tab {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* Thumbnail beside a 16px input leaves no usable field width. */
+  .dg-image-field {
+    flex-direction: column;
+  }
+
+  .dg-image-preview {
+    width: 100%;
+    height: 120px;
+  }
+
+  .dg-image-actions .dg-btn {
+    flex: 1 1 auto;
+  }
+
+  .dg-list-head {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dg-row-card,
+  .dg-toggle-row {
+    flex-wrap: wrap;
+  }
 }

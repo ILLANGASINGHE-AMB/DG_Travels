@@ -573,6 +573,7 @@
       display: flex;
       align-items: center;
       gap: 11px;
+      min-width: 0;
     }
 
     .brand-logo-img {
@@ -596,6 +597,17 @@
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.12em;
+      min-width: 0;
+    }
+
+    /* On a 320px phone the header actions take a fixed 132px; the wordmark
+       is what has to give, and it clips rather than overflowing. */
+    .brand-title > span {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .brand-title span.sub {
@@ -650,6 +662,7 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
+      touch-action: manipulation;
       height: 38px;
       padding: 0 15px;
       border: 1px solid var(--line-strong);
@@ -672,6 +685,7 @@
       display: none;
       width: 44px;
       height: 44px;
+      touch-action: manipulation;
       align-items: center;
       justify-content: center;
       flex: none;
@@ -687,6 +701,7 @@
       display: none;
       width: 44px;
       height: 44px;
+      touch-action: manipulation;
       align-items: center;
       justify-content: center;
       font-size: 17px;
@@ -715,6 +730,9 @@
       padding-bottom: max(22px, env(safe-area-inset-bottom));
       padding-right: max(22px, env(safe-area-inset-right));
       overflow-y: auto;
+      /* Paired with overflow-y:auto the other axis would compute to auto as
+         well, so anything a pixel too wide becomes a sideways scroll. */
+      overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
       visibility: hidden;
@@ -738,7 +756,7 @@
     .drawer-close {
       width: 44px;
       height: 44px;
-      margin-right: -10px;
+      touch-action: manipulation;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -756,6 +774,7 @@
     .drawer-links a {
       display: flex;
       align-items: center;
+      touch-action: manipulation;
       min-height: 52px;
       font-size: 15px;
       font-weight: 500;
@@ -1158,7 +1177,12 @@
     .form-select.invalid { border-color: var(--danger); }
     .fleet-grid.invalid .vehicle-card { border-color: rgba(255, 123, 114, 0.45); }
 
-    .summary-line { font-size: 14px; color: var(--text); }
+    .summary-line {
+      font-size: 14px;
+      color: var(--text);
+      /* Google place names run long and have no break opportunities. */
+      overflow-wrap: anywhere;
+    }
     .summary-line strong { font-weight: 600; }
     .summary-meta {
       display: flex;
@@ -1338,6 +1362,10 @@
     .price-estimate-box {
       font-size: 13.5px;
       color: var(--text-2);
+      /* Lets the flex item shrink so a long route wraps instead of
+         stretching .booking-actions wider than the card. */
+      min-width: 0;
+      flex: 1 1 260px;
     }
 
     .price-estimate-box strong {
@@ -1663,12 +1691,19 @@
       transform: scale(1.04) rotate(-1deg);
     }
 
-    #qrcode {
+    #qrcode,
+    #modalQrCode {
       display: flex;
       justify-content: center;
     }
 
-    #qrcode img {
+    /* The library emits a fixed-size <img> (and a <canvas> fallback). Both
+       are pinned to their frame so a narrow phone shrinks the code rather
+       than pushing the card past the screen edge. */
+    #qrcode img,
+    #qrcode canvas,
+    #modalQrCode img,
+    #modalQrCode canvas {
       margin: 0 auto;
       max-width: 100%;
       height: auto;
@@ -1700,6 +1735,7 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
+      touch-action: manipulation;
       height: 40px;
       padding: 0 16px;
       border: 1px solid var(--line-strong);
@@ -1910,11 +1946,17 @@
     .reviewer-meta h4 {
       font-size: 14.5px;
       font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .reviewer-tag {
       font-size: 12px;
       color: var(--text-3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .reviewer-tag i {
@@ -1933,6 +1975,8 @@
       font-size: 14.5px;
       line-height: 1.7;
       color: var(--text-2);
+      /* Visitor-written text can contain an unbroken URL. */
+      overflow-wrap: anywhere;
     }
 
     .review-footer {
@@ -2061,6 +2105,7 @@
       right: 8px;
       width: 44px;
       height: 44px;
+      touch-action: manipulation;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2322,6 +2367,66 @@
       }
     }
 
+    /* 769-899px: everything still fits on one row, but only by squeezing.
+       Four links, two buttons and the wordmark share ~700 usable pixels,
+       and the brand is what loses — at 800px it had about 60px and the
+       wordmark truncated. This is tablet territory, where a drawer is the
+       expected pattern, so the nav switches over here rather than fighting
+       for the last few pixels. The rest of the phone layout is untouched. */
+    @media (min-width: 769px) and (max-width: 899px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle,
+      .btn-call-nav {
+        display: flex;
+      }
+
+      .btn-qr-nav {
+        display: none;
+      }
+    }
+
+    /* 900-1020px: the full link row fits once the gaps come in. */
+    @media (min-width: 900px) and (max-width: 1020px) {
+      .nav .wrap {
+        gap: 16px;
+      }
+
+      .nav-links {
+        gap: 20px;
+        font-size: 13.5px;
+      }
+
+      .nav-cta-group {
+        gap: 8px;
+      }
+
+      .btn-qr-nav,
+      .btn-login-nav {
+        padding: 0 11px;
+      }
+
+      .nav-cta-group .btn-sm {
+        padding: 9px 12px;
+      }
+    }
+
+    /* Tablets. Three tour cards stacked full width read as three slabs;
+       a 2-up grid with the odd card spanning keeps the row edges even.
+       The :nth-child(odd) guard means an even set just fills two columns —
+       the tour list is owner-editable, so the count is not fixed. */
+    @media (min-width: 701px) and (max-width: 1020px) {
+      .pkg-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pkg-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+      }
+    }
+
     @media (max-width: 860px) {
       .route-grid { grid-template-columns: 1fr 1fr; }
       /* Locations full width, then name + passengers paired, date full width */
@@ -2454,6 +2559,64 @@
       .form-select {
         font-size: 16px;
       }
+
+      /* The sticky header carries a permanent WhatsApp and Call button from
+         this width down, so the floating pair is pure duplication. */
+      .floating-actions {
+        display: none;
+      }
+
+      .section-subtitle {
+        font-size: 14.5px;
+        margin-bottom: 32px;
+      }
+
+      .section-head {
+        margin-bottom: 34px;
+      }
+
+      .eyebrow {
+        margin-bottom: 11px;
+      }
+
+      .vehicle-section-head {
+        padding-top: 24px;
+      }
+
+      .feedback-section {
+        padding-bottom: 72px;
+      }
+
+      footer {
+        padding-top: 52px;
+      }
+
+      .footer-grid {
+        margin-bottom: 40px;
+      }
+
+      .reviews-header {
+        margin-bottom: 30px;
+      }
+
+      /* A tap opens the native picker; the hover lift just leaves the card
+         stuck in its raised state afterwards. */
+      .vehicle-card:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .pkg-card:hover,
+      .review-card:hover,
+      .driver-badge-card:hover,
+      .stat-box:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .qr-box-frame:hover {
+        transform: none;
+      }
     }
 
     @media (max-width: 600px) {
@@ -2527,6 +2690,12 @@
         align-items: stretch;
       }
 
+      /* The row-layout basis is a main-axis size, so once the actions stack
+         it becomes a 260px-tall box with nothing in it. */
+      .price-estimate-box {
+        flex: 0 1 auto;
+      }
+
       .booking-btn-group {
         flex-direction: column;
       }
@@ -2556,15 +2725,19 @@
         width: 100%;
       }
 
-      /* The sticky header already carries a permanent WhatsApp button here,
-         and these were sitting on top of the full-width CTA labels. */
-      .floating-actions {
-        display: none;
-      }
-
       .driver-perks {
         grid-template-columns: 1fr;
         gap: 12px;
+      }
+
+      /* The interpunct is a leading pseudo-element, so once the row wraps a
+         line can begin with a stray dot. Spacing separates them instead. */
+      .languages-badge-row {
+        gap: 8px 18px;
+      }
+
+      .lang-pill + .lang-pill::before {
+        content: none;
       }
 
       .review-card {
@@ -2587,9 +2760,69 @@
         padding-bottom: calc(32px + env(safe-area-inset-bottom));
       }
 
-      .floating-actions {
-        bottom: calc(16px + env(safe-area-inset-bottom));
-        right: calc(16px + env(safe-area-inset-right));
+      /* Stacked layout: the badge reads as a centred header for the bio
+         below it rather than a stray card pinned to the left margin. */
+      .driver-badge-card {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .driver-card {
+        gap: 30px;
+      }
+
+      /* One step per line — three wrapped rows of numbered text read as a
+         paragraph, a column reads as a sequence. */
+      .steps-pill {
+        flex-direction: column;
+        gap: 9px;
+        margin-bottom: 26px;
+      }
+
+      .vehicle-section-head {
+        flex-wrap: wrap;
+        gap: 4px 14px;
+      }
+
+      /* Side by side while both labels fit on one line, stacked full width
+         once they do not — "Copy Review Link" is the one that runs over. */
+      .qr-btn-row .btn-qr-action {
+        flex: 1 1 150px;
+        justify-content: center;
+        white-space: nowrap;
+        padding: 0 12px;
+        font-size: 12.5px;
+      }
+
+      .reviews-header {
+        align-items: flex-start;
+        gap: 16px;
+        padding-bottom: 20px;
+        margin-bottom: 26px;
+      }
+
+      .qr-instruction {
+        margin-bottom: 20px;
+      }
+
+      .feedback-container {
+        margin-bottom: 48px;
+      }
+
+      .modal-card {
+        padding: 30px 20px 24px;
+      }
+
+      .modal-qr-frame {
+        margin: 20px 0 16px;
+      }
+
+      /* Hung off the corner it sits 4px from the screen edge on a 320px
+         phone. Inside the image it stays clear of the bezel and keeps a
+         full-size target; it already carries its own dark backing. */
+      .photo-modal-card .modal-close {
+        top: 8px;
+        right: 8px;
       }
     }
 
@@ -2638,18 +2871,111 @@
       .hero-badge {
         letter-spacing: 0.1em;
       }
+
+      /* Three 44px circles plus their gaps claim 148px of a 320px screen.
+         Trimming them to 40px hands ~20px back to the wordmark. */
+      .nav-cta-group {
+        gap: 6px;
+      }
+
+      .nav-cta-group .btn-whatsapp,
+      .btn-call-nav,
+      .mobile-menu-toggle {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+      }
+
+      .nav .wrap {
+        gap: 8px;
+      }
+
+      .nav-brand {
+        gap: 8px;
+      }
+
+      .booking-card {
+        padding: 22px 16px;
+      }
+
+      .pkg-card {
+        padding: 24px 18px;
+      }
+
+      .qr-standee-card,
+      .feedback-cta-card {
+        padding: 28px 16px;
+      }
+
+      .review-card {
+        padding: 20px 16px;
+      }
+
+      .modal-overlay {
+        padding: 14px;
+        padding-top: max(14px, env(safe-area-inset-top));
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
+      }
+
+      .modal-card {
+        padding: 28px 16px 22px;
+      }
+
+      .qr-box-frame,
+      .modal-qr-frame {
+        padding: 10px;
+      }
+
+      .stat-box {
+        padding: 18px 8px;
+      }
+
+      .stat-num {
+        font-size: 20px;
+      }
+
+      .stat-label {
+        font-size: 11.5px;
+      }
     }
 
     /* Touch devices: comfortable targets, no sticky hover states */
     @media (hover: none) and (pointer: coarse) {
+      /* iOS zooms in on any field under 16px and never zooms back out.
+         Keyed to the input method rather than the width, so a landscape
+         iPad is covered as well as a phone. */
+      .form-input,
+      .form-select {
+        font-size: 16px;
+      }
+
       .map-helper-btn {
-        min-height: 36px;
+        min-height: 44px;
         display: inline-flex;
         align-items: center;
       }
 
       .form-group label {
         min-height: 36px;
+      }
+
+      /* The small button variant is the header WhatsApp pill and the footer
+         phone number — both are primary actions on a phone. */
+      .btn-sm {
+        min-height: 44px;
+      }
+
+      .link-arrow {
+        min-height: 44px;
+      }
+
+      .btn-qr-nav,
+      .btn-login-nav {
+        height: 44px;
+      }
+
+      .drawer-links a {
+        touch-action: manipulation;
       }
 
       .btn-qr-action {
@@ -2671,8 +2997,22 @@
         min-height: 44px;
       }
 
+      /* The desktop link row is still on show at iPad width, where it is
+         tapped rather than clicked. */
+      .nav-links a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+      }
+
+      /* The underline is drawn on the box, which just grew 20px. */
+      .nav-links a::after {
+        bottom: 8px;
+      }
+
       .nav-brand {
         padding: 6px 0;
+        min-height: 44px;
       }
 
       .pkg-footer .btn {
@@ -2702,6 +3042,33 @@
 
       .hero-logo-container {
         margin-bottom: 22px;
+      }
+
+      .logo-mark {
+        width: 210px;
+      }
+
+      .hero-actions {
+        margin-bottom: 34px;
+      }
+
+      section {
+        padding: 44px 0;
+      }
+
+      /* A rotated phone is ~380px tall. Anchor the dialogs to the top so
+         the close button is reachable and the rest scrolls under it. */
+      .modal-overlay {
+        align-items: flex-start;
+      }
+
+      .modal-card,
+      .photo-modal-card {
+        margin: 0 auto;
+      }
+
+      .modal-qr-frame {
+        margin: 14px 0 12px;
       }
     }
 
@@ -3668,7 +4035,18 @@
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           }
           resize();
-          window.addEventListener('resize', resize, { passive: true });
+
+          /* A phone fires `resize` on every URL-bar slide, and reallocating
+             the backing store mid-scroll is what makes those scrolls stutter.
+             Coalescing to one call after the gesture settles keeps the canvas
+             correct without doing the work per frame. */
+          let resizeTimer = null;
+          function scheduleResize() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resize, 200);
+          }
+          window.addEventListener('resize', scheduleResize, { passive: true });
+          window.addEventListener('orientationchange', scheduleResize, { passive: true });
 
           function makeParticle() {
             return {
@@ -3823,7 +4201,10 @@
       // iOS Safari keeps scrolling the page behind an overlay when only
       // `overflow: hidden` is set, so pin the body and restore the offset.
       let lockedScrollY = 0;
+      let scrollLocked = false;
       function lockBodyScroll() {
+        if (scrollLocked) return;
+        scrollLocked = true;
         lockedScrollY = window.scrollY || window.pageYOffset;
         document.body.style.position = 'fixed';
         document.body.style.top = `-${lockedScrollY}px`;
@@ -3833,6 +4214,8 @@
         document.body.style.overflow = 'hidden';
       }
       function unlockBodyScroll() {
+        if (!scrollLocked) return;
+        scrollLocked = false;
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.left = '';
@@ -3843,6 +4226,10 @@
         // otherwise animate (and visibly lose) the restored position.
         window.scrollTo({ top: lockedScrollY, left: 0, behavior: 'instant' });
       }
+
+      // cms.js opens the owner login dialog from its own scope.
+      window.dgLockBodyScroll = lockBodyScroll;
+      window.dgUnlockBodyScroll = unlockBodyScroll;
 
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
       const mobileDrawer = document.getElementById('mobileDrawer');
@@ -4156,7 +4543,7 @@
       const qrEl = document.getElementById('qrcode');
       if (qrEl && typeof QRCode !== 'undefined') {
         qrEl.innerHTML = '';
-        const qrSize = Math.min(160, window.innerWidth - 80);
+        const qrSize = Math.min(160, window.innerWidth - 112);
         new QRCode(qrEl, {
           text: feedbackUrl,
           width: qrSize,
@@ -4171,7 +4558,7 @@
       const modalQrEl = document.getElementById('modalQrCode');
       if (modalQrEl && typeof QRCode !== 'undefined') {
         modalQrEl.innerHTML = '';
-        const modalQrSize = Math.min(210, window.innerWidth - 80);
+        const modalQrSize = Math.min(210, window.innerWidth - 128);
         new QRCode(modalQrEl, {
           text: feedbackUrl,
           width: modalQrSize,
@@ -4241,6 +4628,7 @@
         if (e.key !== 'Escape') return;
         if (photoModal && photoModal.classList.contains('active')) closePhotoModal();
         else if (qrModal && qrModal.classList.contains('active')) closeQrModal();
+        else if (mobileDrawer && mobileDrawer.classList.contains('open')) closeDrawer();
       });
 
       // Copy Link Button
