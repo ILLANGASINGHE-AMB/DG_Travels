@@ -37,16 +37,6 @@
        No glows, no gradients on text, no ambient decoration.
        ============================================================ */
 
-    /* Registering the position makes it interpolate; without @property
-       support the band simply holds still and the contour stays put. */
-    @property --dg-x {
-      syntax: '<percentage>';
-      initial-value: -20%;
-      /* Inherited so a single animation on .logo-mark drives both the
-         trailing sweep and the leading dot, keeping them exactly in step. */
-      inherits: true;
-    }
-
     :root {
       /* Surfaces — flat neutral blacks, no warm cast */
       --bg: #0a0a0a;
@@ -79,7 +69,6 @@
       --nav-h: 72px;
 
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
-      --dg-x: -20%;
     }
 
     *,
@@ -230,17 +219,20 @@
       content: '';
       position: absolute;
       top: 0;
-      left: -60%;
+      left: 0;
       width: 40%;
       height: 100%;
       background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-      transform: skewX(-20deg);
-      transition: left 0.6s ease;
+      /* Travel as a transform, not as `left` — the same sweep without a
+         layout pass on every frame. Percentages here are of the pseudo-
+         element's own 40% width, hence the larger numbers. */
+      transform: translateX(-150%) skewX(-20deg);
+      transition: transform 0.6s ease;
       pointer-events: none;
     }
 
     .btn:hover::before {
-      left: 130%;
+      transform: translateX(325%) skewX(-20deg);
     }
 
     .btn:hover {
@@ -848,7 +840,6 @@
        slice of it, so the light sweeps left to right across the DG
        monogram. */
     .logo-mark {
-      animation: dgSweep 4.5s linear infinite;
       position: relative;
       width: 340px;
       max-width: 78vw;
@@ -879,36 +870,54 @@
       opacity: 0.6;
     }
 
-    /* 2 — the travelling highlight: same contour, revealed through a band
-       that slides left to right. --dg-x is registered above so it can
-       animate. */
-    .logo-sweep {
-      position: absolute;
-      inset: 0;
-      -webkit-mask-image: linear-gradient(90deg,
-          transparent calc(var(--dg-x) - 22%), #000 calc(var(--dg-x) - 12%),
-          #000 calc(var(--dg-x) - 6%), transparent calc(var(--dg-x) + 6%));
-      mask-image: linear-gradient(90deg,
-          transparent calc(var(--dg-x) - 22%), #000 calc(var(--dg-x) - 12%),
-          #000 calc(var(--dg-x) - 6%), transparent calc(var(--dg-x) + 6%));
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-    }
+    /* 2 — the travelling highlight.
+       This used to slide the band by animating a registered custom property
+       inside two mask gradients. That is a style recalc and a repaint of a
+       filtered layer on every frame, none of it compositable, and on a
+       phone it held the whole page at about 21fps whether or not anything
+       was scrolling.
 
-    /* 2b — the dot: a narrow band right at the leading edge of the sweep,
-       so a bright point rides at the head of the travelling light. */
+       Same picture, built to be composited instead. Each band carries a
+       STATIC mask covering a narrow slice at its left edge and moves by
+       transform; the art inside moves by the exact opposite transform, so
+       it stays put on screen while the lit slice travels across it. Two
+       transform animations, no per-frame style or paint work.
+
+       The pair must stay in lockstep: same duration, both linear, both
+       started by the same class flip. */
+    .logo-sweep,
     .logo-head {
       position: absolute;
       inset: 0;
-      -webkit-mask-image: linear-gradient(90deg,
-          transparent calc(var(--dg-x) + 3%), #000 calc(var(--dg-x) + 5.5%),
-          #000 calc(var(--dg-x) + 7%), transparent calc(var(--dg-x) + 9.5%));
-      mask-image: linear-gradient(90deg,
-          transparent calc(var(--dg-x) + 3%), #000 calc(var(--dg-x) + 5.5%),
-          #000 calc(var(--dg-x) + 7%), transparent calc(var(--dg-x) + 9.5%));
+    }
+
+    .logo-band {
+      position: absolute;
+      inset: 0;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
+
+    /* Local 0-28% is the band itself: soft in, opaque core, soft out. */
+    .logo-sweep .logo-band {
+      -webkit-mask-image: linear-gradient(90deg,
+          transparent 0%, #000 10%, #000 16%, transparent 28%, transparent 100%);
+      mask-image: linear-gradient(90deg,
+          transparent 0%, #000 10%, #000 16%, transparent 28%, transparent 100%);
+    }
+
+    /* 2b — the dot: a narrow strip just ahead of the band, so a bright
+       point rides at the head of the travelling light. Offset inside the
+       same moving box rather than animated separately. */
+    .logo-head .logo-band {
+      -webkit-mask-image: linear-gradient(90deg,
+          transparent 25%, #000 27.5%, #000 29%, transparent 31.5%, transparent 100%);
+      mask-image: linear-gradient(90deg,
+          transparent 25%, #000 27.5%, #000 29%, transparent 31.5%, transparent 100%);
+    }
+
     .logo-head img {
       filter: url(#dgContour) brightness(3.4)
               drop-shadow(0 0 5px rgba(240, 248, 255, 0.95))
@@ -919,10 +928,24 @@
               drop-shadow(0 0 4px rgba(226, 235, 245, 0.85));
     }
 
+    /* Only runs while the mark is actually on screen — see the observer in
+       the motion block. Decoration should not cost anything once it has
+       scrolled away. */
+    .logo-mark.sweeping .logo-band {
+      animation: dgSweep 4.5s linear infinite;
+    }
+    .logo-mark.sweeping .logo-band img {
+      animation: dgSweepHold 4.5s linear infinite;
+    }
+
+    /* Local 0 is the band's left edge, and these are the positions it used
+       to travel between, so the light crosses the mark on exactly the same
+       path and at exactly the same moments as before. */
+    @keyframes dgSweep { from { transform: translateX(-42%); } to { transform: translateX(108%); } }
+    @keyframes dgSweepHold { from { transform: translateX(42%); } to { transform: translateX(-108%); } }
+
     /* 3 — the artwork itself, above both contour layers */
     .logo-art { position: relative; }
-
-    @keyframes dgSweep { to { --dg-x: 130%; } }
 
     .hero-badge {
       display: block;
@@ -3078,7 +3101,8 @@
       }
 
       /* Hold the travelling highlight still */
-      .logo-mark { animation: none; }
+      .logo-mark.sweeping .logo-band,
+      .logo-mark.sweeping .logo-band img { animation: none; }
 
       /* Skip the splash entirely rather than flashing it */
       #preloader {
@@ -3443,10 +3467,10 @@
             <img src="LOGO/DG_logo_Tp.png" alt="" aria-hidden="true" class="logo-contour"
               data-cms-src="brand.hero_logo">
             <div class="logo-sweep" aria-hidden="true">
-              <img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo">
+              <div class="logo-band"><img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo"></div>
             </div>
             <div class="logo-head" aria-hidden="true">
-              <img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo">
+              <div class="logo-band"><img src="LOGO/DG_logo_Tp.png" alt="" data-cms-src="brand.hero_logo"></div>
             </div>
             <img src="LOGO/DG_logo_Tp.png" alt="DG Travels" class="logo-art" data-cms-src="brand.hero_logo">
           </div>
@@ -4021,8 +4045,14 @@
         (function () {
           const canvas = document.getElementById('ambientCanvas');
           if (!canvas || !canvas.getContext) return;
-          const ctx = canvas.getContext('2d');
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+          const coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+          /* Soft 1-2px dots gain nothing from a 2x backing store, and the
+             layer is repainted every frame. */
+          const dpr = coarse ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+          /* Drifting dust does not read as smoother at 60fps; halving the
+             rate halves the compositing work on the phones that need it. */
+          const minFrameMs = coarse ? 33 : 0;
           let w, h;
 
           function resize() {
@@ -4070,8 +4100,10 @@
             tabVisible = !document.hidden;
           });
 
-          function tick() {
-            if (tabVisible) {
+          let lastDraw = 0;
+          function tick(now) {
+            if (tabVisible && (now - lastDraw) >= minFrameMs) {
+              lastDraw = now;
               ctx.clearRect(0, 0, w, h);
               for (let i = 0; i < particles.length; i++) {
                 const p = particles[i];
@@ -4091,6 +4123,19 @@
             requestAnimationFrame(tick);
           }
           requestAnimationFrame(tick);
+        })();
+
+        // --- Hero mark: run the travelling highlight only while it is
+        //     on screen. Both halves of the pair are toggled by one class
+        //     so they can never start at different times and drift apart.
+        (function () {
+          const mark = document.getElementById('heroLogo');
+          if (!mark) return;
+          if (!('IntersectionObserver' in window)) { mark.classList.add('sweeping'); return; }
+          const io = new IntersectionObserver(function (entries) {
+            mark.classList.toggle('sweeping', entries[0].isIntersecting);
+          }, { rootMargin: '120px' });
+          io.observe(mark);
         })();
 
         // --- Scroll reveals ---
