@@ -1487,17 +1487,24 @@
     }
 
     .driver-avatar {
-      width: 72px;
-      height: 72px;
+      width: 88px;
+      height: 88px;
       margin: 0 auto 18px;
       border-radius: 50%;
       border: 1px solid var(--line-strong);
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24px;
       color: var(--text-3);
       animation: floatY 3.2s ease-in-out infinite;
+    }
+
+    .driver-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .driver-name {
@@ -3106,7 +3113,7 @@
         <div class="driver-card" data-reveal data-reveal-stagger>
           <div class="driver-badge-card">
             <div class="driver-avatar">
-              <i class="fa-solid fa-user-tie"></i>
+              <img src="pfp_DG.jpg" alt="Isum Sejan Gunasekara, Owner &amp; Chauffeur Host">
             </div>
             <div class="driver-name">Isum Sejan Gunasekara</div>
             <div class="driver-role">Owner & Chauffeur Host</div>
