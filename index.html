@@ -2586,7 +2586,14 @@
         display: none;
       }
 
-      .mobile-menu-toggle,
+      /* The bottom bar reaches every section on a phone, so the drawer
+         trigger is a second route to the same four places. It stays for
+         769-899px, where the bottom bar is off and the drawer is the only
+         navigation there is. */
+      .mobile-menu-toggle {
+        display: none;
+      }
+
       .btn-call-nav {
         display: flex;
       }
@@ -3397,11 +3404,24 @@
       text-align: center;
     }
 
-    /* On phones the header is already tight; the drawer carries the
-       Log In button instead — same breakpoint that drops "Show QR". */
+    /* The drawer used to carry Log In on phones, but the drawer trigger is
+       gone from this width, so the header has to hold it — collapsed to the
+       square the hamburger vacated, so the row is no wider than before.
+       It stays hidden for visitors either way: cms.js only unhides it once
+       Supabase is configured. */
     @media (max-width: 768px) {
       .btn-login-nav {
-        display: none;
+        width: 44px;
+        min-width: 44px;
+        padding: 0;
+        justify-content: center;
+        /* zeroes the label without removing it from the a11y tree */
+        font-size: 0;
+        gap: 0;
+      }
+
+      .btn-login-nav i {
+        font-size: 15px;
       }
     }
   </style>
