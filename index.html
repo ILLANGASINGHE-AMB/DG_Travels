@@ -67,6 +67,8 @@
 
       --maxw: 1120px;
       --nav-h: 72px;
+      /* Phone-only bottom bar; the body reserves exactly this much room. */
+      --bottom-nav-h: 58px;
 
       --ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -644,6 +646,14 @@
       right: 0;
     }
 
+    .nav-links a.active {
+      color: var(--text);
+    }
+
+    .nav-links a.active::after {
+      right: 0;
+    }
+
     .nav-cta-group {
       display: flex;
       align-items: center;
@@ -772,6 +782,10 @@
       font-weight: 500;
       color: var(--text);
       border-bottom: 1px solid var(--line);
+    }
+
+    .drawer-links a.active {
+      color: var(--accent);
     }
 
     .drawer-backdrop {
@@ -2263,6 +2277,102 @@
       }
     }
 
+    /* ---------- Mobile bottom navigation ---------- */
+    /* Phones get a persistent bar for the four content sections. The drawer
+       stays for the contact actions and the QR standee; this bar is purely
+       "where am I / take me there", which is the part visitors repeat.
+       Hidden above 768px, where the header link row does the same job. */
+    .bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 95;
+        /* Flex, not a 4-column grid: the owner can switch a section off,
+           which drops its link, and the survivors should then re-share the
+           full width instead of leaving a hole. */
+        display: flex;
+        background: rgba(10, 10, 10, 0.94);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top: 1px solid var(--line);
+        /* The bar sits on the home-indicator strip; its own padding keeps
+           the taps above it rather than shrinking the touch targets. */
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .bottom-nav-item {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-height: var(--bottom-nav-h);
+        padding: 8px 3px;
+        color: var(--text-3);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        line-height: 1;
+        text-align: center;
+        touch-action: manipulation;
+        transition: color 0.18s var(--ease);
+      }
+
+      .bottom-nav-item i {
+        font-size: 17px;
+        line-height: 1;
+      }
+
+      /* Hairline over the current section, drawn from the middle out */
+      .bottom-nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 36px;
+        height: 2px;
+        background: var(--accent);
+        transform: translateX(-50%) scaleX(0);
+        transition: transform 0.25s var(--ease);
+      }
+
+      .bottom-nav-item.active {
+        color: var(--accent);
+      }
+
+      .bottom-nav-item.active::before {
+        transform: translateX(-50%) scaleX(1);
+      }
+
+      .bottom-nav-item:active {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Nothing should end up trapped underneath the bar */
+      body {
+        padding-bottom: calc(var(--bottom-nav-h) + 1px + env(safe-area-inset-bottom));
+      }
+    }
+
+    /* Very narrow phones: keep four labels on one line each */
+    @media (max-width: 340px) {
+      .bottom-nav-item {
+        font-size: 9px;
+        letter-spacing: 0.02em;
+      }
+    }
+
+
     /* ---------- Footer ---------- */
     footer {
       border-top: 1px solid var(--line);
@@ -2779,8 +2889,10 @@
         text-align: center;
       }
 
+      /* The safe-area strip is reserved by the body once the bottom bar
+         is on screen, so this is plain breathing room. */
       footer {
-        padding-bottom: calc(32px + env(safe-area-inset-bottom));
+        padding-bottom: 32px;
       }
 
       /* Stacked layout: the badge reads as a centred header for the bio
@@ -3947,6 +4059,28 @@
       </div>
     </div>
 
+    <!-- ================= MOBILE BOTTOM NAVIGATION =================
+         Phone-only. Labels are single words so four targets fit across a
+         320px screen; the full section name is on aria-label. -->
+    <nav class="bottom-nav" id="bottomNav" aria-label="Section navigation">
+      <a href="#booking" class="bottom-nav-item" data-section-link="booking" aria-label="Fleet and Booking">
+        <i class="fa-solid fa-car-side" aria-hidden="true"></i>
+        <span>Fleet</span>
+      </a>
+      <a href="#tours" class="bottom-nav-item" data-section-link="tours" aria-label="Popular Tours">
+        <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+        <span>Tours</span>
+      </a>
+      <a href="#about" class="bottom-nav-item" data-section-link="about" aria-label="About the Driver">
+        <i class="fa-solid fa-id-badge" aria-hidden="true"></i>
+        <span>Driver</span>
+      </a>
+      <a href="#feedback" class="bottom-nav-item" data-section-link="feedback" aria-label="Reviews and QR">
+        <i class="fa-solid fa-star" aria-hidden="true"></i>
+        <span>Reviews</span>
+      </a>
+    </nav>
+
     <!-- ================= FLOATING ACTIONS ================= -->
     <div class="floating-actions">
       <a href="https://wa.me/94778261901?text=Hello%20Isum%20(DG%20Travels),%20I%20want%20to%20book%20a%20private%20ride."
@@ -4304,6 +4438,78 @@
           openQrModal();
         });
       }
+
+      // ============ 3b. SECTION SPY (BOTTOM BAR + HEADER LINKS) ============
+      // One source of truth for "which section am I in", applied to every
+      // [data-section-link] at once: the phone bottom bar, the header link
+      // row and the drawer. Deliberately outside the reduced-motion block —
+      // this is orientation, not decoration.
+      (function () {
+        const sectionLinks = document.querySelectorAll('[data-section-link]');
+        const sections = ['booking', 'tours', 'about', 'feedback']
+          .map(function (id) { return document.getElementById(id); })
+          .filter(Boolean);
+        if (!sectionLinks.length || !sections.length) return;
+
+        const nav = document.querySelector('.nav');
+        let current = null;
+
+        function setActive(id) {
+          if (id === current) return;
+          current = id;
+          sectionLinks.forEach(function (link) {
+            const on = link.getAttribute('data-section-link') === id;
+            link.classList.toggle('active', on);
+            if (on) link.setAttribute('aria-current', 'true');
+            else link.removeAttribute('aria-current');
+          });
+        }
+
+        function measure() {
+          // While an overlay has the body pinned, the page reports a
+          // viewport-sized scrollHeight and a scrollY of 0, which reads as
+          // "at the foot of the page". Sit it out; unlocking scrolls, and
+          // that scroll measures again.
+          if (scrollLocked) return;
+
+          // A probe line just under the sticky header. The last section to
+          // start above it is the one being read; while the hero still owns
+          // that line nothing is marked, which is the honest answer.
+          const probe = (nav ? nav.offsetHeight : 64) + 72;
+
+          // The final section can be shorter than the probe offset, so it
+          // would never win on its own. The foot of the page always does.
+          const doc = document.documentElement;
+          // A section the owner switched off has no box at all, and its rect
+          // of zeroes would otherwise pass the probe test every time.
+          const live = sections.filter(function (sec) { return sec.getClientRects().length; });
+          if (!live.length) { setActive(null); return; }
+          if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+            setActive(live[live.length - 1].id);
+            return;
+          }
+
+          let found = null;
+          live.forEach(function (sec) {
+            if (sec.getBoundingClientRect().top <= probe) found = sec.id;
+          });
+          setActive(found);
+        }
+
+        let queued = false;
+        function onScroll() {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(function () { queued = false; measure(); });
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+        // Tour and vehicle lists are owner-editable, so the section offsets
+        // move once the published copy lands.
+        document.addEventListener('dg:ready', onScroll);
+        measure();
+      })();
 
       // Set current year in footer
       document.getElementById('currentYear').textContent = new Date().getFullYear();
