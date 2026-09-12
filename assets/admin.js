@@ -870,6 +870,11 @@
      table is closed to everyone but an admin, and none of this is
      downloaded by a visitor.
 
+     A quotation is one or more trips sharing a vehicle. Each trip
+     carries its own route, its own distance and its own fare; the
+     vehicle, the driver, the allowance and the totals are worked
+     out once for the lot.
+
      The reference number and the issue time come back from the
      database so two quotations can never share a number. If the
      table is missing or the network is down the sheet still prints
@@ -934,8 +939,21 @@
     return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  /** Distances are typed in kilometres, so they add up and print alike. */
+  function kmText(value) {
+    if (value == null || value === '') return '';
+    var n = Number(value);
+    if (!isFinite(n)) return '';
+    return (Math.round(n * 10) / 10).toLocaleString('en-US') + ' km';
+  }
+
+  function num(value) {
+    var n = Number(value);
+    return isFinite(n) ? n : 0;
+  }
+
   /* ---------------------------------------------------------
-     The form
+     Vehicle choices
      --------------------------------------------------------- */
   function vehicleOptions(selected) {
     var names = (CMS.content.vehicles || [])
@@ -951,10 +969,14 @@
         return '<option value="' + esc(name) + '"' +
           (name === selected ? ' selected' : '') + '>' + esc(name) + '</option>';
       }).join('') +
-      '<option value="__other"' + (selected === '__other' ? ' selected' : '') + '>Other — type it in…</option>';
+      '<option value="__other">Other — type it in…</option>';
   }
 
-  /* ---- Other locations: a list that grows as the route does ---- */
+  /* ---------------------------------------------------------
+     One trip — the repeatable part of the form
+     --------------------------------------------------------- */
+  var tripUid = 0;
+
   function stopRowHtml(value) {
     return '<div class="dgq-stop">' +
              '<span class="dgq-stop-n" aria-hidden="true"></span>' +
@@ -965,32 +987,71 @@
            '</div>';
   }
 
-  /** Keeps the visible numbering honest after any add or remove. */
-  function renumberStops(host) {
-    host.querySelectorAll('.dgq-stop').forEach(function (row, i) {
-      row.querySelector('.dgq-stop-n').textContent = (i + 1) + '.';
-    });
+  function tripCardHtml() {
+    var uid = ++tripUid;
+
+    return '<section class="dgq-trip" data-trip>' +
+      '<header class="dgq-trip-head">' +
+        '<h4><span class="dgq-trip-n"></span></h4>' +
+        '<button type="button" class="dg-btn small ghost" data-trip-remove>' +
+          '<i class="fa-solid fa-xmark"></i> Remove</button>' +
+      '</header>' +
+
+      '<div class="dg-field">' +
+        '<div class="dgq-choice" role="radiogroup" aria-label="Trip type">' +
+          '<label class="dgq-chip"><input type="radio" data-f="type" ' +
+            'name="dgqTrip' + uid + '" value="one_way" checked>' +
+            '<span><i class="fa-solid fa-arrow-right-long"></i> One way</span></label>' +
+          '<label class="dgq-chip"><input type="radio" data-f="type" ' +
+            'name="dgqTrip' + uid + '" value="return">' +
+            '<span><i class="fa-solid fa-arrow-right-arrow-left"></i> Return trip</span></label>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="dg-grid">' +
+        '<div class="dg-field"><label>Pickup location <span class="dg-req">*</span></label>' +
+          '<input class="dg-input" type="text" data-f="pickup" autocomplete="off" ' +
+          'placeholder="Hotel, villa or airport"></div>' +
+
+        '<div class="dg-field">' +
+          '<label>Other locations <span class="dgq-optional">optional, as many as you need</span></label>' +
+          '<div class="dgq-stops" data-stops></div>' +
+          '<button type="button" class="dg-btn small ghost dgq-addstop" data-add-stop>' +
+            '<i class="fa-solid fa-plus"></i> Add a stop</button>' +
+        '</div>' +
+
+        // Only one of these two is ever in play, and the trip type decides which.
+        '<div class="dg-field" data-when="one_way">' +
+          '<label>Destination <span class="dg-req">*</span></label>' +
+          '<input class="dg-input" type="text" data-f="destination" autocomplete="off" ' +
+          'placeholder="Where the trip ends"></div>' +
+
+        '<div class="dg-field" data-when="return" hidden>' +
+          '<label>Return location <span class="dg-req">*</span></label>' +
+          '<input class="dg-input" type="text" data-f="return" autocomplete="off" ' +
+          'placeholder="Where the trip comes back to"></div>' +
+
+        '<div class="dg-field half"><label>Date of journey</label>' +
+          '<input class="dg-input dgq-dt" type="date" data-f="date"></div>' +
+        '<div class="dg-field half"><label>Time of journey</label>' +
+          '<input class="dg-input dgq-dt" type="time" data-f="time"></div>' +
+
+        '<div class="dg-field half"><label>Trip distance (km) <span class="dg-req">*</span></label>' +
+          '<div class="dgq-withbtn">' +
+            '<input class="dg-input" type="number" min="0" step="0.1" data-f="km" placeholder="168">' +
+            '<button type="button" class="dg-btn small ghost" data-lookup ' +
+            'title="Work it out from the route"><i class="fa-solid fa-route"></i> Look up</button>' +
+          '</div></div>' +
+
+        '<div class="dg-field half"><label>Trip fare (LKR)</label>' +
+          '<input class="dg-input" type="number" min="0" step="0.01" data-f="fare" placeholder="25000"></div>' +
+      '</div>' +
+    '</section>';
   }
 
-  function addStop(host, value, focus) {
-    host.insertAdjacentHTML('beforeend', stopRowHtml(value));
-    var row = host.lastElementChild;
-    row.querySelector('[data-stop-remove]').addEventListener('click', function () {
-      row.remove();
-      renumberStops(host);
-    });
-    renumberStops(host);
-    if (focus) row.querySelector('[data-stop]').focus();
-    return row;
-  }
-
-  function readStops(modal) {
-    return Array.prototype.map.call(
-      modal.querySelectorAll('#dgqStops [data-stop]'),
-      function (el) { return el.value.trim(); }
-    ).filter(Boolean);
-  }
-
+  /* ---------------------------------------------------------
+     The composer
+     --------------------------------------------------------- */
   function quoteFormHtml() {
     return '' +
       '<form class="dg-modal-body" id="dgQuoteForm" novalidate>' +
@@ -1008,71 +1069,42 @@
             '<input id="dgqEmail" class="dg-input" type="email" autocomplete="off" placeholder="name@example.com"></div>' +
         '</div>' +
 
-        '<h3 class="dg-group-title">Trip</h3>' +
-        '<div class="dg-field">' +
-          '<label>Trip type <span class="dg-req">*</span></label>' +
-          '<div class="dgq-choice" role="radiogroup" aria-label="Trip type">' +
-            '<label class="dgq-chip"><input type="radio" name="dgqTrip" value="one_way" checked>' +
-              '<span><i class="fa-solid fa-arrow-right-long"></i> One way</span></label>' +
-            '<label class="dgq-chip"><input type="radio" name="dgqTrip" value="return">' +
-              '<span><i class="fa-solid fa-arrow-right-arrow-left"></i> Return trip</span></label>' +
-          '</div>' +
-        '</div>' +
+        '<h3 class="dg-group-title">Trip details</h3>' +
+        '<div id="dgqTrips"></div>' +
+        '<button type="button" class="dg-btn ghost dgq-addtrip" id="dgqAddTrip">' +
+          '<i class="fa-solid fa-plus"></i> Add trip</button>' +
 
+        '<h3 class="dg-group-title">Passenger details <span class="dgq-optional">one for all trips</span></h3>' +
         '<div class="dg-grid">' +
-          '<div class="dg-field"><label for="dgqPickup">Pickup location <span class="dg-req">*</span></label>' +
-            '<input id="dgqPickup" class="dg-input" type="text" autocomplete="off" ' +
-            'placeholder="Hotel, villa or airport"></div>' +
-
-          '<div class="dg-field">' +
-            '<label>Other locations <span class="dgq-optional">optional, as many as you need</span></label>' +
-            '<div id="dgqStops" class="dgq-stops"></div>' +
-            '<button type="button" class="dg-btn small ghost dgq-addstop" id="dgqAddStop">' +
-              '<i class="fa-solid fa-plus"></i> Add a stop</button>' +
-          '</div>' +
-
-          '<div class="dg-field" id="dgqReturnField" hidden>' +
-            '<label for="dgqReturn">Return location <span class="dg-req">*</span></label>' +
-            '<input id="dgqReturn" class="dg-input" type="text" autocomplete="off" ' +
-            'placeholder="Where the trip comes back to"></div>' +
-
-          '<div class="dg-field half"><label for="dgqDate">Date of journey</label>' +
-            '<input id="dgqDate" class="dg-input" type="date"></div>' +
-          '<div class="dg-field half"><label for="dgqTime">Time of journey</label>' +
-            '<input id="dgqTime" class="dg-input" type="time"></div>' +
-
           '<div class="dg-field half"><label for="dgqPax">No. of passengers <span class="dg-req">*</span></label>' +
             '<input id="dgqPax" class="dg-input" type="number" min="1" max="99" step="1" placeholder="2"></div>' +
-
           '<div class="dg-field half"><label for="dgqBags">No. of luggage</label>' +
             '<input id="dgqBags" class="dg-input" type="number" min="0" max="99" step="1" placeholder="3"></div>' +
+          '<div class="dg-field"><label for="dgqRequests">Special requests</label>' +
+            '<textarea id="dgqRequests" class="dg-input" rows="2" ' +
+            'placeholder="Child seat, surfboard rack, early pickup…"></textarea></div>' +
+        '</div>' +
 
+        '<h3 class="dg-group-title">Vehicle details <span class="dgq-optional">one for all trips</span></h3>' +
+        '<div class="dg-grid">' +
           '<div class="dg-field half"><label for="dgqVehicleSel">Vehicle type <span class="dg-req">*</span></label>' +
             '<select id="dgqVehicleSel" class="dg-input">' + vehicleOptions('') + '</select>' +
             '<input id="dgqVehicleOther" class="dg-input dgq-other" type="text" ' +
             'placeholder="Vehicle name" hidden></div>' +
 
-          '<div class="dg-field"><label for="dgqRequests">Special requests</label>' +
-            '<textarea id="dgqRequests" class="dg-input" rows="3" ' +
-            'placeholder="Child seat, surfboard rack, early pickup\u2026"></textarea></div>' +
-        '</div>' +
-
-        '<h3 class="dg-group-title">Your figures</h3>' +
-        '<div class="dg-grid">' +
-          '<div class="dg-field half"><label for="dgqDistance">Distance</label>' +
-            '<div class="dgq-withbtn">' +
-              '<input id="dgqDistance" class="dg-input" type="text" placeholder="e.g. 128 km">' +
-              '<button type="button" class="dg-btn small ghost" id="dgqCalc" ' +
-              'title="Look the distance up from the two locations">' +
-              '<i class="fa-solid fa-route"></i> Look up</button>' +
-            '</div></div>' +
-
           '<div class="dg-field half"><label for="dgqDriver">Driver name</label>' +
             '<input id="dgqDriver" class="dg-input" type="text" autocomplete="off" ' +
             'value="' + esc(settingText('about.name', '')) + '"></div>' +
 
-          '<div class="dg-field"><label for="dgqFare">Fare (LKR)</label>' +
-            '<input id="dgqFare" class="dg-input" type="number" min="0" step="0.01" placeholder="25000"></div>' +
+          '<div class="dg-field half"><label for="dgqAllowance">Driver allowance (LKR)</label>' +
+            '<input id="dgqAllowance" class="dg-input" type="number" min="0" step="0.01" placeholder="3000"></div>' +
+        '</div>' +
+
+        // Both totals are worked out from the trips above, so they are shown
+        // rather than typed — there is nothing here for the owner to get wrong.
+        '<div class="dgq-totals" id="dgqTotals">' +
+          '<div><span>Total distance</span><strong data-total="km">—</strong></div>' +
+          '<div><span>Total fare</span><strong data-total="fare">—</strong></div>' +
         '</div>' +
 
         '<div class="dg-modal-actions">' +
@@ -1127,46 +1159,161 @@
 
   function wireQuoteForm(modal, close) {
     var form = modal.querySelector('#dgQuoteForm');
-    var returnField = modal.querySelector('#dgqReturnField');
-    var returnInput = modal.querySelector('#dgqReturn');
+    var tripsHost = modal.querySelector('#dgqTrips');
     var vehicleSel = modal.querySelector('#dgqVehicleSel');
     var vehicleOther = modal.querySelector('#dgqVehicleOther');
-    var pickupInput = modal.querySelector('#dgqPickup');
-    var distanceInput = modal.querySelector('#dgqDistance');
-    var calcBtn = modal.querySelector('#dgqCalc');
 
-    // The return location only exists for a return trip.
-    /** Where the route ends: the return location, else the last stop. */
-    function lastPoint() {
-      var isReturn = modal.querySelector('input[name="dgqTrip"]:checked').value === 'return';
-      if (isReturn && returnInput.value.trim()) return returnInput.value.trim();
-      var stops = readStops(modal);
-      return stops.length ? stops[stops.length - 1] : '';
+    /* ---- Totals, recomputed on every keystroke that can move them ---- */
+    function recalcTotals() {
+      var km = 0, fare = 0, anyKm = false, anyFare = false;
+
+      tripsHost.querySelectorAll('[data-trip]').forEach(function (card) {
+        var k = card.querySelector('[data-f="km"]').value;
+        var f = card.querySelector('[data-f="fare"]').value;
+        if (k !== '') { km += num(k); anyKm = true; }
+        if (f !== '') { fare += num(f); anyFare = true; }
+      });
+
+      var allowance = modal.querySelector('#dgqAllowance').value;
+      if (allowance !== '') { fare += num(allowance); anyFare = true; }
+
+      modal.querySelector('[data-total="km"]').textContent = anyKm ? kmText(km) : '—';
+      modal.querySelector('[data-total="fare"]').textContent = anyFare ? 'LKR ' + money(fare) : '—';
     }
 
-    // Nothing to route to means nothing to look up.
-    function refreshLookup() { calcBtn.hidden = !lastPoint(); }
-
-    modal.querySelectorAll('input[name="dgqTrip"]').forEach(function (radio) {
-      radio.addEventListener('change', function () {
-        var isReturn = modal.querySelector('input[name="dgqTrip"]:checked').value === 'return';
-        returnField.hidden = !isReturn;
-        refreshLookup();
-        if (isReturn) returnInput.focus();
+    /* ---- One trip card ---- */
+    function renumberTrips() {
+      var cards = tripsHost.querySelectorAll('[data-trip]');
+      cards.forEach(function (card, i) {
+        card.querySelector('.dgq-trip-n').textContent = 'Trip ' + (i + 1);
+        // A single trip has nothing to remove down to, so the button goes.
+        card.querySelector('[data-trip-remove]').hidden = cards.length < 2;
       });
-    });
+    }
 
-    // Typing a destination is what makes the lookup worth offering.
-    modal.addEventListener('input', function (e) {
-      if (e.target === returnInput || e.target.hasAttribute('data-stop')) refreshLookup();
-    });
-    refreshLookup();
+    function wireTripCard(card) {
+      var stopsHost = card.querySelector('[data-stops]');
+      var lookupBtn = card.querySelector('[data-lookup]');
+      var kmInput = card.querySelector('[data-f="km"]');
 
-    var stopsHost = modal.querySelector('#dgqStops');
-    modal.querySelector('#dgqAddStop').addEventListener('click', function () {
-      addStop(stopsHost, '', true);
+      function stops() {
+        return Array.prototype.map.call(
+          stopsHost.querySelectorAll('[data-stop]'),
+          function (el) { return el.value.trim(); }
+        ).filter(Boolean);
+      }
+
+      function renumberStops() {
+        stopsHost.querySelectorAll('.dgq-stop').forEach(function (row, i) {
+          row.querySelector('.dgq-stop-n').textContent = (i + 1) + '.';
+        });
+      }
+
+      function addStop(focus) {
+        stopsHost.insertAdjacentHTML('beforeend', stopRowHtml(''));
+        var row = stopsHost.lastElementChild;
+        row.querySelector('[data-stop-remove]').addEventListener('click', function () {
+          row.remove();
+          renumberStops();
+          refreshLookup();
+        });
+        renumberStops();
+        if (focus) row.querySelector('[data-stop]').focus();
+      }
+
+      /** Where this trip ends: its destination or return point, else the last stop. */
+      function lastPoint() {
+        var isReturn = card.querySelector('[data-f="type"]:checked').value === 'return';
+        var end = card.querySelector(isReturn ? '[data-f="return"]' : '[data-f="destination"]').value.trim();
+        if (end) return end;
+        var list = stops();
+        return list.length ? list[list.length - 1] : '';
+      }
+
+      function refreshLookup() { lookupBtn.hidden = !lastPoint(); }
+
+      card.querySelectorAll('[data-f="type"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          var type = card.querySelector('[data-f="type"]:checked').value;
+          card.querySelectorAll('[data-when]').forEach(function (field) {
+            field.hidden = field.getAttribute('data-when') !== type;
+          });
+          refreshLookup();
+          var live = card.querySelector('[data-when="' + type + '"] .dg-input');
+          if (live) live.focus();
+        });
+      });
+
+      card.querySelector('[data-add-stop]').addEventListener('click', function () {
+        addStop(true);
+        refreshLookup();
+      });
+
+      card.querySelector('[data-trip-remove]').addEventListener('click', function () {
+        card.remove();
+        renumberTrips();
+        recalcTotals();
+      });
+
+      card.addEventListener('input', function (e) {
+        var f = e.target.getAttribute('data-f');
+        if (f === 'km' || f === 'fare') recalcTotals();
+        if (f === 'destination' || f === 'return' || e.target.hasAttribute('data-stop')) refreshLookup();
+      });
+
+      // The same lookup the booking form uses. It measures pickup to the end
+      // of the route and ignores the stops between, so it fills the box
+      // rather than owning it — the figure stays the owner's to correct.
+      lookupBtn.addEventListener('click', function () {
+        var origin = card.querySelector('[data-f="pickup"]').value.trim();
+        var destination = lastPoint();
+        if (origin.length < 3 || destination.length < 3) {
+          toast('Fill in both ends of the route first.', 'error');
+          return;
+        }
+
+        lookupBtn.disabled = true;
+        var label = lookupBtn.innerHTML;
+        lookupBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Looking up';
+
+        fetch('/api/distance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ origin: origin, destination: destination })
+        })
+          .then(function (res) {
+            return res.json().then(function (b) { return { ok: res.ok, body: b }; });
+          })
+          .then(function (r) {
+            if (!r.ok) throw new Error((r.body && r.body.error) || 'Lookup failed.');
+            kmInput.value = r.body.km;
+            recalcTotals();
+          })
+          .catch(function (err) { toast(err.message || 'Could not look that route up.', 'error'); })
+          .then(function () {
+            lookupBtn.disabled = false;
+            lookupBtn.innerHTML = label;
+          });
+      });
+
       refreshLookup();
-    });
+    }
+
+    function addTrip(focus) {
+      tripsHost.insertAdjacentHTML('beforeend', tripCardHtml());
+      var card = tripsHost.lastElementChild;
+      wireTripCard(card);
+      renumberTrips();
+      recalcTotals();
+      if (focus) {
+        card.scrollIntoView({ block: 'nearest' });
+        card.querySelector('[data-f="pickup"]').focus();
+      }
+      return card;
+    }
+
+    modal.querySelector('#dgqAddTrip').addEventListener('click', function () { addTrip(true); });
+    modal.querySelector('#dgqAllowance').addEventListener('input', recalcTotals);
 
     vehicleSel.addEventListener('change', function () {
       var other = this.value === '__other';
@@ -1174,38 +1321,8 @@
       if (other) vehicleOther.focus();
     });
 
-    // Same lookup the booking form uses; it fills the field rather than
-    // owning it, so the owner can still overwrite the number by hand.
-    calcBtn.addEventListener('click', function () {
-      var origin = pickupInput.value.trim();
-      var destination = lastPoint();
-      if (origin.length < 3 || destination.length < 3) {
-        toast('Fill in both ends of the route first.', 'error');
-        return;
-      }
-
-      calcBtn.disabled = true;
-      var label = calcBtn.innerHTML;
-      calcBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Looking up';
-
-      fetch('/api/distance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ origin: origin, destination: destination })
-      })
-        .then(function (res) {
-          return res.json().then(function (b) { return { ok: res.ok, body: b }; });
-        })
-        .then(function (r) {
-          if (!r.ok) throw new Error((r.body && r.body.error) || 'Lookup failed.');
-          distanceInput.value = r.body.text || (r.body.km + ' km');
-        })
-        .catch(function (err) { toast(err.message || 'Could not look that route up.', 'error'); })
-        .then(function () {
-          calcBtn.disabled = false;
-          calcBtn.innerHTML = label;
-        });
-    });
+    // A quotation is at least one trip, so the first card is already there.
+    addTrip(false);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -1235,59 +1352,114 @@
     });
   }
 
-  /** Reads and validates the form. Returns null (and complains) if invalid. */
+  /* ---------------------------------------------------------
+     Reading and validating the form
+     --------------------------------------------------------- */
+  /** Complains about a field, focuses it, and returns null. */
+  function complain(message, el) {
+    toast(message, 'error');
+    if (el) {
+      el.focus();
+      el.classList.add('dgq-invalid');
+      setTimeout(function () { el.classList.remove('dgq-invalid'); }, 1600);
+      el.scrollIntoView({ block: 'center' });
+    }
+    return null;
+  }
+
+  /** One trip, or null if it is not usable — the message names which trip. */
+  function readTrip(card, n) {
+    function f(name) { return card.querySelector('[data-f="' + name + '"]'); }
+    function v(name) { var el = f(name); return el ? el.value.trim() : ''; }
+
+    var where = 'Trip ' + n + ': ';
+    var type = card.querySelector('[data-f="type"]:checked').value;
+    var isReturn = type === 'return';
+
+    var pickup = v('pickup');
+    if (!pickup) return complain(where + 'a pickup location is required.', f('pickup'));
+
+    var endKey = isReturn ? 'return' : 'destination';
+    var end = v(endKey);
+    if (!end) {
+      return complain(
+        where + (isReturn ? 'a return trip needs a return location.' : 'a one-way trip needs a destination.'),
+        f(endKey));
+    }
+
+    var km = v('km');
+    if (km === '' || num(km) <= 0) return complain(where + 'how far is this trip, in km?', f('km'));
+
+    var fare = v('fare');
+
+    return {
+      trip_type:        type,
+      pickup_location:  pickup,
+      other_locations:  Array.prototype.map.call(
+                          card.querySelectorAll('[data-stop]'),
+                          function (el) { return el.value.trim(); }
+                        ).filter(Boolean),
+      destination:      isReturn ? null : end,
+      return_location:  isReturn ? end : null,
+      journey_date:     v('date') || null,
+      journey_time:     v('time') || null,
+      distance_km:      num(km),
+      fare_lkr:         fare === '' ? null : num(fare)
+    };
+  }
+
   function readQuoteForm(modal) {
     function val(id) {
       var el = modal.querySelector('#' + id);
       return el ? el.value.trim() : '';
     }
 
-    var tripType = modal.querySelector('input[name="dgqTrip"]:checked').value;
-    var pickup = val('dgqPickup');
-    var returnTo = val('dgqReturn');
+    var cards = modal.querySelectorAll('#dgqTrips [data-trip]');
+    if (!cards.length) return complain('A quotation needs at least one trip.', null);
+
+    var trips = [];
+    for (var i = 0; i < cards.length; i++) {
+      var trip = readTrip(cards[i], i + 1);
+      if (!trip) return null;              // readTrip has already complained
+      trips.push(trip);
+    }
+
     var pax = val('dgqPax');
-    var vehicle = modal.querySelector('#dgqVehicleSel').value;
+    if (pax === '' || num(pax) < 1) {
+      return complain('How many passengers?', modal.querySelector('#dgqPax'));
+    }
+    var bags = val('dgqBags');
+
+    var vehicleSel = modal.querySelector('#dgqVehicleSel');
+    var vehicle = vehicleSel.value;
     if (vehicle === '__other') vehicle = val('dgqVehicleOther');
-
-    function complain(message, id) {
-      toast(message, 'error');
-      var el = modal.querySelector('#' + id);
-      if (el) { el.focus(); el.classList.add('dgq-invalid'); setTimeout(function () {
-        el.classList.remove('dgq-invalid');
-      }, 1600); }
-      return null;
-    }
-
-    if (!pickup) return complain('A pickup location is required.', 'dgqPickup');
-    if (tripType === 'return' && !returnTo) {
-      return complain('A return trip needs a return location.', 'dgqReturn');
-    }
-    if (!pax || Number(pax) < 1) return complain('How many passengers?', 'dgqPax');
     if (!vehicle) {
       return complain('Choose a vehicle type.',
-        modal.querySelector('#dgqVehicleOther').hidden ? 'dgqVehicleSel' : 'dgqVehicleOther');
+        modal.querySelector('#dgqVehicleOther').hidden ? vehicleSel : modal.querySelector('#dgqVehicleOther'));
     }
 
-    var fare = val('dgqFare');
-    var bags = val('dgqBags');
+    var allowance = val('dgqAllowance');
+
+    // Worked out here rather than read off the screen, so what is stored
+    // cannot drift from what the trips actually say.
+    var totalKm = trips.reduce(function (sum, t) { return sum + t.distance_km; }, 0);
+    var totalFare = trips.reduce(function (sum, t) { return sum + (t.fare_lkr || 0); }, 0) +
+                    (allowance === '' ? 0 : num(allowance));
+    var anyFare = trips.some(function (t) { return t.fare_lkr != null; }) || allowance !== '';
 
     return {
       customer_name:    val('dgqName') || null,
       customer_phone:   val('dgqPhone') || null,
       customer_email:   val('dgqEmail') || null,
-      trip_type:        tripType,
-      pickup_location:  pickup,
-      other_locations:  readStops(modal),
-      return_location:  tripType === 'return' ? returnTo : null,
-      journey_date:     val('dgqDate') || null,
-      journey_time:     val('dgqTime') || null,
-      distance:         val('dgqDistance') || null,
-      passengers:       Number(pax),
-      luggage:          bags === '' ? null : Number(bags),
+      trips:            trips,
+      passengers:       num(pax),
+      luggage:          bags === '' ? null : num(bags),
       special_requests: val('dgqRequests') || null,
       vehicle_type:     vehicle,
       driver_name:      val('dgqDriver') || null,
-      fare_lkr:         fare === '' ? null : Number(fare)
+      driver_allowance: allowance === '' ? null : num(allowance),
+      total_distance_km: Math.round(totalKm * 10) / 10,
+      total_fare_lkr:   anyFare ? Math.round(totalFare * 100) / 100 : null
     };
   }
 
@@ -1315,11 +1487,12 @@
       }
 
       host.innerHTML = '<div class="dg-list">' + rows.map(function (row) {
-        var who = row.customer_name || row.pickup_location || 'Quotation';
+        var trips = Array.isArray(row.trips) ? row.trips : [];
+        var who = row.customer_name || (trips[0] && trips[0].pickup_location) || 'Quotation';
         var sub = [
           stampDateTime(row.issued_at).slice(0, 16),
-          row.vehicle_type,
-          row.fare_lkr == null ? '' : 'LKR ' + money(row.fare_lkr)
+          trips.length > 1 ? trips.length + ' trips' : row.vehicle_type,
+          row.total_fare_lkr == null ? '' : 'LKR ' + money(row.total_fare_lkr)
         ].filter(Boolean).join(' · ');
 
         return '<div class="dg-row-card">' +
@@ -1369,7 +1542,7 @@
     }).catch(function (err) {
       console.warn('[quotation]', err);
       host.innerHTML = '<p class="dg-empty">Could not load past quotations. ' +
-        'Run <code>supabase/quotations-schema.sql</code> if you have not yet.</p>';
+        'Run <code>supabase/quotations-trips-migration.sql</code> if you have not yet.</p>';
     });
   }
 
@@ -1392,32 +1565,6 @@
     return '<tr><th>' + esc(label) + '</th><td>' + esc(value) + '</td></tr>';
   }
 
-  /**
-   * The short facts, three to a line. A row each reads fine on screen but
-   * costs about 20mm of paper, which is the difference between one sheet
-   * and two on an ordinary quotation.
-   */
-  function factsHtml(pairs) {
-    var cells = pairs.filter(function (pair) {
-      return pair[1] || pair[1] === 0;
-    }).map(function (pair) {
-      return '<div class="dgq-fact">' +
-               '<div class="dgq-fact-l">' + esc(pair[0]) + '</div>' +
-               '<div class="dgq-fact-v">' + esc(pair[1]) + '</div>' +
-             '</div>';
-    });
-    return cells.length ? '<div class="dgq-facts">' + cells.join('') + '</div>' : '';
-  }
-
-  /** A full-width paragraph, for the one field that runs long. */
-  function noteHtml(label, value) {
-    if (!value) return '';
-    return '<div class="dgq-note">' +
-             '<div class="dgq-fact-l">' + esc(label) + '</div>' +
-             '<p>' + esc(value) + '</p>' +
-           '</div>';
-  }
-
   /** The stops, numbered, in one cell — a row each would cost a page. */
   function stopsRow(list) {
     if (!Array.isArray(list) || !list.length) return '';
@@ -1428,32 +1575,91 @@
            '</td></tr>';
   }
 
-  function quoteSheetHtml(q, unsaved) {
-    var head = letterhead();
-    var isReturn = q.trip_type === 'return';
+  /**
+   * The short facts, three to a line. A row each reads fine on screen but
+   * costs about 20mm of paper, which is the difference between one sheet
+   * and two once a quotation carries more than one trip.
+   */
+  function factsHtml(pairs, tail) {
+    var cells = pairs.filter(function (pair) {
+      return pair[1] || pair[1] === 0;
+    }).map(function (pair) {
+      return '<div class="dgq-fact">' +
+               '<div class="dgq-fact-l">' + esc(pair[0]) + '</div>' +
+               '<div class="dgq-fact-v">' + esc(pair[1]) + '</div>' +
+             '</div>';
+    });
+    if (tail) cells.push(tail);
+    return cells.length ? '<div class="dgq-facts">' + cells.join('') + '</div>' : '';
+  }
 
-    var customer = factsHtml([
-      ['Name', q.customer_name],
-      ['Contact no', q.customer_phone],
-      ['Email', q.customer_email]
-    ]);
+  /**
+   * A fact that runs long, sharing the row with the short ones rather
+   * than taking a line to itself. `span` is how many grid tracks it eats.
+   */
+  function wideFactHtml(label, value, span) {
+    if (!value) return '';
+    return '<div class="dgq-fact dgq-fact-wide" style="grid-column: span ' + span + '">' +
+             '<div class="dgq-fact-l">' + esc(label) + '</div>' +
+             '<div class="dgq-fact-v dgq-fact-text">' + esc(value) + '</div>' +
+           '</div>';
+  }
 
-    // Places can run long, so they keep a full-width row each.
+  /** One trip on the sheet: a titled block with its own fare on the right. */
+  function tripBlockHtml(trip, n, only) {
+    var isReturn = trip.trip_type === 'return';
+
     var route = [
-      detailRow('Pickup location', q.pickup_location),
-      stopsRow(q.other_locations),
-      isReturn ? detailRow('Return location', q.return_location) : ''
+      detailRow('Pickup location', trip.pickup_location),
+      stopsRow(trip.other_locations),
+      detailRow(isReturn ? 'Return location' : 'Destination',
+                isReturn ? trip.return_location : trip.destination)
     ].join('');
 
+    // The trip type is in the heading, and the party travelling is the
+    // same on every trip, so a trip is down to three facts on one line.
     var facts = factsHtml([
-      ['Trip type', isReturn ? 'Return trip' : 'One way'],
-      ['Date of journey', readableDate(q.journey_date)],
-      ['Time of journey', readableTime(q.journey_time)],
-      ['Distance', q.distance],
-      ['No. of passengers', q.passengers],
-      ['No. of luggage', q.luggage],
-      ['Vehicle type', q.vehicle_type],
-      ['Driver', q.driver_name]
+      ['Distance', kmText(trip.distance_km)],
+      ['Date', readableDate(trip.journey_date)],
+      ['Time', readableTime(trip.journey_time)]
+    ]);
+
+    return '<section class="dgq-block">' +
+             '<div class="dgq-trip-title">' +
+               '<h2>' + (only ? 'Journey' : 'Trip ' + n) +
+                 '<span class="dgq-trip-type">' +
+                   (isReturn ? 'Return trip' : 'One way') + '</span></h2>' +
+               (trip.fare_lkr == null ? '' :
+                 '<span class="dgq-trip-fare">LKR ' + esc(money(trip.fare_lkr)) + '</span>') +
+             '</div>' +
+             '<table class="dgq-table">' + route + '</table>' +
+             facts +
+           '</section>';
+  }
+
+  function quoteSheetHtml(q, unsaved) {
+    var head = letterhead();
+    var trips = Array.isArray(q.trips) ? q.trips : [];
+
+    // The customer is three short values; on paper they earn one line.
+    var who = [q.customer_name, q.customer_phone, q.customer_email].filter(Boolean);
+    var customer = who.length
+      ? '<div class="dgq-customer">' +
+          '<span class="dgq-fact-l">Customer</span>' +
+          '<span class="dgq-customer-v">' + who.map(esc).join(' &middot; ') + '</span>' +
+        '</div>'
+      : '';
+
+    var passengers = factsHtml([
+      ['Passengers', q.passengers],
+      ['Luggage', q.luggage]
+    ], wideFactHtml('Special requests', q.special_requests, 3));
+
+    var vehicle = factsHtml([
+      ['Vehicle', q.vehicle_type],
+      ['Driver', q.driver_name],
+      ['Allowance', q.driver_allowance == null ? '' : 'LKR ' + money(q.driver_allowance)],
+      ['Total distance', kmText(q.total_distance_km)]
     ]);
 
     return '' +
@@ -1483,24 +1689,29 @@
 
         (unsaved ? '<p class="dgq-warn">Not recorded — this reference number is temporary.</p>' : '') +
 
-        (customer
+        customer +
+
+        trips.map(function (trip, i) {
+          return tripBlockHtml(trip, i + 1, trips.length === 1);
+        }).join('') +
+
+        (passengers
           ? '<section class="dgq-block">' +
-              '<h2>Customer</h2>' + customer +
+              '<h2>Passengers</h2>' + passengers +
             '</section>'
           : '') +
 
-        '<section class="dgq-block">' +
-          '<h2>Journey</h2>' +
-          '<table class="dgq-table">' + route + '</table>' +
-          facts +
-          noteHtml('Special requests', q.special_requests) +
-        '</section>' +
+        (vehicle
+          ? '<section class="dgq-block">' +
+              '<h2>Vehicle</h2>' + vehicle +
+            '</section>'
+          : '') +
 
-        (q.fare_lkr == null
+        (q.total_fare_lkr == null
           ? ''
           : '<div class="dgq-fare">' +
-              '<span>Quoted fare</span>' +
-              '<strong>LKR ' + esc(money(q.fare_lkr)) + '</strong>' +
+              '<span>Total fare</span>' +
+              '<strong>LKR ' + esc(money(q.total_fare_lkr)) + '</strong>' +
             '</div>') +
 
         '<section class="dgq-important">' +

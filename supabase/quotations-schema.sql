@@ -5,6 +5,10 @@
 --  Requires `admin-schema.sql` to have been run first: the policies
 --  below reuse the public.is_admin() function it creates.
 --
+--  Then run `quotations-trips-migration.sql` straight after this file.
+--  It reshapes the per-journey columns below into the `trips` array the
+--  site actually writes, and without it the quotation form cannot save.
+--
 --  Unlike the site content tables, nothing here is public. A quotation
 --  holds a customer's name, phone and email, so only a listed admin may
 --  read it, write it, or even know it exists.

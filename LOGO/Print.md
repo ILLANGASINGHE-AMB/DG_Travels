@@ -20,20 +20,47 @@ Content (To Be filled uisng website input data)
         - Name
         - Contact No
         - Email
+        (Take very less space in pdf)
 
-    - One way / Return Trip (Check box and must)
+## Trip Details ##
+    |Add Trip Button|
+
+Asks for these user inputs per Trip Add
+-------------------------------------
+    Trip Number(1/2/3/4/....(Automatically fill))
+
+    |One way / Return Trip (Check box and must)|
+
     - Pickup Location (Must Required)
     - Other Locations (Optional) can add as many as possible
+    - Destination (if One Way Trip)
     - Return Location (if Return Trip)
+    - Trip Distance KM (Must)
     - Date of Journey (optional)
     - Time of Journey (optional)
-    - Distance (fill by admin)
+    -Fare of Trip LKR (fill by admin)
+
+    |Remove Button (Optional)| for removing the trip
+
+Passenger Details
+-----------------------------------------
     - No of Passengers (Must Required)
     - No of Luggage (optional)
     - Special Requests (optional)
+
+One for all Trips
+-------------------------------------
+    ## Vehicle Details ##
     - Vehicle Type (Must Required)
     - Driver Name (fill by admin)
-    - Fare LKR.(fill by admin)
+    - Driver Allowence (Optional but recommended)
+    - Total Distance (filled automatically using the sum of trip distances)
+    - Total Fare LKR.(fill automatically
+    Trip 1 Fare + Trip 2 Fare + Driver Allowence)
+-----------------------------------
+    
+
+    
     
 
     Permenet Text as

@@ -149,19 +149,28 @@ own letterhead — logo, brand name, phone, WhatsApp and base, all taken from
 whatever Branding currently holds. Change the phone number in Branding and the
 next quotation carries the new one.
 
+A quotation is **one or more trips sharing a vehicle and a party of
+passengers**. Each trip has its own route, distance and fare. The passengers,
+the luggage, any special request, the vehicle, the driver, the allowance and the
+totals are stated once and apply to the lot.
+
 ### Before the first one
 
-Open Supabase → **SQL Editor → New query**, paste the whole of
-[`supabase/quotations-schema.sql`](supabase/quotations-schema.sql) and press
-**Run**. It needs `admin-schema.sql` to have been run first.
+Open Supabase → **SQL Editor → New query** and run these two files in order:
 
-That creates one table, `quotations`, and the counter behind the reference
-numbers. Unlike the site content, **nothing in this table is public** — a
-quotation holds a customer's name, phone and email, so only an account listed in
-`public.admins` can read it at all.
+1. [`supabase/quotations-schema.sql`](supabase/quotations-schema.sql) — the table,
+   the reference-number counter and the access rules.
+2. [`supabase/quotations-trips-migration.sql`](supabase/quotations-trips-migration.sql) —
+   reshapes it to hold several trips per quotation.
 
-Running the file again is safe and is how you upgrade: it adds anything missing
-and never touches a quotation you have already raised.
+Both need `admin-schema.sql` to have been run first, and both are safe to run
+again: they add what is missing and carry existing quotations across rather than
+dropping them. If you raised quotations before the second file existed, each one
+becomes a single-trip quotation with its details intact.
+
+Unlike the site content, **nothing in this table is public** — a quotation holds
+a customer's name, phone and email, so only an account listed in `public.admins`
+can read it at all.
 
 Numbering starts at REF-001. To carry on from a paper book instead, run
 `select setval('public.quotation_ref_seq', 128);` and the next one is REF-129.
@@ -171,27 +180,50 @@ Numbering starts at REF-001. To carry on from a paper book instead, run
 The reference number and the timestamp are added for you when you press
 **Create & print** — you never type either.
 
-Everything else is yours, and only four things are actually required:
+**Customer** — name, contact no and email, all optional. Leave all three blank
+and the line is left off the printed sheet entirely. When they are filled they
+print as a single line, so they cost almost no space on the page.
 
-| Field | |
+**Trip details** — one card per trip. **Add trip** puts another card on the end
+and **Remove** takes one away; the rest renumber themselves, and the last
+remaining trip has no Remove button because a quotation needs at least one.
+
+| Per trip | |
 |---|---|
-| Customer name, contact no, email | Optional. Leave all three blank and the customer block is left off the printed sheet entirely. |
-| **Trip type** | One way or return. Required. |
+| **Trip type** | One way or return. Required, and it decides which of the next two boxes you get. |
 | **Pickup location** | Required. |
-| Other locations | Optional, and as many as the route needs. **Add a stop** puts another box on the end; the × removes one and the rest renumber. They print as a numbered list in the order you enter them. An empty box is simply ignored. |
-| **Return location** | Appears, and is required, only for a return trip. |
+| Other locations | Optional, and as many as the route needs. **Add a stop** puts another box on the end; the × removes one and the rest renumber. They print as a numbered list in the order you enter them, and an empty box is ignored. |
+| **Destination** | Required on a one-way trip. |
+| **Return location** | Required on a return trip. |
 | Date & time of journey | Optional. |
-| Distance | Yours to fill. **Look up** appears once the route has somewhere to go, and works out the driving distance from the pickup to the last point — the return location, or the final stop. It ignores everything in between, so treat it as a starting figure and overwrite it if you disagree. |
+| **Trip distance (km)** | Required, in kilometres, because the trips add up to the total distance. **Look up** appears once the trip has somewhere to go and measures pickup to the end of the route; it ignores the stops in between, so treat it as a starting figure and overwrite it if you disagree. |
+| Trip fare (LKR) | Yours to fill. It prints beside that trip's heading. |
+
+**Passenger details** — the same party travels every trip, so these are filled
+once and apply to all of them.
+
+| | |
+|---|---|
 | **No. of passengers** | Required. |
 | No. of luggage | Optional. |
-| **Vehicle type** | Required. The list is your fleet; *Other* lets you type in a hired vehicle. |
-| Special requests | Optional. A child seat, a surfboard rack, a name board at arrivals — whatever the trip needs. |
-| Driver name | Starts as your own name from the About section. |
-| Fare (LKR) | Leave blank and the fare band is left off the sheet, which is what you want when the price is still being discussed. |
+| Special requests | Optional. A child seat, a surfboard rack, a name board at arrivals. |
 
-Every quotation also prints a fixed **Important** note under the fare, saying the
-fare covers the trip only and not tolls, parking, entrance fees, night fees or
-extra kilometres. It is not a field and cannot be switched off. To reword it,
+**Vehicle details** — likewise filled once and applied to every trip.
+
+| | |
+|---|---|
+| **Vehicle type** | Required. The list is your fleet; *Other* lets you type in a hired vehicle. |
+| Driver name | Starts as your own name from the About section. |
+| Driver allowance (LKR) | Optional, and worth filling — it is added to the total. |
+| **Total distance** | Worked out for you: every trip distance added up. |
+| **Total fare** | Worked out for you: every trip fare plus the driver allowance. |
+
+Both totals update as you type and cannot be edited directly, so what prints can
+never disagree with the trips above it.
+
+Every quotation also prints a fixed **Important** note under the total, saying
+the fare covers the trip only and not tolls, parking, entrance fees, night fees
+or extra kilometres. It is not a field and cannot be switched off. To reword it,
 edit `QUOTE_IMPORTANT` near the top of the quotation section in
 [`assets/admin.js`](assets/admin.js); reprints of older quotations pick up the
 new wording too.
@@ -206,8 +238,9 @@ to A4 and margins to none or default; the sheet carries its own margins.
 The page it prints is the sheet and nothing else. The site behind it, the admin
 bar and the toolbar buttons are all left off the paper.
 
-Most quotations come out on a single sheet. A long route or a long list of
-special requests will run onto a second, which is fine — it breaks between stops
+The layout is built to keep the page count down: a quotation of one or two trips
+normally comes out on a single sheet. Three trips or a long route will run onto a
+second, which is fine — it breaks between stops
 rather than through one, and every page carries the same margins. What you see in
 the preview is what comes out of the printer, so if you want it back to one page,
 that is the screen to trim it on.
@@ -218,8 +251,8 @@ Past quotations are listed at the foot of the composer, newest first. The printe
 icon reopens one exactly as it was printed, so a customer who has lost their copy
 can be sent another with the same reference number. The bin deletes one for good.
 
-**If saving fails** — the table not created yet, or no connection — you are asked
-whether to print anyway. Say yes and the sheet comes out with a temporary
+**If saving fails** — the tables not created yet, or no connection — you are
+asked whether to print anyway. Say yes and the sheet comes out with a temporary
 reference number and a line saying it was not recorded, so a customer waiting at
 the car still leaves with a bill.
 
@@ -261,5 +294,5 @@ into the `feedback` table, which the browser cannot read — see
 | Uploads fail but everything else saves | The storage part of the schema did not run. Re-run the section under *7. Image storage* in `admin-schema.sql`, or create a public bucket named `site-assets` by hand |
 | The editor shows "No sections found" | `admin-schema.sql` has not been run against this project |
 | An edit saved but the page looks unchanged | Hard-reload once (⌘⇧R / Ctrl-F5). `/api/config` is edge-cached for five minutes |
-| The quotation list says it could not load | `quotations-schema.sql` has not been run against this project |
+| The quotation list says it could not load | One of the two quotation SQL files has not been run against this project |
 | The printed quotation runs onto a second page | Set the paper size to A4 and the scale to 100% in the print dialogue |

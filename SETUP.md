@@ -18,6 +18,7 @@ assets/admin.css    Editor styling
 supabase/schema.sql       The feedback table
 supabase/admin-schema.sql The editable-content tables, auth rules and storage
 supabase/quotations-schema.sql  The admin-only quotation bills
+supabase/quotations-trips-migration.sql  Many trips per quotation
 vercel.json         Clean URLs + security headers
 ```
 
