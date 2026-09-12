@@ -17,6 +17,7 @@ assets/admin.js     The editor — only downloaded once an admin signs in
 assets/admin.css    Editor styling
 supabase/schema.sql       The feedback table
 supabase/admin-schema.sql The editable-content tables, auth rules and storage
+supabase/quotations-schema.sql  The admin-only quotation bills
 vercel.json         Clean URLs + security headers
 ```
 

@@ -275,6 +275,30 @@
     return authedRest('/' + table + '?id=eq.' + encodeURIComponent(id), { method: 'DELETE' });
   }
 
+  /* ---------------------------------------------------------
+     Quotation bills — admin-only, never read by a visitor.
+     The reference number and the issue timestamp are filled in by
+     the database, so the row that comes back is the record of truth.
+     --------------------------------------------------------- */
+  function createQuotation(payload) {
+    return authedRest('/quotations', {
+      method: 'POST',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify(payload)
+    }).then(function (rows) {
+      return (rows && rows[0]) || null;
+    });
+  }
+
+  function listQuotations(limit) {
+    return authedRest('/quotations?select=*&order=issued_at.desc&limit=' +
+      encodeURIComponent(limit || 25));
+  }
+
+  function deleteQuotation(id) {
+    return deleteRow('quotations', id);
+  }
+
   function setSectionVisible(key, visible) {
     return authedRest('/site_sections?key=eq.' + encodeURIComponent(key), {
       method: 'PATCH',
@@ -684,6 +708,10 @@
     deleteRow: deleteRow,
     setSectionVisible: setSectionVisible,
     uploadImage: uploadImage,
+
+    createQuotation: createQuotation,
+    listQuotations: listQuotations,
+    deleteQuotation: deleteQuotation,
 
     applyAll: applyAll,
     applySettings: applySettings,

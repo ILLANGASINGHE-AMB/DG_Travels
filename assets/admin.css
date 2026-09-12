@@ -765,3 +765,531 @@ html.dg-inline [data-cms-text].dg-saving { opacity: 0.5; }
     flex-wrap: wrap;
   }
 }
+
+/* ============================================================
+   QUOTATION BILLS
+   Two very different things live below: the dark composer inside
+   the admin panel, and the white A4 sheet that comes out of the
+   printer. The sheet declares every colour it needs, because a
+   page inheriting the site's dark theme prints as a black slab.
+   ============================================================ */
+
+/* ---------------------------------------------------------
+   Composer
+   --------------------------------------------------------- */
+.dg-modal-card.wide { max-width: 680px; }
+
+/* The composer shows and hides fields with the `hidden` attribute, and
+   both of these set a display of their own, which would otherwise win. */
+.dg-field[hidden],
+.dg-btn[hidden],
+.dg-input[hidden] { display: none !important; }
+
+.dgq-optional {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-3, #808080);
+}
+
+.dgq-choice { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.dgq-chip { position: relative; cursor: pointer; }
+.dgq-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.dgq-chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line-strong, rgba(255, 255, 255, 0.17));
+  border-radius: var(--r, 8px);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2, #a0a0a0);
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+
+.dgq-chip:hover span { border-color: var(--accent, #c9a961); }
+
+.dgq-chip input:checked + span {
+  border-color: var(--accent, #c9a961);
+  background: rgba(201, 169, 97, 0.12);
+  color: var(--accent, #c9a961);
+}
+
+.dgq-chip input:focus-visible + span {
+  outline: 2px solid var(--accent, #c9a961);
+  outline-offset: 2px;
+}
+
+.dgq-withbtn { display: flex; gap: 8px; align-items: stretch; }
+.dgq-withbtn .dg-input { flex: 1; min-width: 0; }
+.dgq-withbtn .dg-btn { flex: none; white-space: nowrap; }
+
+.dgq-other { margin-top: 8px; }
+
+/* Other locations — one row per stop, numbered so the route reads in order */
+.dgq-stops { display: flex; flex-direction: column; gap: 8px; }
+.dgq-stops:empty { display: none; }
+
+.dgq-stop { display: flex; align-items: center; gap: 8px; }
+.dgq-stop .dg-input { flex: 1; min-width: 0; }
+
+.dgq-stop-n {
+  flex: none;
+  width: 20px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3, #808080);
+  font-variant-numeric: tabular-nums;
+}
+
+.dgq-addstop { align-self: flex-start; margin-top: 8px; }
+
+/* Flashed when a required field is missing, then cleared. */
+.dg-input.dgq-invalid {
+  border-color: var(--danger, #ff7b72);
+  box-shadow: 0 0 0 3px rgba(255, 123, 114, 0.16);
+}
+
+/* The reference number sits where a tour thumbnail otherwise would.
+   A 46px square splits "REF-003" across two lines, so this slot is
+   wider and the number is kept on one. */
+.dg-row-thumb.dgq-refbox {
+  width: 68px;
+  padding: 0 4px;
+}
+
+.dgq-ref {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent, #c9a961);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Date and time inputs draw a native picker; without this it comes out
+   light-on-light against the panel's dark field. */
+#dgqDate, #dgqTime { color-scheme: dark; }
+
+/* ---------------------------------------------------------
+   Preview overlay
+   --------------------------------------------------------- */
+#dgQuoteSheetHost { display: none; }
+
+html.dg-quoting #dgQuoteSheetHost {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  background: #16130d;
+}
+
+/* The page behind must not scroll while the sheet is up. */
+html.dg-quoting body { overflow: hidden; }
+
+.dgq-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  padding-top: calc(10px + env(safe-area-inset-top));
+  background: #0f0d08;
+  border-bottom: 1px solid rgba(201, 169, 97, 0.35);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.dgq-toolbar-ref {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent, #c9a961);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dgq-stage {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 12px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* A transform paints the sheet smaller but leaves its 794px layout box
+   behind, which would scroll the stage sideways. fitSheet() sets this
+   box to the painted size instead, so the origin has to be the corner
+   the box is measured from, and the flex minimum has to get out of the
+   way — `min-width: auto` would hold the item at its 794px content. */
+.dgq-scaler {
+  transform-origin: top left;
+  flex: none;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------
+   The A4 sheet itself
+   --------------------------------------------------------- */
+.dgq-sheet {
+  width: 210mm;
+  /* 296mm less the 26mm of vertical padding leaves a 270mm content box:
+     the same height the print rules give a page, so what fits on screen
+     is what fits on paper. */
+  min-height: 296mm;
+  box-sizing: border-box;
+  padding: 14mm 15mm 12mm;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11pt;
+  line-height: 1.5;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.dgq-letterhead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dgq-logo {
+  width: 20mm;
+  height: 20mm;
+  object-fit: contain;
+  flex: none;
+}
+
+.dgq-ident { flex: 1; min-width: 0; }
+
+.dgq-name {
+  font-size: 19pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  color: #0f0f0f;
+}
+
+.dgq-sub {
+  font-size: 9pt;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #9a7f3f;
+  margin-top: 2px;
+}
+
+.dgq-reach {
+  text-align: right;
+  font-size: 8pt;
+  line-height: 1.65;
+  color: #4a4a4a;
+  flex: none;
+  /* Wide enough that the base line does not break mid-place-name. */
+  max-width: 76mm;
+}
+
+.dgq-rule {
+  height: 2px;
+  margin: 4mm 0 6mm;
+  background: linear-gradient(90deg, #c9a961 0%, #e3cf9a 45%, rgba(201, 169, 97, 0.15) 100%);
+}
+
+.dgq-doctitle {
+  font-size: 15pt;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #0f0f0f;
+  margin: 0 0 4mm;
+}
+
+.dgq-meta {
+  display: flex;
+  gap: 8mm;
+  justify-content: space-between;
+  padding: 3.5mm 5mm;
+  background: #faf7ef;
+  border: 1px solid #e8ddc2;
+  border-radius: 2mm;
+  margin-bottom: 6mm;
+}
+
+.dgq-meta > div { display: flex; flex-direction: column; gap: 1mm; min-width: 0; }
+.dgq-meta > div:last-child { text-align: right; }
+
+.dgq-meta span {
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a7742;
+}
+
+.dgq-meta strong { font-size: 11pt; font-weight: 700; color: #1a1a1a; }
+
+.dgq-warn {
+  margin: -4mm 0 6mm;
+  padding: 2.5mm 4mm;
+  border-left: 3px solid #c0392b;
+  background: #fdf1f0;
+  color: #8c2a20;
+  font-size: 9pt;
+  font-weight: 600;
+}
+
+.dgq-block { margin-bottom: 5mm; }
+
+.dgq-block h2 {
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9a7f3f;
+  margin: 0 0 2.5mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 1px solid #e8ddc2;
+}
+
+.dgq-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5pt;
+}
+
+.dgq-table th,
+.dgq-table td {
+  padding: 2.1mm 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dgq-table tr:last-child th,
+.dgq-table tr:last-child td { border-bottom: 0; }
+
+.dgq-table th {
+  width: 52mm;
+  font-weight: 600;
+  color: #6a6a6a;
+  padding-right: 6mm;
+}
+
+.dgq-table td { font-weight: 600; color: #1a1a1a; }
+
+.dgq-stoplist {
+  margin: 0;
+  padding-left: 5mm;
+}
+
+/* Short facts, three to a line. */
+.dgq-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.5mm 6mm;
+  margin-top: 3mm;
+}
+
+.dgq-facts:first-child { margin-top: 0; }
+
+.dgq-fact { min-width: 0; }
+
+.dgq-fact-l {
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  margin-bottom: 0.8mm;
+}
+
+.dgq-fact-v {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+
+.dgq-note { margin-top: 4mm; }
+
+.dgq-note p {
+  margin: 0;
+  font-size: 10pt;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.5;
+}
+
+.dgq-stoplist li { padding: 0.2mm 0; }
+
+/* The fixed wording every quotation carries. */
+.dgq-important {
+  margin-top: 5mm;
+  padding: 3.5mm 5mm;
+  background: #faf7ef;
+  border: 1px solid #e8ddc2;
+  border-left: 3px solid #c9a961;
+  border-radius: 1.5mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.dgq-important h3 {
+  margin: 0 0 1.5mm;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9a7f3f;
+}
+
+.dgq-important p {
+  margin: 0;
+  font-size: 8.5pt;
+  line-height: 1.6;
+  color: #43403a;
+}
+
+.dgq-fare {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8mm;
+  padding: 4mm 6mm;
+  background: #0f0d08;
+  color: #ffffff;
+  border-radius: 2mm;
+  /* Chrome drops backgrounds when printing unless asked not to. */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.dgq-fare span {
+  font-size: 9pt;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c9a961;
+}
+
+.dgq-fare strong { font-size: 16pt; font-weight: 700; letter-spacing: 0.01em; }
+
+.dgq-foot {
+  margin-top: auto;
+  padding-top: 8mm;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10mm;
+}
+
+.dgq-sign { font-size: 9.5pt; }
+.dgq-signline { width: 55mm; border-top: 1px solid #9a9a9a; margin-bottom: 2mm; }
+.dgq-signrole { font-size: 8pt; color: #6a6a6a; margin-top: 0.5mm; }
+
+.dgq-thanks {
+  margin: 0;
+  font-size: 8.5pt;
+  color: #6a6a6a;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------
+   Print — the sheet alone on A4, everything else gone
+   --------------------------------------------------------- */
+@media print {
+  /* The page carries the margins, not the sheet. A quotation long enough
+     to need a second sheet then gets the same margins on every page —
+     with padding on the element instead, page two would start hard
+     against the top edge of the paper. */
+  @page { size: A4; margin: 14mm 15mm 12mm; }
+
+  html.dg-quoting,
+  html.dg-quoting body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Every sibling of the sheet host goes, admin chrome included. */
+  html.dg-quoting body > *:not(#dgQuoteSheetHost) { display: none !important; }
+
+  html.dg-quoting #dgQuoteSheetHost {
+    display: block !important;
+    position: static !important;
+    background: none !important;
+    inset: auto !important;
+  }
+
+  .dgq-toolbar { display: none !important; }
+
+  .dgq-stage {
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  /* The preview is scaled to fit a screen; paper needs it at 1:1. */
+  .dgq-scaler {
+    transform: none !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .dgq-sheet {
+    width: auto !important;
+    min-height: 270mm;
+    padding: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  /* Keep the pieces that read as one unit off a page boundary. The
+     journey table is deliberately not in this list: a long route has to
+     be allowed to break, or it would push the whole block to page two
+     and leave page one half empty. */
+  .dgq-meta,
+  .dgq-fare,
+  .dgq-important,
+  .dgq-foot { page-break-inside: avoid; break-inside: avoid; }
+
+  .dgq-block h2 { page-break-after: avoid; break-after: avoid; }
+  .dgq-table tr { page-break-inside: avoid; break-inside: avoid; }
+
+  /* The exception: a route with a dozen stops is taller than whatever is
+     left of the page, and holding it together would push the whole list
+     to the next sheet and leave this one half empty. It breaks between
+     stops instead, never through one. */
+  .dgq-table tr.dgq-stops-row { page-break-inside: auto; break-inside: auto; }
+  .dgq-stoplist li { page-break-inside: avoid; break-inside: avoid; }
+}
+
+/* ---------------------------------------------------------
+   Composer on a phone
+   --------------------------------------------------------- */
+@media (max-width: 600px) {
+  .dgq-withbtn { flex-direction: column; align-items: stretch; }
+  .dgq-chip span { width: 100%; justify-content: center; min-height: 44px; }
+  .dgq-choice { flex-direction: column; }
+  .dgq-toolbar-ref { display: none; }
+  .dgq-stage { padding: 10px 8px 30px; }
+}
