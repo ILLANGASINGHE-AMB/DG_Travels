@@ -785,6 +785,48 @@ html.dg-inline [data-cms-text].dg-saving { opacity: 0.5; }
 .dg-btn[hidden],
 .dg-input[hidden] { display: none !important; }
 
+/* The dialog's own tab strip. The panel's .dg-tabs sits against a panel
+   edge; here it sits inside a card, so it needs its own side padding. */
+.dgq-tabs {
+  padding: 0 20px;
+  flex: none;
+}
+
+.dgq-tabs .dg-tab { flex: 0 0 auto; padding: 12px 16px; }
+
+/* Search over the saved quotations */
+.dgq-search {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.dgq-search i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--text-3, #808080);
+  pointer-events: none;
+}
+
+.dgq-search .dg-input { padding-left: 32px; }
+
+/* Safari draws its own clear button; it fights the styling above. */
+.dgq-search .dg-input::-webkit-search-decoration,
+.dgq-search .dg-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.dgq-more { width: 100%; margin-top: 12px; }
+
+.dgq-row-total {
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent, #c9a961);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 .dgq-optional {
   font-size: 11px;
   font-weight: 500;

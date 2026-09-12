@@ -290,9 +290,33 @@
     });
   }
 
-  function listQuotations(limit) {
-    return authedRest('/quotations?select=*&order=issued_at.desc&limit=' +
-      encodeURIComponent(limit || 25));
+  /**
+   * Newest first, a page at a time. `term` searches the columns that sit
+   * on the row itself; the route lives inside the trips array, which
+   * PostgREST cannot match with a plain ilike.
+   */
+  function listQuotations(options) {
+    options = options || {};
+    var limit = options.limit || 25;
+    var path = '/quotations?select=*&order=issued_at.desc' +
+      '&limit=' + encodeURIComponent(limit) +
+      '&offset=' + encodeURIComponent(options.offset || 0);
+
+    var term = String(options.term || '').trim();
+    if (term) {
+      // Commas, parentheses and dots separate the parts of a PostgREST
+      // filter, so a search for "REF-001, Galle" must not carry them in.
+      var safe = term.replace(/[(),.*"\\]/g, ' ').trim();
+      if (safe) {
+        path += '&or=(' + [
+          'ref_no', 'customer_name', 'customer_phone', 'customer_email', 'vehicle_type'
+        ].map(function (col) {
+          return col + '.ilike.*' + encodeURIComponent(safe) + '*';
+        }).join(',') + ')';
+      }
+    }
+
+    return authedRest(path);
   }
 
   function deleteQuotation(id) {

@@ -173,8 +173,8 @@
             '<span class="dg-switch-label">Edit on page</span>' +
           '</label>' +
           '<button type="button" class="dg-bar-btn" id="dgOpenQuote" ' +
-            'title="Raise an A4 quotation bill for a customer">' +
-            '<i class="fa-solid fa-file-invoice"></i> Quotation</button>' +
+            'title="Raise an A4 quotation bill, or open a saved one">' +
+            '<i class="fa-solid fa-file-invoice"></i> Quotations</button>' +
           '<button type="button" class="dg-bar-btn primary" id="dgOpenPanel">' +
             '<i class="fa-solid fa-sliders"></i> Editor</button>' +
           '<button type="button" class="dg-bar-btn" id="dgLogout">' +
@@ -882,8 +882,6 @@
      waiting at the car is not helped by an error message.
      ========================================================= */
 
-  var QUOTE_LIMIT = 25;
-
   /* Printed on every quotation, word for word. Edit it here and it
      changes on the next bill — including reprints of old ones. */
   var QUOTE_IMPORTANT =
@@ -1113,29 +1111,39 @@
             '<i class="fa-solid fa-print"></i> Create &amp; print</button>' +
         '</div>' +
 
-        '<h3 class="dg-group-title">Recent quotations</h3>' +
-        '<div id="dgqRecent"><p class="dg-hint">Loading…</p></div>' +
       '</form>';
   }
 
-  function openQuoteModal() {
+  /** Which half of the dialog was last open, so Back comes back here. */
+  var quoteTab = 'new';
+
+  function openQuoteModal(tab) {
     closePanel();
     if (root.classList.contains('dg-preview')) setPreview(false);
+    quoteTab = tab || quoteTab || 'new';
 
     var existing = document.getElementById('dgQuoteModal');
     if (existing) existing.remove();
+
+    var isSaved = quoteTab === 'saved';
 
     var modal = document.createElement('div');
     modal.className = 'dg-modal';
     modal.id = 'dgQuoteModal';
     modal.innerHTML =
-      '<div class="dg-modal-card wide" role="dialog" aria-modal="true" aria-label="New quotation">' +
+      '<div class="dg-modal-card wide" role="dialog" aria-modal="true" aria-label="Quotations">' +
         '<header class="dg-modal-head">' +
-          '<h3><i class="fa-solid fa-file-invoice"></i> New quotation</h3>' +
+          '<h3><i class="fa-solid fa-file-invoice"></i> Quotations</h3>' +
           '<button type="button" class="dg-panel-close" data-close aria-label="Close">' +
             '<i class="fa-solid fa-xmark"></i></button>' +
         '</header>' +
-        quoteFormHtml() +
+        '<nav class="dg-tabs dgq-tabs">' +
+          '<button type="button" class="dg-tab' + (isSaved ? '' : ' active') + '" ' +
+            'data-quote-tab="new">New quotation</button>' +
+          '<button type="button" class="dg-tab' + (isSaved ? ' active' : '') + '" ' +
+            'data-quote-tab="saved">Saved quotations</button>' +
+        '</nav>' +
+        (isSaved ? savedTabHtml() : quoteFormHtml()) +
       '</div>';
     document.body.appendChild(modal);
     requestAnimationFrame(function () { modal.classList.add('show'); });
@@ -1150,11 +1158,20 @@
     });
     modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
 
-    wireQuoteForm(modal, close);
-    loadRecentQuotes(modal.querySelector('#dgqRecent'));
+    modal.querySelectorAll('[data-quote-tab]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var next = this.getAttribute('data-quote-tab');
+        if (next !== quoteTab) openQuoteModal(next);
+      });
+    });
 
-    var first = modal.querySelector('#dgqName');
-    if (first) setTimeout(function () { first.focus(); }, 80);
+    if (isSaved) {
+      wireSavedTab(modal);
+    } else {
+      wireQuoteForm(modal, close);
+      var first = modal.querySelector('#dgqName');
+      if (first) setTimeout(function () { first.focus(); }, 80);
+    }
   }
 
   function wireQuoteForm(modal, close) {
@@ -1474,53 +1491,107 @@
   }
 
   /* ---------------------------------------------------------
-     Recent quotations — so an old bill can be reprinted
+     Saved quotations — find an old one, look at it, download it
      --------------------------------------------------------- */
-  function loadRecentQuotes(host) {
-    if (!host) return;
+  var QUOTE_PAGE = 25;
 
-    CMS.listQuotations(QUOTE_LIMIT).then(function (rows) {
-      rows = rows || [];
+  function savedTabHtml() {
+    return '' +
+      '<div class="dg-modal-body">' +
+        '<div class="dgq-search">' +
+          '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>' +
+          '<input id="dgqSearch" class="dg-input" type="search" autocomplete="off" ' +
+            'placeholder="Search by reference, customer, phone, email or vehicle">' +
+        '</div>' +
+        '<div id="dgqSavedList"><p class="dg-hint">Loading…</p></div>' +
+      '</div>';
+  }
+
+  /** One line of summary under the customer's name. */
+  function quoteSummary(row) {
+    var trips = Array.isArray(row.trips) ? row.trips : [];
+    return [
+      stampDateTime(row.issued_at).slice(0, 10),
+      trips.length > 1 ? trips.length + ' trips' : row.vehicle_type
+    ].filter(Boolean).join(' · ');
+  }
+
+  function quoteRowHtml(row) {
+    var trips = Array.isArray(row.trips) ? row.trips : [];
+    var who = row.customer_name || (trips[0] && trips[0].pickup_location) || 'Quotation';
+
+    return '<div class="dg-row-card">' +
+             '<div class="dg-row-thumb dgq-refbox"><span class="dgq-ref">' + esc(row.ref_no) + '</span></div>' +
+             '<div class="dg-row-main">' +
+               '<div class="dg-row-title">' + esc(who) + '</div>' +
+               '<div class="dg-row-sub">' + esc(quoteSummary(row)) + '</div>' +
+             '</div>' +
+             (row.total_fare_lkr == null ? '' :
+               '<div class="dgq-row-total">LKR ' + esc(money(row.total_fare_lkr)) + '</div>') +
+             '<div class="dg-row-tools">' +
+               '<button type="button" class="dg-icon-btn" data-quote-view="' + esc(row.id) + '" ' +
+                 'title="View the quotation"><i class="fa-solid fa-eye"></i></button>' +
+               '<button type="button" class="dg-icon-btn" data-quote-download="' + esc(row.id) + '" ' +
+                 'title="Download as PDF"><i class="fa-solid fa-download"></i></button>' +
+               '<button type="button" class="dg-icon-btn danger" data-quote-delete="' + esc(row.id) + '" ' +
+                 'title="Delete"><i class="fa-solid fa-trash"></i></button>' +
+             '</div>' +
+           '</div>';
+  }
+
+  function wireSavedTab(modal) {
+    var host = modal.querySelector('#dgqSavedList');
+    var search = modal.querySelector('#dgqSearch');
+
+    var rows = [];          // everything loaded so far, in order
+    var term = '';
+    var loading = false;
+    var exhausted = false;
+    var seq = 0;            // so a slow reply cannot overwrite a newer one
+
+    function closeModal() {
+      modal.classList.remove('show');
+      setTimeout(function () { modal.remove(); }, 200);
+    }
+
+    function open(id, thenPrint) {
+      var row = rows.filter(function (r) { return r.id === id; })[0];
+      if (!row) return;
+      closeModal();
+      showQuoteSheet(row, false, thenPrint);
+    }
+
+    function render() {
       if (!rows.length) {
-        host.innerHTML = '<p class="dg-empty">No quotations yet. The first one you create will be REF-001.</p>';
+        host.innerHTML = '<p class="dg-empty">' +
+          (term
+            ? 'Nothing matches “' + esc(term) + '”.'
+            : 'No quotations yet. The first one you create will be REF-001.') +
+          '</p>';
         return;
       }
 
-      host.innerHTML = '<div class="dg-list">' + rows.map(function (row) {
-        var trips = Array.isArray(row.trips) ? row.trips : [];
-        var who = row.customer_name || (trips[0] && trips[0].pickup_location) || 'Quotation';
-        var sub = [
-          stampDateTime(row.issued_at).slice(0, 16),
-          trips.length > 1 ? trips.length + ' trips' : row.vehicle_type,
-          row.total_fare_lkr == null ? '' : 'LKR ' + money(row.total_fare_lkr)
-        ].filter(Boolean).join(' · ');
+      host.innerHTML =
+        '<p class="dg-hint block">' +
+          rows.length + (rows.length === 1 ? ' quotation' : ' quotations') +
+          (exhausted ? '' : ' so far') +
+          '. <strong>View</strong> opens the sheet; <strong>Download</strong> opens your ' +
+          'print dialogue, where <em>Save as PDF</em> gives you a file to send on.' +
+        '</p>' +
+        '<div class="dg-list">' + rows.map(quoteRowHtml).join('') + '</div>' +
+        (exhausted ? '' :
+          '<button type="button" class="dg-btn ghost dgq-more" id="dgqMore">' +
+            '<i class="fa-solid fa-arrow-down"></i> Load older</button>');
 
-        return '<div class="dg-row-card">' +
-                 '<div class="dg-row-thumb dgq-refbox"><span class="dgq-ref">' + esc(row.ref_no) + '</span></div>' +
-                 '<div class="dg-row-main">' +
-                   '<div class="dg-row-title">' + esc(who) + '</div>' +
-                   '<div class="dg-row-sub">' + esc(sub) + '</div>' +
-                 '</div>' +
-                 '<div class="dg-row-tools">' +
-                   '<button type="button" class="dg-icon-btn" data-quote-print="' + esc(row.id) + '" ' +
-                     'title="Print again"><i class="fa-solid fa-print"></i></button>' +
-                   '<button type="button" class="dg-icon-btn danger" data-quote-delete="' + esc(row.id) + '" ' +
-                     'title="Delete"><i class="fa-solid fa-trash"></i></button>' +
-                 '</div>' +
-               '</div>';
-      }).join('') + '</div>';
-
-      host.querySelectorAll('[data-quote-print]').forEach(function (btn) {
+      host.querySelectorAll('[data-quote-view]').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          var id = this.getAttribute('data-quote-print');
-          var row = rows.filter(function (r) { return r.id === id; })[0];
-          if (!row) return;
-          var modal = document.getElementById('dgQuoteModal');
-          if (modal) {
-            modal.classList.remove('show');
-            setTimeout(function () { modal.remove(); }, 200);
-          }
-          showQuoteSheet(row, false);
+          open(this.getAttribute('data-quote-view'), false);
+        });
+      });
+
+      host.querySelectorAll('[data-quote-download]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          open(this.getAttribute('data-quote-download'), true);
         });
       });
 
@@ -1534,16 +1605,58 @@
           CMS.deleteQuotation(id)
             .then(function () {
               toast('Deleted');
-              loadRecentQuotes(host);
+              load(true);
             })
             .catch(fail);
         });
       });
-    }).catch(function (err) {
-      console.warn('[quotation]', err);
-      host.innerHTML = '<p class="dg-empty">Could not load past quotations. ' +
-        'Run <code>supabase/quotations-trips-migration.sql</code> if you have not yet.</p>';
+
+      var more = host.querySelector('#dgqMore');
+      if (more) more.addEventListener('click', function () { load(false); });
+    }
+
+    function load(reset) {
+      if (loading) return;
+      loading = true;
+      var mine = ++seq;
+
+      if (reset) {
+        rows = [];
+        exhausted = false;
+        host.innerHTML = '<p class="dg-hint">Loading…</p>';
+      }
+
+      CMS.listQuotations({ limit: QUOTE_PAGE, offset: rows.length, term: term })
+        .then(function (page) {
+          if (mine !== seq) return;         // a newer search already ran
+          page = page || [];
+          rows = rows.concat(page);
+          if (page.length < QUOTE_PAGE) exhausted = true;
+          render();
+        })
+        .catch(function (err) {
+          if (mine !== seq) return;
+          console.warn('[quotation]', err);
+          host.innerHTML = '<p class="dg-empty">Could not load past quotations. ' +
+            'Run <code>supabase/quotations-trips-migration.sql</code> if you have not yet.</p>';
+        })
+        .then(function () { if (mine === seq) loading = false; });
+    }
+
+    // Typing searches the server, so it waits for a pause in the typing.
+    var searchTimer;
+    search.addEventListener('input', function () {
+      var next = this.value;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        term = next;
+        seq++;            // cancel whatever is in flight
+        loading = false;
+        load(true);
+      }, 300);
     });
+
+    load(true);
   }
 
   /* ---------------------------------------------------------
@@ -1744,7 +1857,11 @@
     return host;
   }
 
-  function showQuoteSheet(q, unsaved) {
+  /**
+   * @param unsaved   mark the sheet as not recorded
+   * @param autoPrint open the print dialogue as soon as it has been laid out
+   */
+  function showQuoteSheet(q, unsaved, autoPrint) {
     var host = sheetHost();
     host.innerHTML =
       '<div class="dgq-toolbar">' +
@@ -1773,13 +1890,22 @@
     host.querySelector('#dgqBack').addEventListener('click', hideQuoteSheet);
 
     if (unsaved) toast('Printing an unsaved quotation', 'error');
+
+    // Downloading is the same dialogue, reached without a second click.
+    // It waits for the fonts so the sheet is measured before it is sent.
+    if (autoPrint) {
+      var ready = (document.fonts && document.fonts.ready) || Promise.resolve();
+      ready.then(function () {
+        setTimeout(function () { fitSheet(); window.print(); }, 60);
+      });
+    }
   }
 
   function hideQuoteSheet() {
     root.classList.remove('dg-quoting');
     var host = document.getElementById('dgQuoteSheetHost');
     if (host) host.innerHTML = '';
-    openQuoteModal();
+    openQuoteModal();           // reopens on whichever tab it came from
   }
 
   /* An A4 page is 794px wide at 96dpi and a phone is not. Scale the

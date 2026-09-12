@@ -91,7 +91,7 @@ Sign in and the admin bar appears at the top.
 |---|---|
 | **Preview as visitor** | Hides all editing chrome so you see the real site. A gold pill at the bottom brings you back. |
 | **Edit on page** | Outlines every editable piece of text. Click one, type, press Enter. |
-| **Quotation** | Opens the quotation composer. See [Quotation bills](#quotation-bills). |
+| **Quotations** | Raise a new quotation, or open a saved one. See [Quotation bills](#quotation-bills). |
 | **Editor** | Opens the side panel with the five tabs below. |
 | **Log out** | Ends the session and returns the page to User View Mode. |
 
@@ -144,8 +144,9 @@ stops being offered.
 
 ## Quotation bills
 
-**Quotation** on the admin bar opens a form that prints an A4 quotation on your
-own letterhead — logo, brand name, phone, WhatsApp and base, all taken from
+**Quotations** on the admin bar opens a dialog with two tabs: **New quotation**,
+which is the form below, and **Saved quotations**, which is every bill you have
+ever raised. A new quotation prints on your own letterhead — logo, brand name, phone, WhatsApp and base, all taken from
 whatever Branding currently holds. Change the phone number in Branding and the
 next quotation carries the new one.
 
@@ -245,11 +246,29 @@ rather than through one, and every page carries the same margins. What you see i
 the preview is what comes out of the printer, so if you want it back to one page,
 that is the screen to trim it on.
 
-### Going back to one
+### Saved quotations
 
-Past quotations are listed at the foot of the composer, newest first. The printer
-icon reopens one exactly as it was printed, so a customer who has lost their copy
-can be sent another with the same reference number. The bin deletes one for good.
+The second tab lists every quotation you have raised, newest first. Each row
+carries its reference number, the customer, the date, the vehicle and the total.
+
+| Action | |
+|---|---|
+| **View** (eye) | Opens the quotation exactly as it was printed, same reference number and all. A customer who has lost their copy can be handed another. |
+| **Download** (arrow) | Opens the same sheet and goes straight to your print dialogue. Choose **Save as PDF** as the destination and you get a file to send on WhatsApp or by email; choose a printer and you get paper. |
+| **Delete** (bin) | Removes it for good, after asking. |
+
+**Back**, at the top left of a quotation you have opened, returns you to the list
+where you left it.
+
+**Searching.** The box at the top matches the reference number, the customer's
+name, phone or email, and the vehicle. Type a few characters and the list narrows
+as you pause. It searches every quotation in the database, not only the ones on
+screen. The route is inside each quotation rather than in a column of its own, so
+pickup and destination are not searchable — look the trip up by customer or
+reference instead.
+
+**Older ones.** Twenty-five load at a time; **Load older** fetches the next
+twenty-five, and the button disappears when you have reached the end.
 
 **If saving fails** — the tables not created yet, or no connection — you are
 asked whether to print anyway. Say yes and the sheet comes out with a temporary
