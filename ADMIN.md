@@ -229,12 +229,31 @@ edit `QUOTE_IMPORTANT` near the top of the quotation section in
 [`assets/admin.js`](assets/admin.js); reprints of older quotations pick up the
 new wording too.
 
+### What the printed sheet shows
+
+Top to bottom: your letterhead, the word **Quotation**, then **Prepared for** on
+the left with the customer's name and contact, and **Reference** on the right with
+the number, the timestamp and a pill each for the passengers and the luggage.
+
+Then a card per trip, each with a gold edge: the trip number and whether it is
+one way or return, its fare at the top right, the route down the left, and its
+distance and date down the right.
+
+Below the trips, **Service details** — vehicle, driver, total distance, allowance,
+and any special request. Then the **Total fare** band, the **Important** note, and
+your signature line.
+
 ### Printing
 
 **Create & print** saves the quotation, then shows the finished A4 sheet.
 **Print / Save as PDF** opens your browser's print dialogue — choose your printer
-for paper, or *Save as PDF* to send it by WhatsApp or email. Set the paper size
-to A4 and margins to none or default; the sheet carries its own margins.
+for paper, or *Save as PDF* to send it by WhatsApp or email.
+
+**Two settings, once.** In the print dialogue set the paper size to **A4** and
+turn **Headers and footers** off. Leave them on and the browser prints today's
+date and the page title across the top of your letterhead. Every browser
+remembers both settings, so this is a one-time job. The preview reminds you above
+the sheet.
 
 The page it prints is the sheet and nothing else. The site behind it, the admin
 bar and the toolbar buttons are all left off the paper.

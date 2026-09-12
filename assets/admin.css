@@ -1027,6 +1027,21 @@ html.dg-quoting body { overflow: hidden; }
   white-space: nowrap;
 }
 
+.dgq-tip {
+  flex: none;
+  margin: 0;
+  padding: 8px 16px;
+  background: #14110b;
+  border-bottom: 1px solid rgba(201, 169, 97, 0.18);
+  color: var(--text-3, #808080);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dgq-tip strong { color: var(--accent, #c9a961); font-weight: 600; }
+
 .dgq-stage {
   flex: 1;
   overflow: auto;
@@ -1177,48 +1192,193 @@ html.dg-quoting body { overflow: hidden; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #9a7f3f;
-  margin: 0 0 2.5mm;
-  padding-bottom: 1.5mm;
+  margin: 0 0 2mm;
+  padding-bottom: 1.2mm;
   border-bottom: 1px solid #e8ddc2;
 }
 
-.dgq-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 10.5pt;
+/* ---------------------------------------------------------
+   Prepared for / Reference
+   --------------------------------------------------------- */
+.dgq-parties {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8mm;
+  padding-bottom: 2.5mm;
+  margin-bottom: 3mm;
+  border-bottom: 1px solid #e8ddc2;
 }
 
-.dgq-table th,
-.dgq-table td {
-  padding: 1.7mm 0;
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid #f0f0f0;
+.dgq-parties.solo { justify-content: flex-end; }
+
+.dgq-party { min-width: 0; }
+
+.dgq-party-ref { text-align: right; flex: none; }
+
+.dgq-party-name {
+  font-size: 13pt;
+  font-weight: 700;
+  color: #0f0f0f;
+  line-height: 1.2;
+  margin-top: 0.8mm;
 }
 
-.dgq-table tr:last-child th,
-.dgq-table tr:last-child td { border-bottom: 0; }
+.dgq-party-line {
+  font-size: 9pt;
+  color: #5a5a5a;
+  margin-top: 0.6mm;
+  font-variant-numeric: tabular-nums;
+}
 
-.dgq-table th {
-  width: 52mm;
+.dgq-pills {
+  display: flex;
+  gap: 2mm;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 2mm;
+}
+
+.dgq-pill {
+  display: inline-block;
+  padding: 1mm 2.5mm;
+  border-radius: 999px;
+  background: #0f0d08;
+  color: #e3cf9a;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ---------------------------------------------------------
+   A trip, as a card
+   --------------------------------------------------------- */
+.dgq-trip-card {
+  border: 1px solid #e6e0d2;
+  border-left: 3px solid #c9a961;
+  border-radius: 0 2mm 2mm 0;
+  padding: 2.5mm 5mm 2.5mm;
+  margin-bottom: 2.5mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.dgq-trip-head {
+  display: flex;
+  align-items: baseline;
+  gap: 3mm;
+  padding-bottom: 2mm;
+  margin-bottom: 2mm;
+  border-bottom: 1px solid #f0ece0;
+}
+
+.dgq-trip-tag {
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9a7f3f;
+  flex: none;
+}
+
+.dgq-trip-kind {
+  font-size: 8pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  flex: 1;
+  min-width: 0;
+}
+
+.dgq-trip-fare {
+  flex: none;
+  font-size: 13pt;
+  font-weight: 700;
+  color: #0f0f0f;
+  font-variant-numeric: tabular-nums;
+}
+
+.dgq-trip-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 6mm;
+}
+
+.dgq-trip-route { flex: 1; min-width: 0; }
+
+.dgq-rrow {
+  display: flex;
+  align-items: baseline;
+  gap: 4mm;
+  padding: 1mm 0;
+}
+
+.dgq-rrow-l {
+  flex: none;
+  width: 24mm;
+  font-size: 7.5pt;
   font-weight: 600;
-  color: #6a6a6a;
-  padding-right: 6mm;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a8a;
 }
 
-.dgq-table td { font-weight: 600; color: #1a1a1a; }
+.dgq-rrow-v {
+  min-width: 0;
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.35;
+}
+
+/* Distance and dates sit against the right edge of the card. */
+.dgq-trip-side {
+  flex: none;
+  width: 42mm;
+  text-align: right;
+}
+
+.dgq-trip-km {
+  font-size: 11pt;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dgq-trip-kml {
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  margin-top: 0.4mm;
+}
+
+.dgq-trip-when {
+  font-size: 8.5pt;
+  color: #5a5a5a;
+  margin-top: 1.5mm;
+  line-height: 1.35;
+}
 
 .dgq-stoplist {
   margin: 0;
-  padding-left: 5mm;
+  padding-left: 4.5mm;
+  font-size: 10pt;
+  font-weight: 600;
 }
 
 /* Short facts, three to a line. */
 .dgq-facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(29mm, 1fr));
-  gap: 2.5mm 5mm;
-  margin-top: 1.8mm;
+  gap: 2mm 5mm;
+  margin-top: 1.5mm;
 }
 
 .dgq-facts:first-child { margin-top: 0; }
@@ -1270,31 +1430,6 @@ html.dg-quoting body { overflow: hidden; }
   min-width: 0;
 }
 
-/* A trip heading carries its own fare on the right. */
-.dgq-trip-title {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6mm;
-  margin-bottom: 2.5mm;
-  padding-bottom: 1.5mm;
-  border-bottom: 1px solid #e8ddc2;
-}
-
-.dgq-trip-title h2 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.dgq-trip-type {
-  margin-left: 2.5mm;
-  padding-left: 2.5mm;
-  border-left: 1px solid #d8ccae;
-  color: #6a6a6a;
-  letter-spacing: 0.08em;
-}
-
 .dgq-trip-fare {
   flex: none;
   font-size: 11pt;
@@ -1303,15 +1438,12 @@ html.dg-quoting body { overflow: hidden; }
   font-variant-numeric: tabular-nums;
 }
 
-/* A trip heading must never be the last thing on a page. */
-.dgq-trip-title { break-after: avoid; page-break-after: avoid; }
-
 .dgq-stoplist li { padding: 0.2mm 0; }
 
 /* The fixed wording every quotation carries. */
 .dgq-important {
-  margin-top: 2.5mm;
-  padding: 1.8mm 5mm;
+  margin-top: 2mm;
+  padding: 1.5mm 5mm;
   background: #faf7ef;
   border: 1px solid #e8ddc2;
   border-left: 3px solid #c9a961;
@@ -1341,7 +1473,7 @@ html.dg-quoting body { overflow: hidden; }
   align-items: baseline;
   justify-content: space-between;
   gap: 8mm;
-  padding: 3.5mm 6mm;
+  padding: 3mm 6mm;
   background: #0f0d08;
   color: #ffffff;
   border-radius: 2mm;
@@ -1360,9 +1492,10 @@ html.dg-quoting body { overflow: hidden; }
 
 .dgq-fare strong { font-size: 16pt; font-weight: 700; letter-spacing: 0.01em; }
 
+.dgq-close { margin-top: auto; }
+
 .dgq-foot {
-  margin-top: auto;
-  padding-top: 3mm;
+  padding-top: 2.5mm;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -1370,7 +1503,7 @@ html.dg-quoting body { overflow: hidden; }
 }
 
 .dgq-sign { font-size: 9.5pt; }
-.dgq-signline { width: 55mm; border-top: 1px solid #9a9a9a; margin-bottom: 1.5mm; }
+.dgq-signline { width: 55mm; border-top: 1px solid #9a9a9a; margin-bottom: 1mm; }
 .dgq-signrole { font-size: 8pt; color: #6a6a6a; margin-top: 0.5mm; }
 
 .dgq-thanks {
@@ -1409,7 +1542,8 @@ html.dg-quoting body { overflow: hidden; }
     inset: auto !important;
   }
 
-  .dgq-toolbar { display: none !important; }
+  .dgq-toolbar,
+  .dgq-tip { display: none !important; }
 
   .dgq-stage {
     display: block !important;
@@ -1436,10 +1570,7 @@ html.dg-quoting body { overflow: hidden; }
      journey table is deliberately not in this list: a long route has to
      be allowed to break, or it would push the whole block to page two
      and leave page one half empty. */
-  .dgq-meta,
-  .dgq-fare,
-  .dgq-important,
-  .dgq-foot { page-break-inside: avoid; break-inside: avoid; }
+  .dgq-close { page-break-inside: avoid; break-inside: avoid; }
 
   /* Trips are deliberately allowed to break. A trip is usually taller
      than whatever is left of the page, so keeping one whole would push it
@@ -1448,13 +1579,7 @@ html.dg-quoting body { overflow: hidden; }
   .dgq-fact { page-break-inside: avoid; break-inside: avoid; }
 
   .dgq-block h2 { page-break-after: avoid; break-after: avoid; }
-  .dgq-table tr { page-break-inside: avoid; break-inside: avoid; }
-
-  /* The exception: a route with a dozen stops is taller than whatever is
-     left of the page, and holding it together would push the whole list
-     to the next sheet and leave this one half empty. It breaks between
-     stops instead, never through one. */
-  .dgq-table tr.dgq-stops-row { page-break-inside: auto; break-inside: auto; }
+  .dgq-parties { page-break-inside: avoid; break-inside: avoid; }
   .dgq-stoplist li { page-break-inside: avoid; break-inside: avoid; }
 }
 

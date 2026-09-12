@@ -1673,21 +1673,6 @@
     };
   }
 
-  function detailRow(label, value) {
-    if (!value && value !== 0) return '';
-    return '<tr><th>' + esc(label) + '</th><td>' + esc(value) + '</td></tr>';
-  }
-
-  /** The stops, numbered, in one cell — a row each would cost a page. */
-  function stopsRow(list) {
-    if (!Array.isArray(list) || !list.length) return '';
-    return '<tr class="dgq-stops-row"><th>Other locations</th><td>' +
-             '<ol class="dgq-stoplist">' +
-               list.map(function (stop) { return '<li>' + esc(stop) + '</li>'; }).join('') +
-             '</ol>' +
-           '</td></tr>';
-  }
-
   /**
    * The short facts, three to a line. A row each reads fine on screen but
    * costs about 20mm of paper, which is the difference between one sheet
@@ -1719,34 +1704,60 @@
   }
 
   /** One trip on the sheet: a titled block with its own fare on the right. */
-  function tripBlockHtml(trip, n, only) {
+  /** A label/value pair on a trip card's route list. */
+  function routeRow(label, value) {
+    if (!value) return '';
+    return '<div class="dgq-rrow">' +
+             '<span class="dgq-rrow-l">' + esc(label) + '</span>' +
+             '<span class="dgq-rrow-v">' + esc(value) + '</span>' +
+           '</div>';
+  }
+
+  /** The stops, numbered, sharing one row rather than taking one each. */
+  function stopsRoutRow(list) {
+    if (!Array.isArray(list) || !list.length) return '';
+    return '<div class="dgq-rrow">' +
+             '<span class="dgq-rrow-l">Via</span>' +
+             '<span class="dgq-rrow-v">' +
+               '<ol class="dgq-stoplist">' +
+                 list.map(function (stop) { return '<li>' + esc(stop) + '</li>'; }).join('') +
+               '</ol>' +
+             '</span>' +
+           '</div>';
+  }
+
+  /**
+   * One trip, as a card: what it costs at the top right, where it goes
+   * down the left, how far and when down the right.
+   */
+  function tripBlockHtml(trip, n) {
     var isReturn = trip.trip_type === 'return';
 
-    var route = [
-      detailRow('Pickup location', trip.pickup_location),
-      stopsRow(trip.other_locations),
-      detailRow(isReturn ? 'Return location' : 'Destination',
-                isReturn ? trip.return_location : trip.destination)
-    ].join('');
+    var route =
+      routeRow('Pickup', trip.pickup_location) +
+      stopsRoutRow(trip.other_locations) +
+      routeRow(isReturn ? 'Return to' : 'Destination',
+               isReturn ? trip.return_location : trip.destination);
 
-    // The trip type is in the heading, and the party travelling is the
-    // same on every trip, so a trip is down to three facts on one line.
-    var facts = factsHtml([
-      ['Distance', kmText(trip.distance_km)],
-      ['Date', readableDate(trip.journey_date)],
-      ['Time', readableTime(trip.journey_time)]
-    ]);
+    var when = [readableDate(trip.journey_date), readableTime(trip.journey_time)]
+      .filter(Boolean).join(' · ');
 
-    return '<section class="dgq-block">' +
-             '<div class="dgq-trip-title">' +
-               '<h2>' + (only ? 'Journey' : 'Trip ' + n) +
-                 '<span class="dgq-trip-type">' +
-                   (isReturn ? 'Return trip' : 'One way') + '</span></h2>' +
+    return '<section class="dgq-trip-card">' +
+             '<header class="dgq-trip-head">' +
+               '<span class="dgq-trip-tag">Trip ' + n + '</span>' +
+               '<span class="dgq-trip-kind">' + (isReturn ? 'Return trip' : 'One way') + '</span>' +
                (trip.fare_lkr == null ? '' :
                  '<span class="dgq-trip-fare">LKR ' + esc(money(trip.fare_lkr)) + '</span>') +
+             '</header>' +
+             '<div class="dgq-trip-body">' +
+               '<div class="dgq-trip-route">' + route + '</div>' +
+               '<div class="dgq-trip-side">' +
+                 (trip.distance_km == null ? '' :
+                   '<div class="dgq-trip-km">' + esc(kmText(trip.distance_km)) + '</div>' +
+                   '<div class="dgq-trip-kml">Distance</div>') +
+                 (when ? '<div class="dgq-trip-when">' + esc(when) + '</div>' : '') +
+               '</div>' +
              '</div>' +
-             '<table class="dgq-table">' + route + '</table>' +
-             facts +
            '</section>';
   }
 
@@ -1754,26 +1765,30 @@
     var head = letterhead();
     var trips = Array.isArray(q.trips) ? q.trips : [];
 
-    // The customer is three short values; on paper they earn one line.
-    var who = [q.customer_name, q.customer_phone, q.customer_email].filter(Boolean);
-    var customer = who.length
-      ? '<div class="dgq-customer">' +
-          '<span class="dgq-fact-l">Customer</span>' +
-          '<span class="dgq-customer-v">' + who.map(esc).join(' &middot; ') + '</span>' +
+    // Small counts read better as pills than as another labelled column.
+    var pills = [
+      q.passengers == null ? '' : q.passengers + (q.passengers === 1 ? ' passenger' : ' passengers'),
+      q.luggage == null ? '' : q.luggage + (q.luggage === 1 ? ' bag' : ' bags')
+    ].filter(Boolean);
+
+    var who = [q.customer_phone, q.customer_email].filter(Boolean);
+
+    var preparedFor = (q.customer_name || who.length)
+      ? '<div class="dgq-party">' +
+          '<div class="dgq-fact-l">Prepared for</div>' +
+          '<div class="dgq-party-name">' + esc(q.customer_name || 'Guest') + '</div>' +
+          who.map(function (line) {
+            return '<div class="dgq-party-line">' + esc(line) + '</div>';
+          }).join('') +
         '</div>'
       : '';
 
-    var passengers = factsHtml([
-      ['Passengers', q.passengers],
-      ['Luggage', q.luggage]
-    ], wideFactHtml('Special requests', q.special_requests, 3));
-
-    var vehicle = factsHtml([
+    var service = factsHtml([
       ['Vehicle', q.vehicle_type],
       ['Driver', q.driver_name],
-      ['Allowance', q.driver_allowance == null ? '' : 'LKR ' + money(q.driver_allowance)],
-      ['Total distance', kmText(q.total_distance_km)]
-    ]);
+      ['Total distance', kmText(q.total_distance_km)],
+      ['Allowance', q.driver_allowance == null ? '' : 'LKR ' + money(q.driver_allowance)]
+    ], wideFactHtml('Special requests', q.special_requests, 2));
 
     return '' +
       '<div class="dgq-sheet">' +
@@ -1795,52 +1810,57 @@
 
         '<h1 class="dgq-doctitle">Quotation</h1>' +
 
-        '<div class="dgq-meta">' +
-          '<div><span>Reference No</span><strong>' + esc(q.ref_no) + '</strong></div>' +
-          '<div><span>Date &amp; Time</span><strong>' + esc(stampDateTime(q.issued_at)) + '</strong></div>' +
-        '</div>' +
+        // Who it is for on the left, what it is on the right.
+        '<section class="dgq-parties' + (preparedFor ? '' : ' solo') + '">' +
+          preparedFor +
+          '<div class="dgq-party dgq-party-ref">' +
+            '<div class="dgq-fact-l">Reference</div>' +
+            '<div class="dgq-party-name">' + esc(q.ref_no) + '</div>' +
+            '<div class="dgq-party-line">' + esc(stampDateTime(q.issued_at)) + '</div>' +
+            (pills.length
+              ? '<div class="dgq-pills">' + pills.map(function (p) {
+                  return '<span class="dgq-pill">' + esc(p) + '</span>';
+                }).join('') + '</div>'
+              : '') +
+          '</div>' +
+        '</section>' +
 
         (unsaved ? '<p class="dgq-warn">Not recorded — this reference number is temporary.</p>' : '') +
 
-        customer +
+        trips.map(function (trip, i) { return tripBlockHtml(trip, i + 1); }).join('') +
 
-        trips.map(function (trip, i) {
-          return tripBlockHtml(trip, i + 1, trips.length === 1);
-        }).join('') +
-
-        (passengers
-          ? '<section class="dgq-block">' +
-              '<h2>Passengers</h2>' + passengers +
+        (service
+          ? '<section class="dgq-block dgq-service">' +
+              '<h2>Service details</h2>' + service +
             '</section>'
           : '') +
 
-        (vehicle
-          ? '<section class="dgq-block">' +
-              '<h2>Vehicle</h2>' + vehicle +
-            '</section>'
-          : '') +
+        // The total, the terms and the signature close the document
+        // together. Wrapped so a page break moves all three: a page
+        // carrying nothing but a signature reads as a mistake.
+        '<div class="dgq-close">' +
+          (q.total_fare_lkr == null
+            ? ''
+            : '<div class="dgq-fare">' +
+                '<span>Total fare</span>' +
+                '<strong>LKR ' + esc(money(q.total_fare_lkr)) + '</strong>' +
+              '</div>') +
 
-        (q.total_fare_lkr == null
-          ? ''
-          : '<div class="dgq-fare">' +
-              '<span>Total fare</span>' +
-              '<strong>LKR ' + esc(money(q.total_fare_lkr)) + '</strong>' +
-            '</div>') +
+          '<section class="dgq-important">' +
+            '<h3>Important</h3>' +
+            '<p>' + esc(QUOTE_IMPORTANT) + '</p>' +
+          '</section>' +
 
-        '<section class="dgq-important">' +
-          '<h3>Important</h3>' +
-          '<p>' + esc(QUOTE_IMPORTANT) + '</p>' +
-        '</section>' +
-
-        '<footer class="dgq-foot">' +
-          '<div class="dgq-sign">' +
-            '<div class="dgq-signline"></div>' +
-            '<div>' + esc(q.driver_name || head.name) + '</div>' +
-            '<div class="dgq-signrole">' +
-              (q.driver_name ? 'For ' + esc(head.name) : 'Authorised signature') + '</div>' +
-          '</div>' +
-          '<p class="dgq-thanks">Thank you for travelling with ' + esc(head.name) + '.</p>' +
-        '</footer>' +
+          '<footer class="dgq-foot">' +
+            '<div class="dgq-sign">' +
+              '<div class="dgq-signline"></div>' +
+              '<div>' + esc(q.driver_name || head.name) + '</div>' +
+              '<div class="dgq-signrole">' +
+                (q.driver_name ? 'For ' + esc(head.name) : 'Authorised signature') + '</div>' +
+            '</div>' +
+            '<p class="dgq-thanks">Thank you for travelling with ' + esc(head.name) + '.</p>' +
+          '</footer>' +
+        '</div>' +
 
       '</div>';
   }
@@ -1871,6 +1891,12 @@
         '<button type="button" class="dg-bar-btn primary" id="dgqPrint">' +
           '<i class="fa-solid fa-print"></i> Print / Save as PDF</button>' +
       '</div>' +
+      // The sheet asks the page for margins so a second page keeps them,
+      // and that same space is where the browser prints its own date and
+      // page title. Turning them off is a setting the browser remembers.
+      '<p class="dgq-tip">In the print dialogue set the paper to <strong>A4</strong> and turn ' +
+        '<strong>Headers and footers</strong> off, so the browser does not print its own ' +
+        'date and page title across your letterhead. Your browser remembers it.</p>' +
       '<div class="dgq-stage"><div class="dgq-scaler">' + quoteSheetHtml(q, unsaved) + '</div></div>';
 
     root.classList.add('dg-quoting');
