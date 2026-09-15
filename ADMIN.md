@@ -154,9 +154,9 @@ before it uploads, so the page stays quick on mobile data. Uploads go to the
 caption, its date or the image itself; **Delete** (bin) removes it for good, and
 removes the uploaded file from storage along with it.
 
-Until the first photo is added, visitors do not see the section or its link in
-the navigation at all. While you are logged in it stays on screen with a note
-saying it is empty.
+The section and its link in the navigation are always shown. Until the first
+photo is added, visitors see a short note that photos are on their way; while you
+are logged in, the note tells you where to add them instead.
 
 ### Vehicles
 
@@ -361,5 +361,6 @@ into the `feedback` table, which the browser cannot read — see
 | An edit saved but the page looks unchanged | Hard-reload once (⌘⇧R / Ctrl-F5). `/api/config` is edge-cached for five minutes |
 | The quotation list says it could not load | One of the two quotation SQL files has not been run against this project |
 | The Gallery tab says it could not load, or there is no Gallery switch under Sections | `gallery-schema.sql` has not been run against this project |
-| Photos are added but visitors see no Gallery section | Hard-reload once; if it persists, check the Gallery switch under Sections is on |
+| No Gallery section or nav link on the site | The Gallery switch under Sections is off, or the latest code has not been deployed |
+| Visitors still see "photos are on their way" after you added photos | Hard-reload once. If it persists, `gallery-schema.sql` has not been run against the live project |
 | The printed quotation runs onto a second page | Set the paper size to A4 and the scale to 100% in the print dialogue |

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dg-gallery-empty">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -3370,15 +3370,18 @@
       display: none !important;
     }
 
-    /* The gallery stays out of sight until it has a photo to show: no
-       empty section, and no nav link to one. cms.js lifts the class once
-       photos load. The logged-in owner still sees the section, so there
-       is somewhere to see that it is empty. */
-    html.dg-gallery-empty:not(.dg-admin) [data-section="gallery"],
-    html.dg-gallery-empty:not(.dg-admin) [data-section-link="gallery"],
-    html.dg-gallery-empty.dg-preview [data-section="gallery"],
-    html.dg-gallery-empty.dg-preview [data-section-link="gallery"] {
-      display: none !important;
+    /* An empty gallery's note: the visitor wording by default, the owner's
+       wording while logged in (and not previewing as a visitor). */
+    .gallery-state .state-owner {
+      display: none;
+    }
+
+    html.dg-admin:not(.dg-preview) .gallery-state .state-owner {
+      display: block;
+    }
+
+    html.dg-admin:not(.dg-preview) .gallery-state .state-visitor {
+      display: none;
     }
 
     /* Both login buttons carry display:flex from their own class, which
@@ -3977,8 +3980,8 @@
 
     <!-- ================= GALLERY SECTION =================
          Filled from the `gallery_photos` table by assets/cms.js: the four
-         newest photos, then "View more" for the rest. Hidden from visitors
-         until there is at least one photo (see .dg-gallery-empty). -->
+         newest photos, then "View more" for the rest. Shown to every
+         visitor; with no photos yet it shows a short note instead. -->
     <section class="gallery-section" id="gallery" data-section="gallery">
       <div class="wrap">
         <div class="eyebrow" data-reveal data-cms-text="gallery.eyebrow">Moments on the Road</div>
@@ -3988,7 +3991,10 @@
 
         <div class="gallery-grid" id="galleryGrid" data-reveal></div>
 
-        <div class="reviews-state" id="galleryState" hidden></div>
+        <div class="reviews-state gallery-state" id="galleryState">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <p>Loading photos…</p>
+        </div>
 
         <div class="gallery-more" id="galleryMoreWrap" hidden>
           <button type="button" class="btn btn-outline" id="galleryMoreBtn">

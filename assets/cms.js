@@ -497,9 +497,6 @@
     if (!grid) return;
 
     var photos = gallery.photos;
-    // Visitors never see an empty gallery or a nav link to one; index.html
-    // hides both while this class is on <html>.
-    document.documentElement.classList.toggle('dg-gallery-empty', !photos.length);
 
     grid.innerHTML = photos.map(function (photo, i) {
       var date = photoDate(photo.photo_date);
@@ -520,19 +517,23 @@
         '</figure>';
     }).join('');
 
-    // Only the owner ever sees this: for a visitor the section is hidden
-    // whenever there is nothing in it.
+    // An empty gallery still shows, with a note. Visitors and the logged-in
+    // owner get different wording; index.html shows whichever applies, so
+    // "Preview as visitor" swaps it without a re-render.
     var state = document.getElementById('galleryState');
     if (state) {
       state.hidden = photos.length > 0;
       if (!photos.length) {
+        var visitorNote = '<p class="state-visitor">New photos from our tours and transfers are on their way. ' +
+          'Check back soon.</p>';
         state.innerHTML = gallery.loading
           ? '<i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading photos…</p>'
           : gallery.failed
-            ? '<i class="fa-solid fa-triangle-exclamation"></i><p>The gallery could not be loaded. ' +
-              'If you have not yet, run <code>supabase/gallery-schema.sql</code> in Supabase.</p>'
-            : '<i class="fa-regular fa-images"></i><p>No photos yet. Add the first one from ' +
-              '<strong>Editor → Gallery</strong>. Visitors will not see this section until you do.</p>';
+            ? '<i class="fa-regular fa-images"></i>' + visitorNote +
+              '<p class="state-owner">The gallery could not be loaded. If you have not yet, run ' +
+              '<code>supabase/gallery-schema.sql</code> in Supabase.</p>'
+            : '<i class="fa-regular fa-images"></i>' + visitorNote +
+              '<p class="state-owner">No photos yet. Add the first one from <strong>Editor → Gallery</strong>.</p>';
       }
     }
 
@@ -1016,6 +1017,9 @@
         console.warn('[cms] running on built-in content:', err && err.message);
       })
       .then(function () {
+        // Without Supabase there are no photos to fetch; replace the
+        // "Loading photos…" the page ships with by the empty-gallery note.
+        if (!configured()) renderGallery();
         emit('ready', content);
       });
   }
