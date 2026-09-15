@@ -8,7 +8,7 @@ its content, nothing is editable, and the only sign of any of this is a small
 
 **Admin Mode** starts when you sign in with your own account. A gold bar appears
 at the top of the page and you can change the logo, the photos, the wording, the
-tours, the vehicles, and which sections visitors see at all. The same bar is
+tours, the gallery, the vehicles, and which sections visitors see at all. The same bar is
 where you raise a printed [quotation bill](#quotation-bills) for a customer.
 
 Everything you save is live immediately. There is no publish step.
@@ -92,13 +92,13 @@ Sign in and the admin bar appears at the top.
 | **Preview as visitor** | Hides all editing chrome so you see the real site. A gold pill at the bottom brings you back. |
 | **Edit on page** | Outlines every editable piece of text. Click one, type, press Enter. |
 | **Quotations** | Raise a new quotation, or open a saved one. See [Quotation bills](#quotation-bills). |
-| **Editor** | Opens the side panel with the five tabs below. |
+| **Editor** | Opens the side panel with the six tabs below. |
 | **Log out** | Ends the session and returns the page to User View Mode. |
 
 ### Sections
 
-A switch per section — Hero, Fleet & Booking, Popular Tours, About the Driver,
-Reviews & QR. Switch one off and visitors stop seeing it, along with its link in
+A switch per section — Hero, Fleet & Booking, Popular Tours, Gallery, About the
+Driver, Reviews & QR. Switch one off and visitors stop seeing it, along with its link in
 the navigation and the mobile drawer.
 
 While you are logged in a switched-off section stays on screen, dimmed, with a
@@ -130,6 +130,33 @@ Add, edit, reorder, hide and delete the cards in *Popular Tours*. Highlights are
 one per line. The **WhatsApp message** is what gets pre-filled when a visitor
 taps *Inquire on WhatsApp* on that card; leave it blank for a sensible default.
 A tour photo is optional and appears above the highlights.
+
+### Gallery
+
+The photos in the *Gallery* section, between Popular Tours and About the Driver.
+
+**Before the first one**, open Supabase → **SQL Editor → New query** and run
+[`supabase/gallery-schema.sql`](supabase/gallery-schema.sql). It needs
+`admin-schema.sql` to have been run first, and it is safe to run again.
+
+**Add photo** takes one photo at a time, and every photo needs a **caption** and
+the **date of the photo**. Visitors see both under it. The date starts as today;
+change it to the day the photo was taken.
+
+The section shows the four newest photos, newest date first. **View more photos**
+underneath loads the next eight, and disappears once every photo is on screen.
+Tapping a photo opens it full size with its caption and date; the arrows, the
+keyboard arrow keys or a sideways swipe move between photos.
+
+A large photo straight off a phone is resized to 2000 pixels on its long edge
+before it uploads, so the page stays quick on mobile data. Uploads go to the
+`gallery` folder of the `site-assets` bucket. **Edit** (pen) changes a photo's
+caption, its date or the image itself; **Delete** (bin) removes it for good, and
+removes the uploaded file from storage along with it.
+
+Until the first photo is added, visitors do not see the section or its link in
+the navigation at all. While you are logged in it stays on screen with a note
+saying it is empty.
 
 ### Vehicles
 
@@ -311,8 +338,8 @@ password?* — Supabase emails you a reset link. Or reset it yourself from
 Authentication → Users.
 
 **Where the content lives**: Supabase → Table Editor. `site_settings` holds the
-text and image paths as key/value rows, `tours` and `vehicles` a row each,
-`site_sections` the show/hide switches. You can edit any of it there directly if
+text and image paths as key/value rows, `tours`, `vehicles` and
+`gallery_photos` a row each, `site_sections` the show/hide switches. You can edit any of it there directly if
 you prefer.
 
 **Reviews are separate.** Passenger feedback still goes through `/api/feedback`
@@ -333,4 +360,6 @@ into the `feedback` table, which the browser cannot read — see
 | The editor shows "No sections found" | `admin-schema.sql` has not been run against this project |
 | An edit saved but the page looks unchanged | Hard-reload once (⌘⇧R / Ctrl-F5). `/api/config` is edge-cached for five minutes |
 | The quotation list says it could not load | One of the two quotation SQL files has not been run against this project |
+| The Gallery tab says it could not load, or there is no Gallery switch under Sections | `gallery-schema.sql` has not been run against this project |
+| Photos are added but visitors see no Gallery section | Hard-reload once; if it persists, check the Gallery switch under Sections is on |
 | The printed quotation runs onto a second page | Set the paper size to A4 and the scale to 100% in the print dialogue |

@@ -6,7 +6,7 @@
 
    What it adds:
      • a top Admin bar with a "Preview as visitor" switch
-     • a slide-in panel: Sections, Branding, Content, Tours, Vehicles
+     • a slide-in panel: Sections, Branding, Content, Tours, Gallery, Vehicles
      • click-to-edit text directly on the page
      • image uploads straight into Supabase Storage
      • an A4 quotation bill the owner fills in and prints
@@ -65,6 +65,14 @@
       ]
     },
     {
+      title: 'Gallery section heading',
+      fields: [
+        { key: 'gallery.eyebrow', label: 'Eyebrow' },
+        { key: 'gallery.title', label: 'Title' },
+        { key: 'gallery.subtitle', label: 'Subtitle', type: 'textarea' }
+      ]
+    },
+    {
       title: 'About the driver',
       fields: [
         { key: 'about.name', label: 'Name', half: true },
@@ -110,6 +118,12 @@
     { key: 'footer_note', label: 'Footer note', placeholder: 'Flexible Day Trips', half: true },
     { key: 'sort_order', label: 'Sort order', type: 'number', half: true },
     { key: 'whatsapp_text', label: 'WhatsApp message', type: 'textarea', rows: 2 }
+  ];
+
+  var GALLERY_FIELDS = [
+    { key: 'caption', label: 'Caption', required: true, maxlength: 200,
+      placeholder: 'Sunrise over the Nine Arch Bridge, Ella' },
+    { key: 'photo_date', label: 'Date of the photo', type: 'date', required: true, half: true }
   ];
 
   var VEHICLE_ICONS = [
@@ -211,13 +225,14 @@
         '<button type="button" class="dg-panel-close" id="dgClosePanel" aria-label="Close editor">' +
           '<i class="fa-solid fa-xmark"></i></button>' +
       '</header>' +
-      // Five tabs have to fit the panel width without scrolling, so the
+      // Six tabs have to fit the panel width without scrolling, so the
       // labels carry themselves — no icons here.
       '<nav class="dg-tabs" id="dgTabs">' +
         '<button type="button" class="dg-tab active" data-tab="sections">Sections</button>' +
         '<button type="button" class="dg-tab" data-tab="branding">Branding</button>' +
         '<button type="button" class="dg-tab" data-tab="content">Content</button>' +
         '<button type="button" class="dg-tab" data-tab="tours">Tours</button>' +
+        '<button type="button" class="dg-tab" data-tab="gallery">Gallery</button>' +
         '<button type="button" class="dg-tab" data-tab="vehicles">Vehicles</button>' +
       '</nav>' +
       '<div class="dg-panel-body" id="dgPanelBody"></div>';
@@ -302,7 +317,9 @@
               }).join('') +
               '</select>';
     } else {
-      input = '<input id="' + id + '" class="dg-input" type="' + (field.type === 'number' ? 'number' : 'text') + '" ' +
+      var inputType = field.type === 'number' || field.type === 'date' ? field.type : 'text';
+      input = '<input id="' + id + '" class="dg-input" type="' + inputType + '" ' +
+              (field.maxlength ? 'maxlength="' + Number(field.maxlength) + '" ' : '') +
               'data-field="' + esc(field.key) + '" value="' + esc(v) + '" ' +
               'placeholder="' + esc(field.placeholder || '') + '">';
     }
@@ -413,6 +430,7 @@
     if (name === 'branding') return renderBrandingTab(body);
     if (name === 'content') return renderContentTab(body);
     if (name === 'tours') return renderListTab(body, 'tours');
+    if (name === 'gallery') return renderGalleryTab(body);
     if (name === 'vehicles') return renderListTab(body, 'vehicles');
   }
 
@@ -775,6 +793,298 @@
 
     var first = modal.querySelector('.dg-input');
     if (first) setTimeout(function () { first.focus(); }, 80);
+  }
+
+  /* ---- Gallery: photos with a caption and the date they were taken ---- */
+  var galleryRows = [];
+  var PHOTO_MAX_EDGE = 2000;
+
+  function todayIso() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+
+  function findPhoto(id) {
+    return galleryRows.filter(function (p) { return p.id === id; })[0];
+  }
+
+  /**
+   * A photo straight off a phone is 3–10 MB and 4000px across; the gallery
+   * never shows one wider than about 1100px. Anything big is re-encoded to
+   * 2000px on its long edge before it uploads. If the browser cannot decode
+   * the file (HEIC in desktop Chrome, say) the original goes up unchanged.
+   */
+  function shrinkImage(file) {
+    return new Promise(function (resolve) {
+      if (/gif|svg/i.test(file.type || '') || !window.URL || !URL.createObjectURL) {
+        resolve(file);
+        return;
+      }
+
+      var src = URL.createObjectURL(file);
+      var img = new Image();
+
+      img.onerror = function () {
+        URL.revokeObjectURL(src);
+        resolve(file);
+      };
+
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(w, h));
+
+        if (scale === 1 && file.size <= 1.5 * 1024 * 1024) {
+          URL.revokeObjectURL(src);
+          resolve(file);
+          return;
+        }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(w * scale);
+        canvas.height = Math.round(h * scale);
+        var ctx = canvas.getContext('2d');
+        // JPEG has no transparency; a see-through PNG lands on the site's
+        // own background colour rather than on black.
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(src);
+
+        canvas.toBlob(function (blob) {
+          if (!blob || (scale === 1 && blob.size >= file.size)) { resolve(file); return; }
+          var name = String(file.name || 'photo').replace(/\.[^.]*$/, '') + '.jpg';
+          try {
+            resolve(new File([blob], name, { type: 'image/jpeg' }));
+          } catch (err) {
+            blob.name = name;   // very old Safari: no File constructor
+            resolve(blob);
+          }
+        }, 'image/jpeg', 0.85);
+      };
+
+      img.src = src;
+    });
+  }
+
+  function photoRowHtml(photo) {
+    return '<div class="dg-row-card">' +
+             '<div class="dg-row-thumb"><img src="' + esc(photo.image_url) + '" alt="" loading="lazy"></div>' +
+             '<div class="dg-row-main">' +
+               '<div class="dg-row-title">' + esc(photo.caption) + '</div>' +
+               '<div class="dg-row-sub">' + esc(CMS.photoDate(photo.photo_date)) + '</div>' +
+             '</div>' +
+             '<div class="dg-row-tools">' +
+               '<button type="button" class="dg-icon-btn" data-edit-photo="' + esc(photo.id) + '" title="Edit">' +
+                 '<i class="fa-solid fa-pen"></i></button>' +
+               '<button type="button" class="dg-icon-btn danger" data-delete-photo="' + esc(photo.id) + '" title="Delete">' +
+                 '<i class="fa-solid fa-trash"></i></button>' +
+             '</div>' +
+           '</div>';
+  }
+
+  function renderGalleryTab(body) {
+    body.innerHTML =
+      '<div class="dg-list-head">' +
+        '<p class="dg-hint">These photos fill the “Gallery” section, newest date first. ' +
+          'Visitors see four, then <strong>View more photos</strong> for the rest.</p>' +
+        '<button type="button" class="dg-btn primary" id="dgAddPhoto">' +
+          '<i class="fa-solid fa-plus"></i> Add photo</button>' +
+      '</div>' +
+      '<div id="dgGalleryList"><p class="dg-empty">Loading photos…</p></div>';
+
+    document.getElementById('dgAddPhoto').addEventListener('click', function () {
+      openPhotoEditor(null);
+    });
+
+    CMS.listGallery(0, 1000, true)
+      .then(function (rows) {
+        var list = document.getElementById('dgGalleryList');
+        if (!list) return;   // the owner has moved on to another tab
+        galleryRows = Array.isArray(rows) ? rows : [];
+
+        if (!galleryRows.length) {
+          list.innerHTML = '<p class="dg-empty">No photos yet. Add the first one.</p>';
+          return;
+        }
+
+        list.innerHTML = '<div class="dg-list">' + galleryRows.map(photoRowHtml).join('') + '</div>';
+
+        list.querySelectorAll('[data-edit-photo]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var photo = findPhoto(this.getAttribute('data-edit-photo'));
+            if (photo) openPhotoEditor(photo);
+          });
+        });
+
+        list.querySelectorAll('[data-delete-photo]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var photo = findPhoto(this.getAttribute('data-delete-photo'));
+            if (!photo) return;
+            if (!window.confirm('Delete “' + photo.caption + '” from the gallery permanently?')) return;
+
+            btn.disabled = true;
+            CMS.deleteGalleryPhoto(photo)
+              .then(CMS.reloadGallery)
+              .then(function () {
+                toast('Photo deleted');
+                if (currentTab === 'gallery') renderTab('gallery');
+              })
+              .catch(function (err) { btn.disabled = false; fail(err); });
+          });
+        });
+      })
+      .catch(function (err) {
+        console.error('[admin]', err);
+        var list = document.getElementById('dgGalleryList');
+        if (list) {
+          list.innerHTML = '<p class="dg-empty">The gallery could not be loaded. If this is the first time, ' +
+            'run <code>supabase/gallery-schema.sql</code> in Supabase.</p>';
+        }
+      });
+  }
+
+  /* ---- The add / edit dialog for one photo ---- */
+  function openPhotoEditor(photo) {
+    var isNew = !photo;
+    photo = photo || { caption: '', photo_date: todayIso(), image_url: '' };
+
+    var existing = document.getElementById('dgRowModal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.className = 'dg-modal';
+    modal.id = 'dgRowModal';
+    modal.innerHTML =
+      '<div class="dg-modal-card" role="dialog" aria-modal="true">' +
+        '<header class="dg-modal-head">' +
+          '<h3>' + (isNew ? 'Add photo' : 'Edit photo') + '</h3>' +
+          '<button type="button" class="dg-panel-close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+        '</header>' +
+        '<form class="dg-modal-body" id="dgPhotoForm" novalidate>' +
+          imageFieldHtml({
+            key: '__photo',
+            label: 'Photo',
+            hint: 'Required. A large photo is resized before it uploads, so it stays quick to load on a phone.',
+            folder: CMS.galleryFolder
+          }, photo.image_url) +
+          '<div class="dg-grid">' +
+            GALLERY_FIELDS.map(function (f) { return fieldHtml(f, photo[f.key]); }).join('') +
+          '</div>' +
+          '<div class="dg-modal-actions">' +
+            '<button type="button" class="dg-btn ghost" data-close>Cancel</button>' +
+            '<button type="submit" class="dg-btn primary"><i class="fa-solid fa-check"></i> ' +
+              (isNew ? 'Add to gallery' : 'Save') + '</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(modal);
+    requestAnimationFrame(function () { modal.classList.add('show'); });
+
+    // As with tours, an upload only stages the file; nothing reaches the
+    // gallery until the form is saved.
+    var original = photo.image_url || '';
+    var staged = original;
+    var uploads = [];
+    var saved = false;
+    var closed = false;
+    var imageWrap = modal.querySelector('.dg-image-field');
+
+    function showStaged() {
+      imageWrap.querySelector('.dg-image-preview').innerHTML = staged
+        ? '<img src="' + esc(staged) + '" alt="">'
+        : '<i class="fa-regular fa-image"></i>';
+      imageWrap.querySelector('.dg-image-path').textContent = staged || 'Not set';
+    }
+
+    imageWrap.querySelector('[data-image-input]').addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      this.value = '';   // choosing the same file again should still fire
+      if (!file) return;
+
+      imageWrap.classList.add('busy');
+      shrinkImage(file)
+        .then(function (ready) {
+          if (ready.size > 6 * 1024 * 1024) throw new Error('Please choose an image under 6 MB.');
+          return CMS.uploadImage(ready, CMS.galleryFolder);
+        })
+        .then(function (url) {
+          uploads.push(url);
+          staged = url;
+          showStaged();
+          toast('Photo ready — save to publish it');
+        })
+        .catch(fail)
+        .then(function () { imageWrap.classList.remove('busy'); });
+    });
+
+    imageWrap.querySelector('[data-image-url]').addEventListener('click', function () {
+      var url = window.prompt('Image URL:', staged);
+      if (url == null) return;
+      staged = url.trim();
+      showStaged();
+    });
+
+    function close() {
+      if (closed) return;
+      closed = true;
+
+      // Leave nothing orphaned in storage: an abandoned dialog's uploads are
+      // unused, and so is the old file once a replacement has been saved.
+      var unused = uploads.filter(function (url) { return !saved || url !== staged; });
+      if (saved && staged !== original) unused.push(original);
+      unused.forEach(function (url) { CMS.deleteStoredImage(url, CMS.galleryFolder); });
+
+      modal.classList.remove('show');
+      setTimeout(function () { modal.remove(); }, 200);
+    }
+
+    modal.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', close);
+    });
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+
+    document.getElementById('dgPhotoForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (imageWrap.classList.contains('busy')) {
+        toast('Wait for the photo to finish uploading.', 'error');
+        return;
+      }
+
+      var values = readFields(this);
+      if (!staged) {
+        toast('Choose a photo to upload.', 'error');
+        return;
+      }
+      if (!values.caption) {
+        toast('A caption is required.', 'error');
+        modal.querySelector('[data-field="caption"]').focus();
+        return;
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(values.photo_date || '')) {
+        toast('Pick the date of the photo.', 'error');
+        modal.querySelector('[data-field="photo_date"]').focus();
+        return;
+      }
+
+      var payload = { image_url: staged, caption: values.caption, photo_date: values.photo_date };
+      if (!isNew) payload.id = photo.id;
+
+      var btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
+      CMS.saveRow('gallery_photos', payload)
+        .then(function () {
+          saved = true;
+          return CMS.reloadGallery();
+        })
+        .then(function () {
+          toast(isNew ? 'Photo added to the gallery' : 'Photo saved');
+          close();
+          if (currentTab === 'gallery') renderTab('gallery');
+        })
+        .catch(function (err) { btn.disabled = false; fail(err); });
+    });
   }
 
   /* ---------------------------------------------------------

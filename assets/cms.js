@@ -369,6 +369,309 @@
     });
   }
 
+  /**
+   * Removes a file this site uploaded into `folder`. Anything else — a
+   * link to another site, an image shipped with the repo — is left alone,
+   * and a failure only leaves an unused file behind, so it never throws.
+   */
+  function deleteStoredImage(url, folder) {
+    var base = cfg.url + '/storage/v1/object/public/' + ASSET_BUCKET + '/';
+    url = String(url || '');
+    if (!folder || url.indexOf(base + folder + '/') !== 0) return Promise.resolve();
+    var path = url.slice(base.length);
+
+    return validSession().then(function (live) {
+      if (!live) return null;
+      return fetch(cfg.url + '/storage/v1/object/' + ASSET_BUCKET + '/' + path, {
+        method: 'DELETE',
+        headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + live.access_token }
+      });
+    }).catch(function (err) {
+      console.warn('[cms] could not remove ' + path + ':', err && err.message);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     Gallery — the newest photos first, a page at a time.
+     Kept out of loadContent on purpose: the section opens on four
+     photos and only asks for more when a visitor wants them, so a
+     gallery of hundreds costs a first visit nothing extra.
+     --------------------------------------------------------- */
+  var GALLERY_FIRST_PAGE = 4;
+  var GALLERY_PAGE = 8;
+  var GALLERY_FOLDER = 'gallery';
+
+  var gallery = {
+    photos: [],
+    hasMore: false,
+    loading: false,
+    failed: false,       // the first page could not be read
+    moreFailed: false,   // a "View more" could not be read
+    index: -1            // the photo open in the viewer
+  };
+
+  function listGallery(offset, limit, authed) {
+    var path = '/gallery_photos?select=id,image_url,caption,photo_date,created_at' +
+      '&order=photo_date.desc,created_at.desc' +
+      '&limit=' + encodeURIComponent(limit) +
+      '&offset=' + encodeURIComponent(offset || 0);
+    return (authed ? authedRest : rest)(path);
+  }
+
+  /** One row more than asked for answers "is there more?" in the same request. */
+  function fetchGalleryPage(offset, count) {
+    return listGallery(offset, count + 1).then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      return { rows: rows.slice(0, count), more: rows.length > count };
+    });
+  }
+
+  function loadGallery() {
+    if (!configured()) return Promise.resolve(gallery.photos);
+
+    // Reload as many as are already on screen, so saving an edit does not
+    // collapse a gallery that had been expanded.
+    var count = Math.max(GALLERY_FIRST_PAGE, gallery.photos.length);
+    gallery.loading = true;
+    renderGallery();
+
+    return fetchGalleryPage(0, count)
+      .then(function (page) {
+        gallery.photos = page.rows;
+        gallery.hasMore = page.more;
+        gallery.failed = false;
+      })
+      .catch(function (err) {
+        console.warn('[cms] gallery unavailable:', err && err.message);
+        gallery.photos = [];
+        gallery.hasMore = false;
+        gallery.failed = true;
+      })
+      .then(function () {
+        gallery.loading = false;
+        gallery.moreFailed = false;
+        renderGallery();
+        return gallery.photos;
+      });
+  }
+
+  function loadMoreGallery() {
+    if (gallery.loading || !gallery.hasMore) return Promise.resolve(gallery.photos);
+
+    gallery.loading = true;
+    renderGalleryMore();
+
+    return fetchGalleryPage(gallery.photos.length, GALLERY_PAGE)
+      .then(function (page) {
+        // A photo added since the last page shifts every offset by one;
+        // skip anything already on screen rather than showing it twice.
+        var seen = {};
+        gallery.photos.forEach(function (p) { seen[p.id] = true; });
+        gallery.photos = gallery.photos.concat(page.rows.filter(function (p) { return !seen[p.id]; }));
+        gallery.hasMore = page.more;
+        gallery.moreFailed = false;
+      })
+      .catch(function (err) {
+        console.warn('[cms] more gallery photos unavailable:', err && err.message);
+        gallery.moreFailed = true;   // the button stays, and becomes a retry
+      })
+      .then(function () {
+        gallery.loading = false;
+        renderGallery();
+        return gallery.photos;
+      });
+  }
+
+  /** "2026-09-15" → "15 Sep 2026" */
+  function photoDate(value) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ''));
+    if (!m) return '';
+    // Built from its parts: new Date('2026-09-15') is UTC midnight, which
+    // anywhere west of Greenwich is still the 14th.
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function renderGallery() {
+    var grid = document.getElementById('galleryGrid');
+    if (!grid) return;
+
+    var photos = gallery.photos;
+    // Visitors never see an empty gallery or a nav link to one; index.html
+    // hides both while this class is on <html>.
+    document.documentElement.classList.toggle('dg-gallery-empty', !photos.length);
+
+    grid.innerHTML = photos.map(function (photo, i) {
+      var date = photoDate(photo.photo_date);
+      return '' +
+        '<figure class="gallery-item">' +
+          '<button type="button" class="gallery-thumb" data-gallery-index="' + i + '" ' +
+                  'aria-label="View photo: ' + escapeHtml(photo.caption) + '">' +
+            '<img src="' + escapeHtml(photo.image_url) + '" alt="' + escapeHtml(photo.caption) + '" ' +
+                 'loading="lazy" decoding="async">' +
+          '</button>' +
+          '<figcaption>' +
+            '<span class="gallery-caption">' + escapeHtml(photo.caption) + '</span>' +
+            (date
+              ? '<time class="gallery-date" datetime="' + escapeHtml(photo.photo_date) + '">' +
+                  '<i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</time>'
+              : '') +
+          '</figcaption>' +
+        '</figure>';
+    }).join('');
+
+    // Only the owner ever sees this: for a visitor the section is hidden
+    // whenever there is nothing in it.
+    var state = document.getElementById('galleryState');
+    if (state) {
+      state.hidden = photos.length > 0;
+      if (!photos.length) {
+        state.innerHTML = gallery.loading
+          ? '<i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading photos…</p>'
+          : gallery.failed
+            ? '<i class="fa-solid fa-triangle-exclamation"></i><p>The gallery could not be loaded. ' +
+              'If you have not yet, run <code>supabase/gallery-schema.sql</code> in Supabase.</p>'
+            : '<i class="fa-regular fa-images"></i><p>No photos yet. Add the first one from ' +
+              '<strong>Editor → Gallery</strong>. Visitors will not see this section until you do.</p>';
+      }
+    }
+
+    renderGalleryMore();
+    emit('gallery-rendered', photos);
+  }
+
+  function renderGalleryMore() {
+    var wrap = document.getElementById('galleryMoreWrap');
+    var btn = document.getElementById('galleryMoreBtn');
+    if (!wrap || !btn) return;
+
+    wrap.hidden = !gallery.hasMore;
+    btn.disabled = gallery.loading;
+    btn.innerHTML = gallery.loading
+      ? '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading…'
+      : gallery.moreFailed
+        ? '<i class="fa-solid fa-rotate-right"></i> Could not load — try again'
+        : '<i class="fa-regular fa-images"></i> View more photos';
+  }
+
+  /* ---- The full-size viewer ---- */
+  function showGalleryPhoto(index) {
+    var photo = gallery.photos[index];
+    var modal = document.getElementById('galleryModal');
+    if (!photo || !modal) return;
+
+    var total = gallery.photos.length;
+    gallery.index = index;
+
+    var img = document.getElementById('galleryViewerImg');
+    img.src = photo.image_url;
+    img.alt = photo.caption || '';
+    document.getElementById('galleryViewerCaption').textContent = photo.caption || '';
+
+    var date = document.getElementById('galleryViewerDate');
+    date.textContent = photoDate(photo.photo_date);
+    date.setAttribute('datetime', photo.photo_date || '');
+
+    document.getElementById('galleryViewerCount').textContent =
+      total > 1 ? (index + 1) + ' / ' + total : '';
+    modal.classList.toggle('single', total < 2 && !gallery.hasMore);
+  }
+
+  function openGalleryViewer(index) {
+    var modal = document.getElementById('galleryModal');
+    if (!modal || !gallery.photos[index]) return;
+
+    showGalleryPhoto(index);
+    if (!modal.classList.contains('active')) {
+      modal.classList.add('active');
+      if (window.dgLockBodyScroll) window.dgLockBodyScroll();
+      else document.body.style.overflow = 'hidden';
+    }
+
+    var close = document.getElementById('galleryCloseBtn');
+    if (close) close.focus({ preventScroll: true });
+  }
+
+  function closeGalleryViewer() {
+    var modal = document.getElementById('galleryModal');
+    if (!modal || !modal.classList.contains('active')) return;
+
+    modal.classList.remove('active');
+    if (window.dgUnlockBodyScroll) window.dgUnlockBodyScroll();
+    else document.body.style.overflow = '';
+
+    // Back to the photo that was last on screen, which after paging through
+    // the viewer may not be the one that opened it.
+    var thumb = document.querySelector('[data-gallery-index="' + gallery.index + '"]');
+    if (thumb) thumb.focus({ preventScroll: true });
+  }
+
+  function stepGallery(dir) {
+    var total = gallery.photos.length;
+    if (!total || gallery.loading) return;
+    var next = gallery.index + dir;
+
+    // Past the last photo loaded so far: fetch the next page before
+    // wrapping round to the first.
+    if (next >= total && gallery.hasMore) {
+      loadMoreGallery().then(function () {
+        showGalleryPhoto(gallery.photos[next] ? next : 0);
+      });
+      return;
+    }
+    showGalleryPhoto((next + total) % total);
+  }
+
+  function wireGalleryUi() {
+    var grid = document.getElementById('galleryGrid');
+    var modal = document.getElementById('galleryModal');
+    if (!grid || !modal) return;
+
+    grid.addEventListener('click', function (e) {
+      var thumb = e.target.closest('[data-gallery-index]');
+      if (thumb) openGalleryViewer(Number(thumb.getAttribute('data-gallery-index')));
+    });
+
+    var more = document.getElementById('galleryMoreBtn');
+    if (more) more.addEventListener('click', loadMoreGallery);
+
+    document.getElementById('galleryCloseBtn').addEventListener('click', closeGalleryViewer);
+    document.getElementById('galleryPrevBtn').addEventListener('click', function () { stepGallery(-1); });
+    document.getElementById('galleryNextBtn').addEventListener('click', function () { stepGallery(1); });
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal || e.target.classList.contains('gallery-viewer')) closeGalleryViewer();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!modal.classList.contains('active')) return;
+      if (e.key === 'Escape') closeGalleryViewer();
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); stepGallery(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); stepGallery(1); }
+    });
+
+    // A sideways swipe moves between photos on a phone
+    var startX = null, startY = 0;
+    modal.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) { startX = null; return; }
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    modal.addEventListener('touchend', function (e) {
+      if (startX == null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      var dy = e.changedTouches[0].clientY - startY;
+      startX = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) stepGallery(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  }
+
+  function deleteGalleryPhoto(photo) {
+    return deleteRow('gallery_photos', photo.id).then(function () {
+      return deleteStoredImage(photo.image_url, GALLERY_FOLDER);
+    });
+  }
+
   /* ---------------------------------------------------------
      Load the published content
      --------------------------------------------------------- */
@@ -677,6 +980,7 @@
      --------------------------------------------------------- */
   function boot() {
     wireLoginUi();
+    wireGalleryUi();
     refreshAuthButtons();
 
     return fetch('/api/config', { headers: { Accept: 'application/json' } })
@@ -689,12 +993,19 @@
         session = readStoredSession();
         refreshAuthButtons();
 
+        // A visitor has no token, so the photos can start loading at once.
+        // With a stored session wait for checkAdmin instead: it may renew
+        // the token, and two renewals racing would sign the owner out.
+        var hadSession = Boolean(session);
+        if (!hadSession) loadGallery();
+
         return loadContent()
           .then(function () {
             applyAll();
             return session ? checkAdmin() : false;
           })
           .then(function (admin) {
+            if (hadSession) loadGallery();
             refreshAuthButtons();
             if (admin) return enterAdminMode();
             return null;
@@ -732,6 +1043,14 @@
     deleteRow: deleteRow,
     setSectionVisible: setSectionVisible,
     uploadImage: uploadImage,
+    deleteStoredImage: deleteStoredImage,
+
+    get gallery() { return gallery; },
+    galleryFolder: GALLERY_FOLDER,
+    listGallery: listGallery,
+    reloadGallery: loadGallery,
+    deleteGalleryPhoto: deleteGalleryPhoto,
+    photoDate: photoDate,
 
     createQuotation: createQuotation,
     listQuotations: listQuotations,

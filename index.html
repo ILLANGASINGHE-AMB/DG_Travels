@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dg-gallery-empty">
 
 <head>
   <meta charset="UTF-8">
@@ -559,7 +559,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
+      gap: 20px;
       height: var(--nav-h);
     }
 
@@ -615,14 +615,17 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 24px;
       font-size: 14px;
       font-weight: 500;
     }
 
+    /* A label that wraps doubles the header's height; the breakpoints
+       below switch to the drawer before that would ever be needed. */
     .nav-links a {
       position: relative;
       display: inline-block;
+      white-space: nowrap;
       color: var(--text-2);
       transition: color 0.18s var(--ease);
     }
@@ -1064,6 +1067,10 @@
     }
 
     .packages {
+      border-top: 1px solid var(--line);
+    }
+
+    .gallery-section {
       border-top: 1px solid var(--line);
     }
 
@@ -1998,6 +2005,224 @@
       margin-top: 24px;
     }
 
+    /* ---------- Gallery ---------- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 28px 20px;
+    }
+
+    .gallery-item {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .gallery-thumb {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      background: var(--surface);
+      cursor: zoom-in;
+      touch-action: manipulation;
+      transition: border-color 0.2s var(--ease);
+    }
+
+    .gallery-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+
+    .gallery-thumb:hover {
+      border-color: var(--line-strong);
+    }
+
+    .gallery-thumb:hover img {
+      transform: scale(1.05);
+    }
+
+    .gallery-thumb:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .gallery-item figcaption {
+      padding: 12px 2px 0;
+    }
+
+    .gallery-caption {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .gallery-date {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 5px;
+      font-size: 12.5px;
+      color: var(--text-3);
+    }
+
+    .gallery-date i {
+      font-size: 11px;
+    }
+
+    .gallery-more {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    @media (hover: none) {
+      .gallery-thumb:hover img {
+        transform: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px 16px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .gallery-grid {
+        gap: 20px 12px;
+      }
+
+      .gallery-caption {
+        font-size: 13px;
+      }
+
+      .gallery-date {
+        font-size: 11.5px;
+      }
+    }
+
+    /* The full-size viewer. Close and the arrows sit inside the photo, so
+       they stay on screen at any width without hanging off a corner. */
+    .gallery-viewer {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .modal-overlay.active .gallery-viewer {
+      animation: modalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .gallery-viewer-frame {
+      position: relative;
+      max-width: 100%;
+      min-width: min(260px, 100%);
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+
+    .gallery-viewer-frame img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 170px);
+      max-height: calc(100dvh - 170px);
+    }
+
+    .gallery-viewer .modal-close,
+    .gallery-nav {
+      background: rgba(10, 10, 10, 0.78);
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      color: var(--text);
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+    }
+
+    .gallery-viewer .modal-close {
+      top: 10px;
+      right: 10px;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transform: translateY(-50%);
+      touch-action: manipulation;
+    }
+
+    .gallery-nav.prev {
+      left: 10px;
+    }
+
+    .gallery-nav.next {
+      right: 10px;
+    }
+
+    .gallery-viewer .modal-close:hover,
+    .gallery-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .gallery-modal.single .gallery-nav {
+      display: none;
+    }
+
+    .gallery-viewer-text {
+      max-width: 60ch;
+      margin-top: 16px;
+      padding: 0 8px;
+      text-align: center;
+    }
+
+    .gallery-viewer-caption {
+      font-size: 15.5px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+
+    .gallery-viewer-meta {
+      margin-top: 4px;
+      font-size: 12.5px;
+      color: var(--text-3);
+    }
+
+    .gallery-viewer-meta span:not(:empty)::before {
+      content: '·';
+      margin: 0 8px;
+    }
+
     /* ---------- QR modal ---------- */
     .modal-overlay {
       position: fixed;
@@ -2203,7 +2428,7 @@
     }
 
     /* ---------- Mobile bottom navigation ---------- */
-    /* Phones get a persistent bar for the four content sections. The drawer
+    /* Phones get a persistent bar for the five content sections. The drawer
        stays for the contact actions and the QR standee; this bar is purely
        "where am I / take me there", which is the part visitors repeat.
        Hidden above 768px, where the header link row does the same job. */
@@ -2289,7 +2514,7 @@
       }
     }
 
-    /* Very narrow phones: keep four labels on one line each */
+    /* Very narrow phones: keep five labels on one line each */
     @media (max-width: 340px) {
       .bottom-nav-item {
         font-size: 9px;
@@ -2412,13 +2637,13 @@
       }
     }
 
-    /* 769-899px: everything still fits on one row, but only by squeezing.
-       Four links, two buttons and the wordmark share ~700 usable pixels,
-       and the brand is what loses — at 800px it had about 60px and the
-       wordmark truncated. This is tablet territory, where a drawer is the
-       expected pattern, so the nav switches over here rather than fighting
-       for the last few pixels. The rest of the phone layout is untouched. */
-    @media (min-width: 769px) and (max-width: 899px) {
+    /* 769-1059px: five links, three buttons and the wordmark need about
+       975px on one row even with the gaps pulled in; below that the brand
+       truncates and the links wrap onto two lines. This is tablet
+       territory, where a drawer is the expected pattern, so the nav
+       switches over here rather than fighting for the last few pixels.
+       The rest of the phone layout is untouched. */
+    @media (min-width: 769px) and (max-width: 1059px) {
       .nav-links {
         display: none;
       }
@@ -2433,8 +2658,8 @@
       }
     }
 
-    /* 900-1020px: the full link row fits once the gaps come in. */
-    @media (min-width: 900px) and (max-width: 1020px) {
+    /* 1060-1139px: the full link row fits once the gaps come in. */
+    @media (min-width: 1060px) and (max-width: 1139px) {
       .nav .wrap {
         gap: 16px;
       }
@@ -3145,6 +3370,17 @@
       display: none !important;
     }
 
+    /* The gallery stays out of sight until it has a photo to show: no
+       empty section, and no nav link to one. cms.js lifts the class once
+       photos load. The logged-in owner still sees the section, so there
+       is somewhere to see that it is empty. */
+    html.dg-gallery-empty:not(.dg-admin) [data-section="gallery"],
+    html.dg-gallery-empty:not(.dg-admin) [data-section-link="gallery"],
+    html.dg-gallery-empty.dg-preview [data-section="gallery"],
+    html.dg-gallery-empty.dg-preview [data-section-link="gallery"] {
+      display: none !important;
+    }
+
     /* Both login buttons carry display:flex from their own class, which
        would otherwise beat the UA's [hidden] rule. */
     [data-login-btn][hidden] {
@@ -3399,6 +3635,7 @@
         <nav class="nav-links">
           <a href="#booking" data-section-link="booking">Fleet & Booking</a>
           <a href="#tours" data-section-link="tours">Popular Tours</a>
+          <a href="#gallery" data-section-link="gallery">Gallery</a>
           <a href="#about" data-section-link="about">About Driver</a>
           <a href="#feedback" data-section-link="feedback">Reviews & QR</a>
         </nav>
@@ -3446,6 +3683,7 @@
         <div class="drawer-links">
           <a href="#booking" class="drawer-link" data-section-link="booking">Fleet & Booking</a>
           <a href="#tours" class="drawer-link" data-section-link="tours">Popular Tours</a>
+          <a href="#gallery" class="drawer-link" data-section-link="gallery">Gallery</a>
           <a href="#about" class="drawer-link" data-section-link="about">About Driver</a>
           <a href="#feedback" class="drawer-link" data-section-link="feedback">Reviews & QR</a>
           <a href="#feedback" class="drawer-link" id="drawerShowQrBtn">In-Vehicle QR
@@ -3737,6 +3975,30 @@
     </section>
 
 
+    <!-- ================= GALLERY SECTION =================
+         Filled from the `gallery_photos` table by assets/cms.js: the four
+         newest photos, then "View more" for the rest. Hidden from visitors
+         until there is at least one photo (see .dg-gallery-empty). -->
+    <section class="gallery-section" id="gallery" data-section="gallery">
+      <div class="wrap">
+        <div class="eyebrow" data-reveal data-cms-text="gallery.eyebrow">Moments on the Road</div>
+        <h2 class="section-title" data-reveal data-cms-text="gallery.title">Gallery</h2>
+        <p class="section-subtitle" data-reveal data-cms-text="gallery.subtitle">Snapshots from the tours, transfers and
+          places we visit across Sri Lanka.</p>
+
+        <div class="gallery-grid" id="galleryGrid" data-reveal></div>
+
+        <div class="reviews-state" id="galleryState" hidden></div>
+
+        <div class="gallery-more" id="galleryMoreWrap" hidden>
+          <button type="button" class="btn btn-outline" id="galleryMoreBtn">
+            <i class="fa-regular fa-images"></i> View more photos
+          </button>
+        </div>
+      </div>
+    </section>
+
+
     <!-- ================= ABOUT DRIVER & MULTILINGUAL SECTION ================= -->
     <section class="about-driver" id="about" data-section="about">
       <div class="wrap">
@@ -3891,6 +4153,33 @@
       </div>
     </div>
 
+    <!-- ================= GALLERY VIEWER =================
+         One photo at a time with its caption and date. Filled and wired up
+         in assets/cms.js, alongside the grid it opens from. -->
+    <div class="modal-overlay gallery-modal" id="galleryModal" role="dialog" aria-modal="true"
+         aria-label="Gallery photo">
+      <figure class="gallery-viewer">
+        <div class="gallery-viewer-frame">
+          <img id="galleryViewerImg" alt="">
+          <button type="button" class="modal-close" id="galleryCloseBtn" aria-label="Close photo">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button type="button" class="gallery-nav prev" id="galleryPrevBtn" aria-label="Previous photo">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" class="gallery-nav next" id="galleryNextBtn" aria-label="Next photo">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+        <figcaption class="gallery-viewer-text">
+          <div class="gallery-viewer-caption" id="galleryViewerCaption"></div>
+          <div class="gallery-viewer-meta">
+            <time id="galleryViewerDate"></time><span id="galleryViewerCount"></span>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+
     <!-- ================= OWNER LOGIN =================
          Supabase Auth. Only accounts listed in public.admins can sign
          in here — any other valid account is signed straight back out.
@@ -3938,7 +4227,7 @@
     </div>
 
     <!-- ================= MOBILE BOTTOM NAVIGATION =================
-         Phone-only. Labels are single words so four targets fit across a
+         Phone-only. Labels are single words so five targets fit across a
          320px screen; the full section name is on aria-label. -->
     <nav class="bottom-nav" id="bottomNav" aria-label="Section navigation">
       <a href="#booking" class="bottom-nav-item" data-section-link="booking" aria-label="Fleet and Booking">
@@ -3948,6 +4237,10 @@
       <a href="#tours" class="bottom-nav-item" data-section-link="tours" aria-label="Popular Tours">
         <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
         <span>Tours</span>
+      </a>
+      <a href="#gallery" class="bottom-nav-item" data-section-link="gallery" aria-label="Gallery">
+        <i class="fa-regular fa-images" aria-hidden="true"></i>
+        <span>Gallery</span>
       </a>
       <a href="#about" class="bottom-nav-item" data-section-link="about" aria-label="About the Driver">
         <i class="fa-solid fa-id-badge" aria-hidden="true"></i>
@@ -4324,7 +4617,7 @@
       // this is orientation, not decoration.
       (function () {
         const sectionLinks = document.querySelectorAll('[data-section-link]');
-        const sections = ['booking', 'tours', 'about', 'feedback']
+        const sections = ['booking', 'tours', 'gallery', 'about', 'feedback']
           .map(function (id) { return document.getElementById(id); })
           .filter(Boolean);
         if (!sectionLinks.length || !sections.length) return;
