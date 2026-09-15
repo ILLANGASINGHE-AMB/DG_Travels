@@ -1693,42 +1693,12 @@
 
     /* ---------- Feedback / QR ---------- */
     .feedback-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--line);
       border: 1px solid var(--line);
       border-radius: var(--r-lg);
       overflow: hidden;
       margin-bottom: 88px;
     }
 
-    .qr-standee-card {
-      background: var(--bg);
-      padding: 40px 32px;
-      text-align: center;
-    }
-
-    .qr-standee-card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .qr-box-frame {
-      background: #ffffff;
-      padding: 14px;
-      border-radius: var(--r);
-      display: inline-block;
-      margin: 26px auto 22px;
-      transition: transform 0.3s var(--ease);
-    }
-
-    .qr-box-frame:hover {
-      transform: scale(1.04) rotate(-1deg);
-    }
-
-    #qrcode,
     #modalQrCode {
       display: flex;
       justify-content: center;
@@ -1737,56 +1707,11 @@
     /* The library emits a fixed-size <img> (and a <canvas> fallback). Both
        are pinned to their frame so a narrow phone shrinks the code rather
        than pushing the card past the screen edge. */
-    #qrcode img,
-    #qrcode canvas,
     #modalQrCode img,
     #modalQrCode canvas {
       margin: 0 auto;
       max-width: 100%;
       height: auto;
-    }
-
-    .qr-instruction {
-      font-size: 13.5px;
-      color: var(--text-2);
-      line-height: 1.6;
-      margin-bottom: 24px;
-      max-width: 34ch;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .qr-instruction strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .qr-btn-row {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-qr-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      touch-action: manipulation;
-      height: 40px;
-      padding: 0 16px;
-      border: 1px solid var(--line-strong);
-      border-radius: var(--r);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-2);
-      transition: border-color 0.18s var(--ease), color 0.18s var(--ease), transform 0.18s var(--ease);
-    }
-
-    .btn-qr-action:hover {
-      border-color: var(--accent);
-      color: var(--text);
-      transform: translateY(-2px);
     }
 
     .feedback-cta-card {
@@ -2477,19 +2402,6 @@
         grid-template-columns: 1fr;
       }
 
-      .feedback-container {
-        grid-template-columns: 1fr;
-      }
-
-      /* Form-equivalent CTA first, printable QR second */
-      .feedback-cta-card {
-        order: 1;
-      }
-
-      .qr-standee-card {
-        order: 2;
-      }
-
       .footer-grid {
         grid-template-columns: 1fr 1fr;
         gap: 40px;
@@ -2685,7 +2597,6 @@
         padding: 28px 22px;
       }
 
-      .qr-standee-card,
       .feedback-cta-card {
         padding: 32px 22px;
       }
@@ -2752,10 +2663,6 @@
       .stat-box:hover {
         transform: none;
         box-shadow: none;
-      }
-
-      .qr-box-frame:hover {
-        transform: none;
       }
     }
 
@@ -2926,25 +2833,11 @@
         gap: 4px 14px;
       }
 
-      /* Side by side while both labels fit on one line, stacked full width
-         once they do not — "Copy Review Link" is the one that runs over. */
-      .qr-btn-row .btn-qr-action {
-        flex: 1 1 150px;
-        justify-content: center;
-        white-space: nowrap;
-        padding: 0 12px;
-        font-size: 12.5px;
-      }
-
       .reviews-header {
         align-items: flex-start;
         gap: 16px;
         padding-bottom: 20px;
         margin-bottom: 26px;
-      }
-
-      .qr-instruction {
-        margin-bottom: 20px;
       }
 
       .feedback-container {
@@ -3044,7 +2937,6 @@
         padding: 24px 18px;
       }
 
-      .qr-standee-card,
       .feedback-cta-card {
         padding: 28px 16px;
       }
@@ -3063,7 +2955,6 @@
         padding: 28px 16px 22px;
       }
 
-      .qr-box-frame,
       .modal-qr-frame {
         padding: 10px;
       }
@@ -3118,15 +3009,6 @@
 
       .drawer-links a {
         touch-action: manipulation;
-      }
-
-      .btn-qr-action {
-        height: 44px;
-      }
-
-      .qr-btn-row .btn-qr-action {
-        flex: 1 1 auto;
-        justify-content: center;
       }
 
       .footer-links li {
@@ -3922,30 +3804,6 @@
           the button below, to share your experience with us.</p>
 
         <div class="feedback-container" data-reveal data-reveal-stagger>
-          <!-- In-Vehicle QR Code Standee Card -->
-          <div class="qr-standee-card">
-            <div class="eyebrow" data-reveal>In-Vehicle QR Code</div>
-            <h3>Scan to Leave a Review</h3>
-
-            <div class="qr-box-frame">
-              <div id="qrcode"></div>
-            </div>
-
-            <p class="qr-instruction">
-              <strong>For Passengers:</strong> Point your phone camera at this QR code to open the feedback form on your
-              device.
-            </p>
-
-            <div class="qr-btn-row">
-              <button type="button" class="btn-qr-action" id="enlargeQrBtn">
-                <i class="fa-solid fa-expand"></i> Full Screen QR
-              </button>
-              <button type="button" class="btn-qr-action" id="copyLinkBtn">
-                <i class="fa-solid fa-link"></i> Copy Review Link
-              </button>
-            </div>
-          </div>
-
           <!-- Review Invitation Panel -> dedicated mobile feedback page -->
           <div class="feedback-cta-card">
             <div class="feedback-form-header">
@@ -4810,21 +4668,6 @@
         : new URL('feedback.html', window.location.href).href;
 
 
-      // Render In-Card QR
-      const qrEl = document.getElementById('qrcode');
-      if (qrEl && typeof QRCode !== 'undefined') {
-        qrEl.innerHTML = '';
-        const qrSize = Math.min(160, window.innerWidth - 112);
-        new QRCode(qrEl, {
-          text: feedbackUrl,
-          width: qrSize,
-          height: qrSize,
-          colorDark: "#141310",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      }
-
       // Render Modal QR
       const modalQrEl = document.getElementById('modalQrCode');
       if (modalQrEl && typeof QRCode !== 'undefined') {
@@ -4843,7 +4686,6 @@
       // Modal Controls
       const qrModal = document.getElementById('qrModal');
       const openQrModalBtn = document.getElementById('openQrModalBtn');
-      const enlargeQrBtn = document.getElementById('enlargeQrBtn');
       const closeQrModalBtn = document.getElementById('closeQrModalBtn');
       const modalCloseActionBtn = document.getElementById('modalCloseActionBtn');
 
@@ -4857,7 +4699,6 @@
       }
 
       if (openQrModalBtn) openQrModalBtn.addEventListener('click', openQrModal);
-      if (enlargeQrBtn) enlargeQrBtn.addEventListener('click', openQrModal);
       if (closeQrModalBtn) closeQrModalBtn.addEventListener('click', closeQrModal);
       if (modalCloseActionBtn) modalCloseActionBtn.addEventListener('click', closeQrModal);
       if (qrModal) {
@@ -4901,22 +4742,6 @@
         else if (qrModal && qrModal.classList.contains('active')) closeQrModal();
         else if (mobileDrawer && mobileDrawer.classList.contains('open')) closeDrawer();
       });
-
-      // Copy Link Button
-      const copyLinkBtn = document.getElementById('copyLinkBtn');
-      if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText(feedbackUrl).then(() => {
-            const originalHtml = copyLinkBtn.innerHTML;
-            copyLinkBtn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--accent);"></i> Copied Link!';
-            setTimeout(() => {
-              copyLinkBtn.innerHTML = originalHtml;
-            }, 2000);
-          }).catch(() => {
-            prompt('Review Link:', feedbackUrl);
-          });
-        });
-      }
 
       // ================= 7. LIVE PASSENGER REVIEWS (SUPABASE) =================
       // Reviews are submitted on feedback.html and stored in Supabase.
