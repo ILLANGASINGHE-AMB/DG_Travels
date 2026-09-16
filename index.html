@@ -2018,6 +2018,102 @@
     }
 
     /* ---------- Gallery ---------- */
+    .gallery-album-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 0 4px;
+    }
+
+    .gallery-album-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 9999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text-2);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .gallery-album-pill i {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .gallery-album-pill .pill-count {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .gallery-album-pill:hover {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .gallery-album-pill.active {
+      background: rgba(201, 169, 97, 0.16);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 16px rgba(201, 169, 97, 0.2);
+    }
+
+    .gallery-album-pill.active i {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .gallery-album-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(12, 12, 12, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .gallery-album-badge i {
+      font-size: 11px;
+    }
+
+    .gallery-viewer-album {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: rgba(201, 169, 97, 0.14);
+      border: 1px solid rgba(201, 169, 97, 0.28);
+      padding: 3px 10px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4001,6 +4097,8 @@
         <p class="section-subtitle" data-reveal data-cms-text="gallery.subtitle">Snapshots from the tours, transfers and
           places we visit across Sri Lanka.</p>
 
+        <div class="gallery-album-nav" id="galleryAlbumNav" data-reveal style="display:none"></div>
+
         <div class="gallery-grid" id="galleryGrid" data-reveal></div>
 
         <div class="reviews-state gallery-state" id="galleryState">
@@ -4190,6 +4288,7 @@
           </button>
         </div>
         <figcaption class="gallery-viewer-text">
+          <div class="gallery-viewer-album" id="galleryViewerAlbum" style="display:none"></div>
           <div class="gallery-viewer-caption" id="galleryViewerCaption"></div>
           <div class="gallery-viewer-meta">
             <time id="galleryViewerDate"></time><span id="galleryViewerCount"></span>

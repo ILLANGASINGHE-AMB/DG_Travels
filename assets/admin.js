@@ -870,7 +870,9 @@
     return '<div class="dg-row-card">' +
              '<div class="dg-row-thumb"><img src="' + esc(photo.image_url) + '" alt="" loading="lazy"></div>' +
              '<div class="dg-row-main">' +
-               '<div class="dg-row-title">' + esc(photo.caption) + '</div>' +
+               '<div class="dg-row-title">' + esc(photo.caption) +
+                 (photo.album_title ? ' <span class="dg-album-badge"><i class="fa-regular fa-folder"></i> ' + esc(photo.album_title) + '</span>' : '') +
+               '</div>' +
                '<div class="dg-row-sub">' + esc(CMS.photoDate(photo.photo_date)) + '</div>' +
              '</div>' +
              '<div class="dg-row-tools">' +
@@ -882,71 +884,267 @@
            '</div>';
   }
 
+  var galleryAlbums = [];
+  var adminActiveAlbum = 'all';
+
   function renderGalleryTab(body) {
     body.innerHTML =
       '<div class="dg-list-head">' +
-        '<p class="dg-hint">These photos fill the “Gallery” section, newest date first. ' +
-          'Visitors see four, then <strong>View more photos</strong> for the rest.</p>' +
-        '<button type="button" class="dg-btn primary" id="dgAddPhoto">' +
-          '<i class="fa-solid fa-plus"></i> Add photo</button>' +
+        '<p class="dg-hint">Organize your photos into albums or view all photos.</p>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" class="dg-btn primary" id="dgCreateAlbum">' +
+            '<i class="fa-solid fa-folder-plus"></i> Create Album</button>' +
+          '<button type="button" class="dg-btn outline" id="dgAddPhoto">' +
+            '<i class="fa-solid fa-plus"></i> Add photo</button>' +
+        '</div>' +
       '</div>' +
+      '<div class="dg-album-toolbar" id="dgAlbumToolbar"></div>' +
       '<div id="dgGalleryList"><p class="dg-empty">Loading photos…</p></div>';
+
+    document.getElementById('dgCreateAlbum').addEventListener('click', function () {
+      openAlbumEditor(null);
+    });
 
     document.getElementById('dgAddPhoto').addEventListener('click', function () {
       openPhotoEditor(null);
     });
 
-    CMS.listGallery(0, 1000, true)
-      .then(function (rows) {
+    Promise.all([
+      CMS.listGallery(0, 1000, true),
+      CMS.listGalleryAlbums(true)
+    ])
+      .then(function (results) {
+        var rows = results[0];
+        var albums = results[1];
         var list = document.getElementById('dgGalleryList');
-        if (!list) return;   // the owner has moved on to another tab
+        if (!list) return;   // owner moved to another tab
+
         galleryRows = Array.isArray(rows) ? rows : [];
+        galleryAlbums = Array.isArray(albums) ? albums : [];
 
-        if (!galleryRows.length) {
-          list.innerHTML = '<p class="dg-empty">No photos yet. Add the first one.</p>';
-          return;
-        }
-
-        list.innerHTML = '<div class="dg-list">' + galleryRows.map(photoRowHtml).join('') + '</div>';
-
-        list.querySelectorAll('[data-edit-photo]').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var photo = findPhoto(this.getAttribute('data-edit-photo'));
-            if (photo) openPhotoEditor(photo);
-          });
-        });
-
-        list.querySelectorAll('[data-delete-photo]').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var photo = findPhoto(this.getAttribute('data-delete-photo'));
-            if (!photo) return;
-            if (!window.confirm('Delete “' + photo.caption + '” from the gallery permanently?')) return;
-
-            btn.disabled = true;
-            CMS.deleteGalleryPhoto(photo)
-              .then(CMS.reloadGallery)
-              .then(function () {
-                toast('Photo deleted');
-                if (currentTab === 'gallery') renderTab('gallery');
-              })
-              .catch(function (err) { btn.disabled = false; fail(err); });
-          });
-        });
+        renderAdminAlbumBar();
+        renderAdminPhotoList();
       })
       .catch(function (err) {
         console.error('[admin]', err);
         var list = document.getElementById('dgGalleryList');
         if (list) {
           list.innerHTML = '<p class="dg-empty">The gallery could not be loaded. If this is the first time, ' +
-            'run <code>supabase/gallery-schema.sql</code> in Supabase.</p>';
+            'run <code>supabase/gallery-albums-schema.sql</code> in Supabase.</p>';
         }
       });
+  }
+
+  function renderAdminAlbumBar() {
+    var bar = document.getElementById('dgAlbumToolbar');
+    if (!bar) return;
+
+    var totalPhotos = galleryRows.length;
+    var html = '<div class="dg-album-pills">';
+    html += '<button type="button" class="dg-album-pill' + (adminActiveAlbum === 'all' ? ' active' : '') + '" data-admin-album="all">' +
+      '<i class="fa-solid fa-layer-group"></i> All (' + totalPhotos + ')' +
+      '</button>';
+
+    galleryAlbums.forEach(function (album) {
+      var count = galleryRows.filter(function (p) {
+        return p.album_id === album.id || p.album_title === album.title;
+      }).length;
+      var isActive = (adminActiveAlbum === album.id);
+      html += '<button type="button" class="dg-album-pill' + (isActive ? ' active' : '') + '" data-admin-album="' + esc(album.id) + '">' +
+        '<i class="fa-regular fa-folder"></i> ' + esc(album.title) + ' (' + count + ')' +
+        '</button>';
+    });
+    html += '</div>';
+
+    if (adminActiveAlbum !== 'all') {
+      var activeObj = galleryAlbums.find(function (a) { return a.id === adminActiveAlbum; });
+      if (activeObj) {
+        html += '<div class="dg-active-album-meta">' +
+          '<span>Album: <strong>' + esc(activeObj.title) + '</strong></span>' +
+          '<div style="display:flex;gap:6px;">' +
+            '<button type="button" class="dg-btn ghost mini" id="dgEditActiveAlbum"><i class="fa-solid fa-pen"></i> Rename</button>' +
+            '<button type="button" class="dg-btn danger ghost mini" id="dgDeleteActiveAlbum"><i class="fa-solid fa-trash"></i> Delete</button>' +
+          '</div>' +
+        '</div>';
+      }
+    }
+
+    bar.innerHTML = html;
+
+    bar.querySelectorAll('[data-admin-album]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        adminActiveAlbum = this.getAttribute('data-admin-album');
+        renderAdminAlbumBar();
+        renderAdminPhotoList();
+      });
+    });
+
+    var editBtn = bar.querySelector('#dgEditActiveAlbum');
+    if (editBtn) {
+      editBtn.addEventListener('click', function () {
+        var activeObj = galleryAlbums.find(function (a) { return a.id === adminActiveAlbum; });
+        if (activeObj) openAlbumEditor(activeObj);
+      });
+    }
+
+    var delBtn = bar.querySelector('#dgDeleteActiveAlbum');
+    if (delBtn) {
+      delBtn.addEventListener('click', function () {
+        var activeObj = galleryAlbums.find(function (a) { return a.id === adminActiveAlbum; });
+        if (activeObj) deleteAlbumPrompt(activeObj);
+      });
+    }
+  }
+
+  function renderAdminPhotoList() {
+    var list = document.getElementById('dgGalleryList');
+    if (!list) return;
+
+    var filtered = galleryRows;
+    if (adminActiveAlbum !== 'all') {
+      filtered = galleryRows.filter(function (p) {
+        return p.album_id === adminActiveAlbum || p.album_title === (galleryAlbums.find(function(a){ return a.id === adminActiveAlbum; }) || {}).title;
+      });
+    }
+
+    if (!filtered.length) {
+      list.innerHTML = '<p class="dg-empty">' +
+        (adminActiveAlbum !== 'all' ? 'No photos in this album yet. Click "Add photo" to add one.' : 'No photos yet. Add the first one.') +
+        '</p>';
+      return;
+    }
+
+    list.innerHTML = '<div class="dg-list">' + filtered.map(photoRowHtml).join('') + '</div>';
+
+    list.querySelectorAll('[data-edit-photo]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var photo = findPhoto(this.getAttribute('data-edit-photo'));
+        if (photo) openPhotoEditor(photo);
+      });
+    });
+
+    list.querySelectorAll('[data-delete-photo]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var photo = findPhoto(this.getAttribute('data-delete-photo'));
+        if (!photo) return;
+        if (!window.confirm('Delete “' + photo.caption + '” from the gallery permanently?')) return;
+
+        btn.disabled = true;
+        CMS.deleteGalleryPhoto(photo)
+          .then(CMS.reloadGallery)
+          .then(function () {
+            toast('Photo deleted');
+            if (currentTab === 'gallery') renderTab('gallery');
+          })
+          .catch(function (err) { btn.disabled = false; fail(err); });
+      });
+    });
+  }
+
+  /* ---- The add / edit dialog for an album ---- */
+  function openAlbumEditor(album, onCreated) {
+    var isNew = !album;
+    album = album || { title: '', description: '' };
+
+    var existing = document.getElementById('dgRowModal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.className = 'dg-modal';
+    modal.id = 'dgRowModal';
+    modal.innerHTML =
+      '<div class="dg-modal-card" role="dialog" aria-modal="true">' +
+        '<header class="dg-modal-head">' +
+          '<h3>' + (isNew ? 'Create Album' : 'Edit Album') + '</h3>' +
+          '<button type="button" class="dg-panel-close" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>' +
+        '</header>' +
+        '<form class="dg-modal-body" id="dgAlbumForm" novalidate>' +
+          '<div class="dg-field">' +
+            '<label for="dgAlbumTitle">Album Title <span class="dg-req">*</span></label>' +
+            '<input id="dgAlbumTitle" class="dg-input" type="text" maxlength="120" placeholder="e.g. Ella Day Tour & Nine Arch Bridge" value="' + esc(album.title) + '" required>' +
+          '</div>' +
+          '<div class="dg-field">' +
+            '<label for="dgAlbumDesc">Description <span class="dg-hint" style="display:inline;font-weight:normal;color:#888;">— optional</span></label>' +
+            '<textarea id="dgAlbumDesc" class="dg-input" rows="3" placeholder="Brief note about this tour or album">' + esc(album.description || '') + '</textarea>' +
+          '</div>' +
+          '<div class="dg-modal-actions">' +
+            '<button type="button" class="dg-btn ghost" data-close>Cancel</button>' +
+            '<button type="submit" class="dg-btn primary"><i class="fa-solid fa-check"></i> ' +
+              (isNew ? 'Create Album' : 'Save Album') + '</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(modal);
+    requestAnimationFrame(function () { modal.classList.add('show'); });
+
+    var titleInput = modal.querySelector('#dgAlbumTitle');
+    setTimeout(function () { titleInput.focus(); }, 80);
+
+    function close() {
+      modal.classList.remove('show');
+      setTimeout(function () { modal.remove(); }, 200);
+    }
+
+    modal.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', close);
+    });
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+
+    modal.querySelector('#dgAlbumForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var title = titleInput.value.trim();
+      if (!title) {
+        toast('Please enter an album title.', 'error');
+        titleInput.focus();
+        return;
+      }
+      var desc = modal.querySelector('#dgAlbumDesc').value.trim();
+      var payload = { title: title, description: desc };
+      if (!isNew) payload.id = album.id;
+
+      var btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
+      CMS.saveGalleryAlbum(payload)
+        .then(function (rows) {
+          var created = (rows && rows[0]) || { id: payload.id || title, title: title };
+          toast(isNew ? 'Album created' : 'Album saved');
+          close();
+          if (onCreated) {
+            onCreated(created);
+            return;
+          }
+          if (isNew) adminActiveAlbum = created.id;
+          return CMS.reloadGallery();
+        })
+        .then(function () {
+          if (currentTab === 'gallery') renderTab('gallery');
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          fail(err);
+        });
+    });
+  }
+
+  function deleteAlbumPrompt(album) {
+    if (!window.confirm('Delete album “' + album.title + '”? Photos in this album will remain in your gallery as unassigned.')) return;
+    CMS.deleteGalleryAlbum(album.id)
+      .then(function () {
+        toast('Album deleted');
+        adminActiveAlbum = 'all';
+        return CMS.reloadGallery();
+      })
+      .then(function () {
+        if (currentTab === 'gallery') renderTab('gallery');
+      })
+      .catch(fail);
   }
 
   /* ---- The add / edit dialog for one photo ---- */
   function openPhotoEditor(photo) {
     var isNew = !photo;
-    photo = photo || { caption: '', photo_date: todayIso(), image_url: '' };
+    photo = photo || { caption: '', photo_date: todayIso(), image_url: '', album_id: '', album_title: '' };
 
     var existing = document.getElementById('dgRowModal');
     if (existing) existing.remove();
@@ -969,6 +1167,21 @@
           }, photo.image_url) +
           '<div class="dg-grid">' +
             GALLERY_FIELDS.map(function (f) { return fieldHtml(f, photo[f.key]); }).join('') +
+            '<div class="dg-field half">' +
+              '<label for="dgPhotoAlbum">Album <span class="dg-hint" style="display:inline;font-weight:normal;color:#888;">— optional</span></label>' +
+              '<div style="display:flex;gap:6px;align-items:center;">' +
+                '<select id="dgPhotoAlbum" class="dg-input" style="flex:1">' +
+                  '<option value="">(No Album — General)</option>' +
+                  galleryAlbums.map(function (a) {
+                    var isSel = (photo.album_id === a.id || (!photo.album_id && adminActiveAlbum === a.id));
+                    return '<option value="' + esc(a.id) + '"' + (isSel ? ' selected' : '') + '>' + esc(a.title) + '</option>';
+                  }).join('') +
+                '</select>' +
+                '<button type="button" class="dg-btn ghost" id="dgModalNewAlbum" title="Create a new album" style="padding:0 10px;white-space:nowrap;height:38px;">' +
+                  '<i class="fa-solid fa-folder-plus"></i> New' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
           '<div class="dg-modal-actions">' +
             '<button type="button" class="dg-btn ghost" data-close>Cancel</button>' +
@@ -979,6 +1192,23 @@
       '</div>';
     document.body.appendChild(modal);
     requestAnimationFrame(function () { modal.classList.add('show'); });
+
+    var newAlbumBtn = modal.querySelector('#dgModalNewAlbum');
+    if (newAlbumBtn) {
+      newAlbumBtn.addEventListener('click', function () {
+        openAlbumEditor(null, function (newAlbum) {
+          galleryAlbums.push(newAlbum);
+          var sel = modal.querySelector('#dgPhotoAlbum');
+          if (sel) {
+            var opt = document.createElement('option');
+            opt.value = newAlbum.id;
+            opt.textContent = newAlbum.title;
+            opt.selected = true;
+            sel.appendChild(opt);
+          }
+        });
+      });
+    }
 
     // As with tours, an upload only stages the file; nothing reaches the
     // gallery until the form is saved.
@@ -1067,7 +1297,18 @@
         return;
       }
 
-      var payload = { image_url: staged, caption: values.caption, photo_date: values.photo_date };
+      var albumSelect = modal.querySelector('#dgPhotoAlbum');
+      var selectedAlbumId = albumSelect ? albumSelect.value : '';
+      var selectedAlbum = galleryAlbums.find(function (a) { return a.id === selectedAlbumId; });
+      var selectedAlbumTitle = selectedAlbum ? selectedAlbum.title : '';
+
+      var payload = {
+        image_url: staged,
+        caption: values.caption,
+        photo_date: values.photo_date,
+        album_id: selectedAlbumId || null,
+        album_title: selectedAlbumTitle || null
+      };
       if (!isNew) payload.id = photo.id;
 
       var btn = this.querySelector('button[type="submit"]');
@@ -1086,6 +1327,7 @@
         .catch(function (err) { btn.disabled = false; fail(err); });
     });
   }
+
 
   /* ---------------------------------------------------------
      Click-to-edit text on the page itself
