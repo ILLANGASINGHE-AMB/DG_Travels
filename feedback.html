@@ -41,6 +41,7 @@
 
     html {
       -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
     }
 
@@ -49,15 +50,15 @@
       color: var(--text);
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
-      line-height: 1.55;
+      line-height: 1.5;
       min-height: 100vh;
       min-height: 100dvh;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       /* Notch and home-indicator clearance */
-      padding: max(20px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right))
-               max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+               max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     }
 
     a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
@@ -79,47 +80,51 @@
     /* ============ HEADER ============ */
     .head {
       text-align: center;
-      padding: 6px 0 22px;
-    }
-    .head h1 {
-      font-size: clamp(24px, 6.4vw, 30px);
-      font-weight: 600;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      margin-bottom: 16px;
+      padding: 6px 0 18px;
     }
     .logo {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto;
-      border-radius: 8px;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 12px;
+      border-radius: 12px;
       border: 1px solid var(--border-soft);
       object-fit: contain;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+    .head h1 {
+      font-size: clamp(21px, 6vw, 27px);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: -0.025em;
+      margin-bottom: 6px;
     }
     .head .tagline {
-      margin-top: 12px;
-      font-size: 13px;
+      margin-top: 4px;
+      font-size: 13.5px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     /* ============ CARD ============ */
     .card {
       background: var(--surface);
       border: 1px solid var(--border-soft);
-      border-radius: 12px;
-      padding: 26px 22px 28px;
+      border-radius: 14px;
+      padding: 24px 20px 26px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     }
 
     /* ============ FIELDS ============ */
-    .field { margin-bottom: 18px; }
+    .field { margin-bottom: 16px; }
 
     .field label {
       display: block;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .field .hint {
       font-weight: 400;
@@ -134,7 +139,7 @@
       background: var(--field);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 13px 14px;
+      padding: 12px 14px;
       color: var(--text);
       /* 16px keeps iOS Safari from zooming in on focus */
       font-size: 16px;
@@ -142,12 +147,13 @@
       line-height: 1.5;
       outline: none;
       transition: var(--transition);
-      min-height: 52px;
+      min-height: 50px;
       -webkit-appearance: none;
       appearance: none;
+      touch-action: manipulation;
     }
     textarea {
-      min-height: 148px;
+      min-height: 110px;
       resize: vertical;
     }
     input::placeholder, textarea::placeholder { color: #5a5a5a; }
@@ -165,7 +171,7 @@
       justify-content: flex-end;
       font-size: 11.5px;
       color: var(--text-faint);
-      margin-top: 6px;
+      margin-top: 5px;
       font-variant-numeric: tabular-nums;
     }
     .counter.near { color: var(--gold); }
@@ -173,9 +179,9 @@
 
     .error {
       display: none;
-      font-size: 12.5px;
+      font-size: 12px;
       color: var(--danger);
-      margin-top: 6px;
+      margin-top: 5px;
     }
     .field.invalid .error { display: block; }
 
@@ -184,32 +190,36 @@
       text-align: center;
       background: var(--surface-2);
       border: 1px solid var(--border-soft);
-      border-radius: var(--radius);
-      padding: 16px 12px 14px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      padding: 14px 10px 12px;
+      margin-bottom: 18px;
     }
     .rating > label {
       display: block;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .stars {
       display: flex;
       justify-content: center;
-      gap: 2px;
+      gap: 4px;
+      touch-action: manipulation;
     }
     .star {
       /* Comfortably above the 44px touch-target floor */
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #3a3a3a;
-      transition: transform 0.15s ease, color 0.15s ease;
+      color: #383838;
+      transition: transform 0.12s ease, color 0.15s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      border-radius: 6px;
     }
-    .star svg { width: 30px; height: 30px; fill: currentColor; }
+    .star svg { width: 30px; height: 30px; fill: currentColor; pointer-events: none; }
     .star.on { color: var(--gold); }
     .star:active { transform: scale(0.9); }
     .rating.invalid { border-color: var(--danger); }
@@ -218,7 +228,7 @@
       font-size: 12.5px;
       font-weight: 600;
       color: var(--gold);
-      margin-top: 8px;
+      margin-top: 6px;
       min-height: 18px;
     }
     .rating .error { text-align: center; }
@@ -227,26 +237,32 @@
     /* ============ SUBMIT ============ */
     .submit {
       width: 100%;
-      min-height: 54px;
+      min-height: 52px;
       border-radius: var(--radius);
       background: var(--gold);
       color: #0a0a0a;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 15.5px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 9px;
       transition: var(--transition);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .submit:hover { background: var(--gold-light); }
+    .submit:active:not([disabled]) {
+      background: var(--gold-light);
+      transform: scale(0.985);
+    }
     .submit[disabled] {
       opacity: 0.55;
       cursor: not-allowed;
     }
     .spinner {
-      width: 17px;
-      height: 17px;
+      width: 18px;
+      height: 18px;
       border: 2px solid rgba(0, 0, 0, 0.25);
       border-top-color: #0d0c09;
       border-radius: 50%;
@@ -273,13 +289,13 @@
     .success {
       display: none;
       text-align: center;
-      padding: 30px 14px 26px;
+      padding: 24px 12px 20px;
     }
     .success.show { display: block; }
     .success-icon {
-      width: 66px;
-      height: 66px;
-      margin: 0 auto 18px;
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 16px;
       border-radius: 50%;
       background: rgba(74, 222, 128, 0.12);
       border: 2px solid var(--success);
@@ -288,24 +304,24 @@
       align-items: center;
       justify-content: center;
     }
-    .success-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 3; }
+    .success-icon svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 3; }
     .success h2 {
-      font-size: 23px;
+      font-size: 22px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .success p {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 22px;
+      line-height: 1.55;
+      margin-bottom: 20px;
     }
     .success .stars-recap {
       display: flex;
       justify-content: center;
       gap: 3px;
       color: var(--gold);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .success .stars-recap svg { width: 22px; height: 22px; fill: currentColor; }
 
@@ -315,20 +331,22 @@
       justify-content: center;
       gap: 8px;
       min-height: 48px;
-      padding: 12px 24px;
+      width: 100%;
+      padding: 12px 20px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       color: var(--text);
       font-size: 14.5px;
       font-weight: 600;
       transition: var(--transition);
+      touch-action: manipulation;
     }
-    .btn-ghost:active { border-color: var(--gold); color: var(--gold); }
+    .btn-ghost:active { border-color: var(--gold); color: var(--gold); transform: scale(0.985); }
 
     /* ============ FOOTER LINK ============ */
     .foot {
       text-align: center;
-      padding: 26px 0 6px;
+      padding: 20px 0 6px;
     }
     /* The success card carries its own "Visit DG Travels" button —
        hide the footer copy so the link is not shown twice. */
@@ -338,46 +356,23 @@
       align-items: center;
       gap: 8px;
       min-height: 44px;
-      padding: 10px 18px;
-      font-size: 14.5px;
+      padding: 8px 16px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--gold);
       border-bottom: 1px solid rgba(215, 168, 78, 0.4);
       border-radius: 4px;
+      touch-action: manipulation;
     }
     .visit-link svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
     .visit-link:active { color: var(--gold-light); }
 
     .foot .legal {
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 11.5px;
       color: var(--text-faint);
-      line-height: 1.6;
-    }
-
-    /* ============ SMALL PHONES ============ */
-    @media (max-width: 360px) {
-      body { padding-left: max(14px, env(safe-area-inset-left)); padding-right: max(14px, env(safe-area-inset-right)); }
-      .card { padding: 18px 14px 20px; }
-      .logo { width: 72px; height: 72px; border-radius: 18px; }
-      .star { width: 46px; height: 46px; }
-      .star svg { width: 27px; height: 27px; }
-    }
-
-    /* ============ LANDSCAPE ============ */
-    @media (max-height: 460px) and (orientation: landscape) {
-      .head { padding-bottom: 14px; }
-      .logo { width: 58px; height: 58px; border-radius: 14px; padding: 7px; }
-      .head h1 { font-size: 21px; margin-bottom: 10px; }
-      .head .tagline { display: none; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+      line-height: 1.55;
+      padding: 0 10px;
     }
 
     /* ============ COUNTRY DROPDOWN ============ */
@@ -385,7 +380,7 @@
 
     .country-trigger {
       width: 100%;
-      min-height: 52px;
+      min-height: 50px;
       background: var(--field);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -401,6 +396,7 @@
       text-align: left;
       -webkit-appearance: none;
       appearance: none;
+      touch-action: manipulation;
     }
     .country-trigger:focus,
     .country-trigger.open { border-color: var(--gold); background: #101010; }
@@ -421,62 +417,110 @@
       position: absolute;
       top: calc(100% + 5px);
       left: 0; right: 0;
-      background: #161616;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      z-index: 999;
-      max-height: 260px;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      z-index: 1000;
+      max-height: min(290px, 46vh);
       overflow: hidden;
       flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(201, 169, 97, 0.18);
+      -webkit-overflow-scrolling: touch;
     }
     .country-dropdown.open { display: flex; }
 
     .country-search-wrap {
-      padding: 10px 10px 8px;
+      position: relative;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--border-soft);
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      background: #181818;
+    }
+    .country-search-wrap .search-icon {
+      position: absolute;
+      left: 18px;
+      color: #666;
+      pointer-events: none;
     }
     .country-search {
       width: 100%;
       background: var(--field);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 9px 12px;
+      padding: 9px 32px 9px 32px;
       color: var(--text);
-      font-size: 14px;
+      font-size: 16px !important; /* CRITICAL: 16px prevents iOS Safari auto-zoom */
       font-family: inherit;
       outline: none;
       -webkit-appearance: none;
+      height: 40px;
     }
     .country-search:focus { border-color: var(--gold); }
-    .country-search::placeholder { color: #5a5a5a; }
+    .country-search::placeholder { color: #5a5a5a; font-size: 14px; }
+    .search-clear {
+      position: absolute;
+      right: 18px;
+      width: 22px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      color: #bbb;
+      font-size: 15px;
+      line-height: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
 
     .country-list {
       overflow-y: auto;
       flex: 1;
       overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
     .country-list::-webkit-scrollbar { width: 4px; }
     .country-list::-webkit-scrollbar-track { background: transparent; }
     .country-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
+    .country-group-label {
+      padding: 8px 14px 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--gold);
+      background: rgba(201, 169, 97, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
     .country-option {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 14px;
+      padding: 11px 14px;
+      min-height: 44px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 14.5px;
       transition: background 0.12s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      -webkit-tap-highlight-color: rgba(201, 169, 97, 0.15);
+      touch-action: manipulation;
     }
+    .country-option:last-child { border-bottom: none; }
     .country-option:hover,
     .country-option.focused { background: rgba(201, 169, 97, 0.12); }
-    .country-option.selected { background: rgba(201, 169, 97, 0.18); color: var(--gold); }
-    .country-option .co-flag { font-size: 20px; flex-shrink: 0; }
-    .country-option .co-name { flex: 1; }
+    .country-option:active { background: rgba(201, 169, 97, 0.22); }
+    .country-option.selected { background: rgba(201, 169, 97, 0.18); color: var(--gold-light); font-weight: 600; }
+    .country-option .co-flag { font-size: 20px; line-height: 1; flex-shrink: 0; }
+    .country-option .co-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .country-no-results {
-      padding: 14px;
+      padding: 18px 14px;
       font-size: 13px;
       color: var(--text-faint);
       text-align: center;
@@ -497,6 +541,114 @@
       margin-bottom: 14px;
     }
     .success-country .sc-flag { font-size: 18px; }
+
+    /* ============ RESPONSIVE MEDIA QUERIES ============ */
+    @media (max-width: 480px) {
+      body {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+      }
+      .card {
+        padding: 18px 14px 20px;
+        border-radius: 12px;
+      }
+      .head {
+        padding-bottom: 14px;
+      }
+      .logo {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 10px;
+      }
+      .head h1 {
+        font-size: 22px;
+      }
+      .head .tagline {
+        font-size: 12.5px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        font-size: 13px;
+        margin-bottom: 5px;
+      }
+      input[type="text"],
+      input[type="email"],
+      .country-trigger {
+        min-height: 48px;
+        padding: 10px 12px;
+      }
+      textarea {
+        min-height: 100px;
+        padding: 10px 12px;
+      }
+      .rating {
+        padding: 12px 8px 10px;
+        margin-bottom: 16px;
+      }
+      .stars {
+        gap: 4px;
+      }
+      .star {
+        width: 46px;
+        height: 46px;
+      }
+      .star svg {
+        width: 29px;
+        height: 29px;
+      }
+      .submit {
+        min-height: 50px;
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding-left: max(8px, env(safe-area-inset-left));
+        padding-right: max(8px, env(safe-area-inset-right));
+      }
+      .card {
+        padding: 16px 10px 18px;
+        border-radius: 10px;
+      }
+      .logo {
+        width: 50px;
+        height: 50px;
+      }
+      .head h1 {
+        font-size: 20px;
+      }
+      .stars {
+        gap: 2px;
+      }
+      .star {
+        width: 40px;
+        height: 40px;
+      }
+      .star svg {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    /* ============ LANDSCAPE ============ */
+    @media (max-height: 460px) and (orientation: landscape) {
+      .head { padding-bottom: 10px; }
+      .logo { width: 46px; height: 46px; margin-bottom: 6px; }
+      .head h1 { font-size: 19px; margin-bottom: 4px; }
+      .head .tagline { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -505,8 +657,8 @@
 
     <!-- ================= HEADER ================= -->
     <header class="head">
+      <img src="LOGO/DG - 1.png" alt="DG Travels" class="logo" width="64" height="64">
       <h1>Your Feedback Matters to Us</h1>
-      <img src="LOGO/DG - 1.png" alt="DG Travels" class="logo" width="82" height="82">
       <p class="tagline">Thank you for travelling with DG Travels.<br>Tell us how your journey went.</p>
     </header>
 
@@ -544,8 +696,13 @@
             </button>
             <div class="country-dropdown" id="countryDropdown" role="listbox" aria-label="Countries">
               <div class="country-search-wrap">
+                <svg class="search-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
                 <input type="text" class="country-search" id="countrySearch"
-                       placeholder="Search country…" autocomplete="off" aria-label="Search countries">
+                       placeholder="Search country…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Search countries">
+                <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" style="display:none">&times;</button>
               </div>
               <div class="country-list" id="countryList"></div>
             </div>
@@ -741,30 +898,72 @@
       });
 
       // ---------- Country dropdown ----------
-      var ctTrigger  = document.getElementById('countryTrigger');
-      var ctDropdown = document.getElementById('countryDropdown');
-      var ctSearch   = document.getElementById('countrySearch');
-      var ctList     = document.getElementById('countryList');
-      var ctFlag     = document.getElementById('ctFlag');
-      var ctName     = document.getElementById('ctName');
+      var POPULAR_COUNTRIES = [
+        {f:'🇱🇰',n:'Sri Lanka'},
+        {f:'🇬🇧',n:'United Kingdom'},
+        {f:'🇩🇪',n:'Germany'},
+        {f:'🇦🇺',n:'Australia'},
+        {f:'🇫🇷',n:'France'},
+        {f:'🇮🇳',n:'India'},
+        {f:'🇺🇸',n:'United States'},
+        {f:'🇷🇺',n:'Russia'},
+        {f:'🇳🇱',n:'Netherlands'},
+        {f:'🇨🇦',n:'Canada'},
+        {f:'🇮🇹',n:'Italy'},
+        {f:'🇨🇭',n:'Switzerland'}
+      ];
+
+      var ctTrigger   = document.getElementById('countryTrigger');
+      var ctDropdown  = document.getElementById('countryDropdown');
+      var ctSearch    = document.getElementById('countrySearch');
+      var ctList      = document.getElementById('countryList');
+      var ctFlag      = document.getElementById('ctFlag');
+      var ctName      = document.getElementById('ctName');
+      var searchClear = document.getElementById('searchClear');
+
+      function makeCountryOption(c) {
+        var opt = document.createElement('div');
+        opt.className = 'country-option' + (selectedCountry && selectedCountry.n === c.n ? ' selected' : '');
+        opt.setAttribute('role', 'option');
+        opt.setAttribute('aria-selected', selectedCountry && selectedCountry.n === c.n ? 'true' : 'false');
+        opt.innerHTML = '<span class="co-flag">' + c.f + '</span><span class="co-name">' + c.n + '</span>';
+        opt.addEventListener('mousedown', function(e) { e.preventDefault(); });
+        opt.addEventListener('click', function() { selectCountry(c); });
+        return opt;
+      }
 
       function renderCountryList(query) {
         var q = (query || '').toLowerCase().trim();
-        var filtered = q ? COUNTRIES.filter(function(c){ return c.n.toLowerCase().indexOf(q) !== -1; }) : COUNTRIES;
         ctList.innerHTML = '';
+
+        if (!q) {
+          var popHeader = document.createElement('div');
+          popHeader.className = 'country-group-label';
+          popHeader.textContent = 'Popular';
+          ctList.appendChild(popHeader);
+
+          POPULAR_COUNTRIES.forEach(function(c) {
+            ctList.appendChild(makeCountryOption(c));
+          });
+
+          var allHeader = document.createElement('div');
+          allHeader.className = 'country-group-label';
+          allHeader.textContent = 'All Countries (A–Z)';
+          ctList.appendChild(allHeader);
+
+          COUNTRIES.forEach(function(c) {
+            ctList.appendChild(makeCountryOption(c));
+          });
+          return;
+        }
+
+        var filtered = COUNTRIES.filter(function(c){ return c.n.toLowerCase().indexOf(q) !== -1; });
         if (!filtered.length) {
           ctList.innerHTML = '<div class="country-no-results">No countries found</div>';
           return;
         }
         filtered.forEach(function(c) {
-          var opt = document.createElement('div');
-          opt.className = 'country-option' + (selectedCountry && selectedCountry.n === c.n ? ' selected' : '');
-          opt.setAttribute('role', 'option');
-          opt.setAttribute('aria-selected', selectedCountry && selectedCountry.n === c.n ? 'true' : 'false');
-          opt.innerHTML = '<span class="co-flag">' + c.f + '</span><span class="co-name">' + c.n + '</span>';
-          opt.addEventListener('mousedown', function(e) { e.preventDefault(); });
-          opt.addEventListener('click', function() { selectCountry(c); });
-          ctList.appendChild(opt);
+          ctList.appendChild(makeCountryOption(c));
         });
       }
 
@@ -773,8 +972,22 @@
         ctTrigger.classList.add('open');
         ctTrigger.setAttribute('aria-expanded', 'true');
         ctSearch.value = '';
+        if (searchClear) searchClear.style.display = 'none';
         renderCountryList('');
-        setTimeout(function(){ ctSearch.focus(); }, 10);
+
+        // Smoothly ensure dropdown is visible in viewport on mobile
+        setTimeout(function() {
+          var rect = ctDropdown.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight - 10) {
+            ctDropdown.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 50);
+
+        // On desktop focus search; on mobile touch avoid abrupt keyboard covering the options
+        var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (!isTouch) {
+          setTimeout(function(){ ctSearch.focus(); }, 80);
+        }
         if (selectedCountry) {
           var sel = ctList.querySelector('.selected');
           if (sel) sel.scrollIntoView({ block: 'nearest' });
@@ -801,8 +1014,20 @@
       });
 
       ctSearch.addEventListener('input', function() {
+        if (searchClear) searchClear.style.display = ctSearch.value ? 'flex' : 'none';
         renderCountryList(ctSearch.value);
       });
+
+      if (searchClear) {
+        searchClear.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          ctSearch.value = '';
+          searchClear.style.display = 'none';
+          renderCountryList('');
+          ctSearch.focus();
+        });
+      }
 
       document.addEventListener('click', function(e) {
         if (!document.getElementById('countryWrapper').contains(e.target)) {
