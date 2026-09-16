@@ -379,6 +379,124 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* ============ COUNTRY DROPDOWN ============ */
+    .country-wrapper { position: relative; }
+
+    .country-trigger {
+      width: 100%;
+      min-height: 52px;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 14px;
+      color: var(--text);
+      font-size: 16px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .country-trigger:focus,
+    .country-trigger.open { border-color: var(--gold); background: #101010; }
+    .field.invalid .country-trigger { border-color: var(--danger); }
+
+    .country-trigger .ct-flag { font-size: 22px; line-height: 1; flex-shrink: 0; }
+    .country-trigger .ct-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .country-trigger .ct-placeholder { color: #5a5a5a; }
+    .country-trigger .ct-chevron {
+      width: 16px; height: 16px; flex-shrink: 0;
+      stroke: var(--text-faint); fill: none; stroke-width: 2;
+      transition: transform 0.18s ease;
+    }
+    .country-trigger.open .ct-chevron { transform: rotate(180deg); }
+
+    .country-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0; right: 0;
+      background: #161616;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      z-index: 999;
+      max-height: 260px;
+      overflow: hidden;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    .country-dropdown.open { display: flex; }
+
+    .country-search-wrap {
+      padding: 10px 10px 8px;
+      border-bottom: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+    .country-search {
+      width: 100%;
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .country-search:focus { border-color: var(--gold); }
+    .country-search::placeholder { color: #5a5a5a; }
+
+    .country-list {
+      overflow-y: auto;
+      flex: 1;
+      overscroll-behavior: contain;
+    }
+    .country-list::-webkit-scrollbar { width: 4px; }
+    .country-list::-webkit-scrollbar-track { background: transparent; }
+    .country-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+    .country-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.12s;
+    }
+    .country-option:hover,
+    .country-option.focused { background: rgba(201, 169, 97, 0.12); }
+    .country-option.selected { background: rgba(201, 169, 97, 0.18); color: var(--gold); }
+    .country-option .co-flag { font-size: 20px; flex-shrink: 0; }
+    .country-option .co-name { flex: 1; }
+    .country-no-results {
+      padding: 14px;
+      font-size: 13px;
+      color: var(--text-faint);
+      text-align: center;
+    }
+
+    /* success country chip */
+    .success-country {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(201,169,97,0.1);
+      border: 1px solid rgba(201,169,97,0.3);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .success-country .sc-flag { font-size: 18px; }
   </style>
 </head>
 <body>
@@ -411,6 +529,27 @@
                  autocomplete="email" autocapitalize="none" autocorrect="off"
                  inputmode="email" spellcheck="false" required>
           <p class="error" id="errEmail">Please enter a valid email address.</p>
+        </div>
+
+        <div class="field" id="fieldCountry">
+          <label for="countryTrigger">Your Country <span class="hint">— optional</span></label>
+          <div class="country-wrapper" id="countryWrapper">
+            <button type="button" class="country-trigger" id="countryTrigger"
+                    aria-haspopup="listbox" aria-expanded="false" aria-label="Select your country">
+              <span class="ct-flag" id="ctFlag" aria-hidden="true"></span>
+              <span class="ct-name ct-placeholder" id="ctName">Select your country</span>
+              <svg class="ct-chevron" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="country-dropdown" id="countryDropdown" role="listbox" aria-label="Countries">
+              <div class="country-search-wrap">
+                <input type="text" class="country-search" id="countrySearch"
+                       placeholder="Search country…" autocomplete="off" aria-label="Search countries">
+              </div>
+              <div class="country-list" id="countryList"></div>
+            </div>
+          </div>
         </div>
 
         <div class="field" id="fieldMessage">
@@ -452,6 +591,10 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="stars-recap" id="starsRecap" aria-hidden="true"></div>
+        <div class="success-country" id="successCountry" style="display:none">
+          <span class="sc-flag" id="successCountryFlag"></span>
+          <span id="successCountryName"></span>
+        </div>
         <h2>Thank you!</h2>
         <p id="successText">Your feedback has been sent to Isum and is now live on the DG&nbsp;Travels website.</p>
         <a class="btn-ghost" href="index.html">Visit DG Travels</a>
@@ -482,6 +625,74 @@
       var CAPTIONS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
       var STAR_PATH = 'M12 2.6l2.9 5.88 6.49.95-4.7 4.58 1.11 6.46L12 17.42 6.2 20.47l1.11-6.46-4.7-4.58 6.49-.95z';
 
+      // ---- Country data (flag emoji + name) ----
+      var COUNTRIES = [
+        {f:'🇦🇫',n:'Afghanistan'},{f:'🇦🇱',n:'Albania'},{f:'🇩🇿',n:'Algeria'},
+        {f:'🇦🇩',n:'Andorra'},{f:'🇦🇴',n:'Angola'},{f:'🇦🇬',n:'Antigua & Barbuda'},
+        {f:'🇦🇷',n:'Argentina'},{f:'🇦🇲',n:'Armenia'},{f:'🇦🇺',n:'Australia'},
+        {f:'🇦🇹',n:'Austria'},{f:'🇦🇿',n:'Azerbaijan'},{f:'🇧🇸',n:'Bahamas'},
+        {f:'🇧🇭',n:'Bahrain'},{f:'🇧🇩',n:'Bangladesh'},{f:'🇧🇧',n:'Barbados'},
+        {f:'🇧🇾',n:'Belarus'},{f:'🇧🇪',n:'Belgium'},{f:'🇧🇿',n:'Belize'},
+        {f:'🇧🇯',n:'Benin'},{f:'🇧🇹',n:'Bhutan'},{f:'🇧🇴',n:'Bolivia'},
+        {f:'🇧🇦',n:'Bosnia & Herzegovina'},{f:'🇧🇼',n:'Botswana'},{f:'🇧🇷',n:'Brazil'},
+        {f:'🇧🇳',n:'Brunei'},{f:'🇧🇬',n:'Bulgaria'},{f:'🇧🇫',n:'Burkina Faso'},
+        {f:'🇧🇮',n:'Burundi'},{f:'🇨🇻',n:'Cabo Verde'},{f:'🇰🇭',n:'Cambodia'},
+        {f:'🇨🇲',n:'Cameroon'},{f:'🇨🇦',n:'Canada'},{f:'🇨🇫',n:'Central African Republic'},
+        {f:'🇹🇩',n:'Chad'},{f:'🇨🇱',n:'Chile'},{f:'🇨🇳',n:'China'},
+        {f:'🇨🇴',n:'Colombia'},{f:'🇰🇲',n:'Comoros'},{f:'🇨🇩',n:'Congo (DRC)'},
+        {f:'🇨🇬',n:'Congo (Republic)'},{f:'🇨🇷',n:'Costa Rica'},{f:'🇭🇷',n:'Croatia'},
+        {f:'🇨🇺',n:'Cuba'},{f:'🇨🇾',n:'Cyprus'},{f:'🇨🇿',n:'Czech Republic'},
+        {f:'🇩🇰',n:'Denmark'},{f:'🇩🇯',n:'Djibouti'},{f:'🇩🇲',n:'Dominica'},
+        {f:'🇩🇴',n:'Dominican Republic'},{f:'🇪🇨',n:'Ecuador'},{f:'🇪🇬',n:'Egypt'},
+        {f:'🇸🇻',n:'El Salvador'},{f:'🇬🇶',n:'Equatorial Guinea'},{f:'🇪🇷',n:'Eritrea'},
+        {f:'🇪🇪',n:'Estonia'},{f:'🇸🇿',n:'Eswatini'},{f:'🇪🇹',n:'Ethiopia'},
+        {f:'🇫🇯',n:'Fiji'},{f:'🇫🇮',n:'Finland'},{f:'🇫🇷',n:'France'},
+        {f:'🇬🇦',n:'Gabon'},{f:'🇬🇲',n:'Gambia'},{f:'🇬🇪',n:'Georgia'},
+        {f:'🇩🇪',n:'Germany'},{f:'🇬🇭',n:'Ghana'},{f:'🇬🇷',n:'Greece'},
+        {f:'🇬🇩',n:'Grenada'},{f:'🇬🇹',n:'Guatemala'},{f:'🇬🇳',n:'Guinea'},
+        {f:'🇬🇼',n:'Guinea-Bissau'},{f:'🇬🇾',n:'Guyana'},{f:'🇭🇹',n:'Haiti'},
+        {f:'🇭🇳',n:'Honduras'},{f:'🇭🇺',n:'Hungary'},{f:'🇮🇸',n:'Iceland'},
+        {f:'🇮🇳',n:'India'},{f:'🇮🇩',n:'Indonesia'},{f:'🇮🇷',n:'Iran'},
+        {f:'🇮🇶',n:'Iraq'},{f:'🇮🇪',n:'Ireland'},{f:'🇮🇱',n:'Israel'},
+        {f:'🇮🇹',n:'Italy'},{f:'🇯🇲',n:'Jamaica'},{f:'🇯🇵',n:'Japan'},
+        {f:'🇯🇴',n:'Jordan'},{f:'🇰🇿',n:'Kazakhstan'},{f:'🇰🇪',n:'Kenya'},
+        {f:'🇰🇮',n:'Kiribati'},{f:'🇰🇼',n:'Kuwait'},{f:'🇰🇬',n:'Kyrgyzstan'},
+        {f:'🇱🇦',n:'Laos'},{f:'🇱🇻',n:'Latvia'},{f:'🇱🇧',n:'Lebanon'},
+        {f:'🇱🇸',n:'Lesotho'},{f:'🇱🇷',n:'Liberia'},{f:'🇱🇾',n:'Libya'},
+        {f:'🇱🇮',n:'Liechtenstein'},{f:'🇱🇹',n:'Lithuania'},{f:'🇱🇺',n:'Luxembourg'},
+        {f:'🇲🇬',n:'Madagascar'},{f:'🇲🇼',n:'Malawi'},{f:'🇲🇾',n:'Malaysia'},
+        {f:'🇲🇻',n:'Maldives'},{f:'🇲🇱',n:'Mali'},{f:'🇲🇹',n:'Malta'},
+        {f:'🇲🇭',n:'Marshall Islands'},{f:'🇲🇷',n:'Mauritania'},{f:'🇲🇺',n:'Mauritius'},
+        {f:'🇲🇽',n:'Mexico'},{f:'🇫🇲',n:'Micronesia'},{f:'🇲🇩',n:'Moldova'},
+        {f:'🇲🇨',n:'Monaco'},{f:'🇲🇳',n:'Mongolia'},{f:'🇲🇪',n:'Montenegro'},
+        {f:'🇲🇦',n:'Morocco'},{f:'🇲🇿',n:'Mozambique'},{f:'🇲🇲',n:'Myanmar'},
+        {f:'🇳🇦',n:'Namibia'},{f:'🇳🇷',n:'Nauru'},{f:'🇳🇵',n:'Nepal'},
+        {f:'🇳🇱',n:'Netherlands'},{f:'🇳🇿',n:'New Zealand'},{f:'🇳🇮',n:'Nicaragua'},
+        {f:'🇳🇪',n:'Niger'},{f:'🇳🇬',n:'Nigeria'},{f:'🇲🇰',n:'North Macedonia'},
+        {f:'🇳🇴',n:'Norway'},{f:'🇴🇲',n:'Oman'},{f:'🇵🇰',n:'Pakistan'},
+        {f:'🇵🇼',n:'Palau'},{f:'🇵🇦',n:'Panama'},{f:'🇵🇬',n:'Papua New Guinea'},
+        {f:'🇵🇾',n:'Paraguay'},{f:'🇵🇪',n:'Peru'},{f:'🇵🇭',n:'Philippines'},
+        {f:'🇵🇱',n:'Poland'},{f:'🇵🇹',n:'Portugal'},{f:'🇶🇦',n:'Qatar'},
+        {f:'🇷🇴',n:'Romania'},{f:'🇷🇺',n:'Russia'},{f:'🇷🇼',n:'Rwanda'},
+        {f:'🇰🇳',n:'Saint Kitts & Nevis'},{f:'🇱🇨',n:'Saint Lucia'},{f:'🇻🇨',n:'Saint Vincent & the Grenadines'},
+        {f:'🇼🇸',n:'Samoa'},{f:'🇸🇲',n:'San Marino'},{f:'🇸🇹',n:'Sao Tome & Principe'},
+        {f:'🇸🇦',n:'Saudi Arabia'},{f:'🇸🇳',n:'Senegal'},{f:'🇷🇸',n:'Serbia'},
+        {f:'🇸🇨',n:'Seychelles'},{f:'🇸🇱',n:'Sierra Leone'},{f:'🇸🇬',n:'Singapore'},
+        {f:'🇸🇰',n:'Slovakia'},{f:'🇸🇮',n:'Slovenia'},{f:'🇸🇧',n:'Solomon Islands'},
+        {f:'🇸🇴',n:'Somalia'},{f:'🇿🇦',n:'South Africa'},{f:'🇸🇸',n:'South Sudan'},
+        {f:'🇪🇸',n:'Spain'},{f:'🇱🇰',n:'Sri Lanka'},{f:'🇸🇩',n:'Sudan'},
+        {f:'🇸🇷',n:'Suriname'},{f:'🇸🇪',n:'Sweden'},{f:'🇨🇭',n:'Switzerland'},
+        {f:'🇸🇾',n:'Syria'},{f:'🇹🇼',n:'Taiwan'},{f:'🇹🇯',n:'Tajikistan'},
+        {f:'🇹🇿',n:'Tanzania'},{f:'🇹🇭',n:'Thailand'},{f:'🇹🇱',n:'Timor-Leste'},
+        {f:'🇹🇬',n:'Togo'},{f:'🇹🇴',n:'Tonga'},{f:'🇹🇹',n:'Trinidad & Tobago'},
+        {f:'🇹🇳',n:'Tunisia'},{f:'🇹🇷',n:'Turkey'},{f:'🇹🇲',n:'Turkmenistan'},
+        {f:'🇹🇻',n:'Tuvalu'},{f:'🇺🇬',n:'Uganda'},{f:'🇺🇦',n:'Ukraine'},
+        {f:'🇦🇪',n:'United Arab Emirates'},{f:'🇬🇧',n:'United Kingdom'},
+        {f:'🇺🇸',n:'United States'},{f:'🇺🇾',n:'Uruguay'},{f:'🇺🇿',n:'Uzbekistan'},
+        {f:'🇻🇺',n:'Vanuatu'},{f:'🇻🇪',n:'Venezuela'},{f:'🇻🇳',n:'Vietnam'},
+        {f:'🇾🇪',n:'Yemen'},{f:'🇿🇲',n:'Zambia'},{f:'🇿🇼',n:'Zimbabwe'}
+      ];
+
       var form = document.getElementById('feedbackForm');
       var success = document.getElementById('success');
       var submitBtn = document.getElementById('submitBtn');
@@ -492,6 +703,7 @@
       var starsBox = document.getElementById('stars');
       var caption = document.getElementById('ratingCaption');
       var rating = 0;
+      var selectedCountry = null;
 
       function starSvg() {
         return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg>';
@@ -527,6 +739,87 @@
         caption.textContent = CAPTIONS[rating];
         document.getElementById('fieldRating').classList.remove('invalid');
       });
+
+      // ---------- Country dropdown ----------
+      var ctTrigger  = document.getElementById('countryTrigger');
+      var ctDropdown = document.getElementById('countryDropdown');
+      var ctSearch   = document.getElementById('countrySearch');
+      var ctList     = document.getElementById('countryList');
+      var ctFlag     = document.getElementById('ctFlag');
+      var ctName     = document.getElementById('ctName');
+
+      function renderCountryList(query) {
+        var q = (query || '').toLowerCase().trim();
+        var filtered = q ? COUNTRIES.filter(function(c){ return c.n.toLowerCase().indexOf(q) !== -1; }) : COUNTRIES;
+        ctList.innerHTML = '';
+        if (!filtered.length) {
+          ctList.innerHTML = '<div class="country-no-results">No countries found</div>';
+          return;
+        }
+        filtered.forEach(function(c) {
+          var opt = document.createElement('div');
+          opt.className = 'country-option' + (selectedCountry && selectedCountry.n === c.n ? ' selected' : '');
+          opt.setAttribute('role', 'option');
+          opt.setAttribute('aria-selected', selectedCountry && selectedCountry.n === c.n ? 'true' : 'false');
+          opt.innerHTML = '<span class="co-flag">' + c.f + '</span><span class="co-name">' + c.n + '</span>';
+          opt.addEventListener('mousedown', function(e) { e.preventDefault(); });
+          opt.addEventListener('click', function() { selectCountry(c); });
+          ctList.appendChild(opt);
+        });
+      }
+
+      function openDropdown() {
+        ctDropdown.classList.add('open');
+        ctTrigger.classList.add('open');
+        ctTrigger.setAttribute('aria-expanded', 'true');
+        ctSearch.value = '';
+        renderCountryList('');
+        setTimeout(function(){ ctSearch.focus(); }, 10);
+        if (selectedCountry) {
+          var sel = ctList.querySelector('.selected');
+          if (sel) sel.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function closeDropdown() {
+        ctDropdown.classList.remove('open');
+        ctTrigger.classList.remove('open');
+        ctTrigger.setAttribute('aria-expanded', 'false');
+      }
+
+      function selectCountry(c) {
+        selectedCountry = c;
+        ctFlag.textContent = c.f;
+        ctName.textContent = c.n;
+        ctName.classList.remove('ct-placeholder');
+        closeDropdown();
+        ctTrigger.focus();
+      }
+
+      ctTrigger.addEventListener('click', function() {
+        ctDropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+      });
+
+      ctSearch.addEventListener('input', function() {
+        renderCountryList(ctSearch.value);
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!document.getElementById('countryWrapper').contains(e.target)) {
+          closeDropdown();
+        }
+      });
+
+      ctTrigger.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
+        if (e.key === 'Escape') closeDropdown();
+      });
+
+      ctSearch.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { closeDropdown(); ctTrigger.focus(); }
+      });
+
+      renderCountryList('');
 
       // ---------- Character counter ----------
       function updateCounter() {
@@ -614,6 +907,7 @@
             email: data.email,
             message: data.message,
             rating: rating,
+            country: selectedCountry ? selectedCountry.n : '',
             website: document.getElementById('website').value
           })
         })
@@ -638,6 +932,12 @@
             var recap = '';
             for (var i = 0; i < rating; i++) recap += starSvg();
             document.getElementById('starsRecap').innerHTML = recap;
+            // Show country chip if a country was selected
+            if (selectedCountry) {
+              document.getElementById('successCountryFlag').textContent = selectedCountry.f;
+              document.getElementById('successCountryName').textContent = selectedCountry.n;
+              document.getElementById('successCountry').style.display = 'inline-flex';
+            }
             form.style.display = 'none';
             success.classList.add('show');
             document.querySelector('.shell').classList.add('done');

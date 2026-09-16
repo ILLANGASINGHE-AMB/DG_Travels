@@ -7,7 +7,7 @@
 const { insertFeedback } = require('./_supabase.js');
 const { sendFeedbackEmail } = require('./_notify.js');
 
-const LIMITS = { name: 80, email: 160, message: 500 };
+const LIMITS = { name: 80, email: 160, message: 500, country: 80 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function clean(value) {
@@ -19,6 +19,7 @@ function validate(body) {
   const email = clean(body.email);
   const message = clean(body.message);
   const rating = Number(body.rating);
+  const country = clean(body.country);
   const errors = {};
 
   if (!name) errors.name = 'Please enter your name.';
@@ -32,7 +33,7 @@ function validate(body) {
 
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) errors.rating = 'Please select a star rating.';
 
-  return { errors, row: { name, email, message, rating } };
+  return { errors, row: { name, email, message, rating, country: country.slice(0, LIMITS.country) || null } };
 }
 
 module.exports = async function handler(req, res) {
@@ -85,6 +86,7 @@ module.exports = async function handler(req, res) {
       name: created.name,
       message: created.message,
       rating: created.rating,
+      country: created.country || null,
       created_at: created.created_at
     }
   });
