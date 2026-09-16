@@ -60,7 +60,7 @@ async function listFeedback(limit = 60) {
   const { url, key } = getConfig();
 
   const query = new URLSearchParams({
-    select: 'id,name,message,rating,created_at',
+    select: 'id,name,message,rating,country,created_at',
     order: 'created_at.desc',
     limit: String(limit)
   });
