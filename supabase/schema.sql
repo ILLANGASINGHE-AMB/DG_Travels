@@ -9,6 +9,7 @@ create table if not exists public.feedback (
   email       text        not null,
   message     text        not null,
   rating      smallint    not null,
+  country     text,
   created_at  timestamptz not null default now(),
 
   constraint feedback_name_len    check (char_length(name) between 1 and 80),
@@ -16,6 +17,9 @@ create table if not exists public.feedback (
   constraint feedback_message_len check (char_length(message) between 1 and 500),
   constraint feedback_rating_rng  check (rating between 1 and 5)
 );
+
+-- Migration for existing tables:
+alter table public.feedback add column if not exists country text;
 
 -- Newest reviews are read on every page load, so index the sort column.
 create index if not exists feedback_created_at_idx
