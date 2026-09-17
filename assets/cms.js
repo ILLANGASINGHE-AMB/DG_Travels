@@ -413,7 +413,7 @@
   };
 
   function listGalleryAlbums(authed) {
-    var path = '/gallery_albums?select=id,title,description,sort_order,created_at&order=sort_order.asc,created_at.asc';
+    var path = '/gallery_albums?select=id,title,description,sort_order,created_at&order=sort_order.asc,created_at.desc';
     return (authed ? authedRest : rest)(path).catch(function (err) {
       console.warn('[cms] albums table not found or unavailable:', err && err.message);
       return [];
