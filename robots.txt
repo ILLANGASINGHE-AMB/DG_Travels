@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow admin/API paths from indexing
+Disallow: /api/
+Disallow: /.env
+
+Sitemap: https://dgtravels.com.lk/sitemap.xml
