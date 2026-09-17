@@ -537,7 +537,8 @@
     var nav = document.getElementById('galleryAlbumNav');
     if (!nav) return;
 
-    // Build merged album list (from gallery.albums + fallback from photo titles)
+    // Use the full album list fetched from DB (gallery.albums), plus any
+    // album_title values found in loaded photos that aren't already listed.
     var albums = (gallery.albums || []).slice();
     var knownTitles = {};
     albums.forEach(function (a) { knownTitles[a.title] = true; });
@@ -548,14 +549,9 @@
       }
     });
 
-    // Only keep albums that have photos currently loaded
-    var activeAlbums = albums.filter(function (album) {
-      return gallery.photos.some(function (p) {
-        return p.album_id === album.id || p.album_title === album.title;
-      });
-    });
-
-    if (activeAlbums.length === 0) {
+    // Show all albums — not just those with currently loaded photos —
+    // so the nav is always complete regardless of pagination state.
+    if (albums.length === 0) {
       nav.innerHTML = '';
       nav.style.display = 'none';
       return;
@@ -567,28 +563,45 @@
         '<button type="button" class="gallery-albums-btn" id="galleryAlbumsBtn" aria-expanded="false" aria-haspopup="true">' +
           '<i class="fa-regular fa-folder-open"></i>' +
           '<span>Albums</span>' +
-          '<span class="gallery-albums-btn-count">' + activeAlbums.length + '</span>' +
+          '<span class="gallery-albums-btn-count">' + albums.length + '</span>' +
           '<i class="fa-solid fa-chevron-down albums-chevron"></i>' +
         '</button>' +
         '<div class="gallery-albums-dropdown" id="galleryAlbumsDropdown" hidden>' +
           '<div class="gallery-albums-dropdown-head">' +
-            '<span><i class="fa-solid fa-layer-group"></i> Current Albums</span>' +
-            '<span class="dropdown-badge">' + activeAlbums.length + (activeAlbums.length === 1 ? ' album' : ' albums') + '</span>' +
+            '<span><i class="fa-solid fa-layer-group"></i> Albums</span>' +
+            '<span class="dropdown-badge">' + albums.length + (albums.length === 1 ? ' album' : ' albums') + '</span>' +
           '</div>' +
           '<div class="gallery-albums-dropdown-list">';
 
-    activeAlbums.forEach(function (album, i) {
+    // Build an anchor-id map that matches what renderGallery assigns:
+    // group IDs are assigned in album order, skipping albums with no loaded photos.
+    var groupIndex = 0;
+    var anchorMap = {};
+    albums.forEach(function (album) {
+      var hasPhotos = gallery.photos.some(function (p) {
+        return p.album_id === album.id || p.album_title === album.title;
+      });
+      if (hasPhotos) {
+        anchorMap[album.title] = 'album-group-' + groupIndex;
+        groupIndex++;
+      }
+    });
+
+    albums.forEach(function (album) {
       var count = gallery.photos.filter(function (p) {
         return p.album_id === album.id || p.album_title === album.title;
       }).length;
-      var anchorId = 'album-group-' + i;
+      var anchorId = anchorMap[album.title] || '';
 
       html +=
-        '<button type="button" class="gallery-albums-dropdown-item" data-album-anchor="' + anchorId + '">' +
+        '<button type="button" class="gallery-albums-dropdown-item"' +
+          (anchorId ? ' data-album-anchor="' + anchorId + '"' : '') + '>' +
           '<span class="item-icon"><i class="fa-regular fa-folder"></i></span>' +
           '<div class="item-info">' +
             '<span class="item-name">' + escapeHtml(album.title) + '</span>' +
-            '<span class="item-meta">' + count + (count === 1 ? ' photo' : ' photos') + '</span>' +
+            '<span class="item-meta">' +
+              (count > 0 ? count + (count === 1 ? ' photo' : ' photos') : 'Scroll down to load') +
+            '</span>' +
           '</div>' +
           '<i class="fa-solid fa-arrow-down-long item-arrow"></i>' +
         '</button>';
