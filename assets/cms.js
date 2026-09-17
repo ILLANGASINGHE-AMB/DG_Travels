@@ -537,11 +537,10 @@
     var nav = document.getElementById('galleryAlbumNav');
     if (!nav) return;
 
+    // Build merged album list (from gallery.albums + fallback from photo titles)
     var albums = (gallery.albums || []).slice();
     var knownTitles = {};
     albums.forEach(function (a) { knownTitles[a.title] = true; });
-
-    // Also collect any distinct album_title from photos
     gallery.photos.forEach(function (p) {
       if (p.album_title && !knownTitles[p.album_title]) {
         knownTitles[p.album_title] = true;
@@ -555,41 +554,26 @@
       return;
     }
 
+    // Single "Albums" button — clicking scrolls to first album group
     nav.style.display = 'flex';
-    var active = gallery.activeAlbum || 'all';
-
-    var html = '<button type="button" class="gallery-album-pill' + (active === 'all' ? ' active' : '') + '" data-album-id="all">' +
-      '<i class="fa-solid fa-layer-group"></i> All Photos' +
+    nav.innerHTML =
+      '<button type="button" class="gallery-albums-btn" id="galleryAlbumsScrollBtn">' +
+        '<i class="fa-regular fa-folder-open"></i> Albums' +
       '</button>';
 
-    albums.forEach(function (album) {
-      var count = gallery.photos.filter(function (p) {
-        return p.album_id === album.id || p.album_title === album.title;
-      }).length;
-
-      var isActive = (active === album.id || active === album.title);
-      html += '<button type="button" class="gallery-album-pill' + (isActive ? ' active' : '') + '" data-album-id="' + escapeHtml(album.id) + '" data-album-title="' + escapeHtml(album.title) + '">' +
-        '<i class="fa-regular fa-folder"></i> ' + escapeHtml(album.title) +
-        (count > 0 ? ' <span class="pill-count">(' + count + ')</span>' : '') +
-        '</button>';
-    });
-
-    nav.innerHTML = html;
-
-    nav.querySelectorAll('[data-album-id]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        setActiveAlbum(this.getAttribute('data-album-id'));
+    var scrollBtn = document.getElementById('galleryAlbumsScrollBtn');
+    if (scrollBtn) {
+      scrollBtn.addEventListener('click', function () {
+        var firstGroup = document.querySelector('.gallery-album-group');
+        if (firstGroup) {
+          firstGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       });
-    });
+    }
   }
 
   function getFilteredPhotos() {
-    var active = gallery.activeAlbum || 'all';
-    if (active === 'all') return gallery.photos;
-    return gallery.photos.filter(function (p) {
-      return p.album_id === active || p.album_title === active ||
-        (gallery.albums && gallery.albums.some(function (a) { return a.id === active && a.title === p.album_title; }));
-    });
+    return gallery.photos;
   }
 
   function renderGallery() {
@@ -598,56 +582,131 @@
     var grid = document.getElementById('galleryGrid');
     if (!grid) return;
 
-    var filtered = getFilteredPhotos();
+    var photos = gallery.photos;
 
-    grid.innerHTML = filtered.map(function (photo, i) {
-      var date = photoDate(photo.photo_date);
-      var globalIndex = gallery.photos.indexOf(photo);
-      var idx = globalIndex >= 0 ? globalIndex : i;
-      return '' +
-        '<figure class="gallery-item">' +
-          '<button type="button" class="gallery-thumb" data-gallery-index="' + idx + '" ' +
-                  'aria-label="View photo: ' + escapeHtml(photo.caption) + '">' +
-            '<img src="' + escapeHtml(photo.image_url) + '" alt="' + escapeHtml(photo.caption) + '" ' +
-                 'loading="lazy" decoding="async">' +
-            (photo.album_title
-              ? '<span class="gallery-album-badge"><i class="fa-regular fa-folder-open"></i> ' + escapeHtml(photo.album_title) + '</span>'
-              : '') +
-          '</button>' +
-          '<figcaption>' +
-            '<span class="gallery-caption">' + escapeHtml(photo.caption) + '</span>' +
-            (date
-              ? '<time class="gallery-date" datetime="' + escapeHtml(photo.photo_date) + '">' +
-                  '<i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</time>'
-              : '') +
-          '</figcaption>' +
-        '</figure>';
-    }).join('');
+    // Build merged album list
+    var albums = (gallery.albums || []).slice();
+    var knownTitles = {};
+    albums.forEach(function (a) { knownTitles[a.title] = true; });
+    photos.forEach(function (p) {
+      if (p.album_title && !knownTitles[p.album_title]) {
+        knownTitles[p.album_title] = true;
+        albums.push({ id: p.album_title, title: p.album_title });
+      }
+    });
 
-    // An empty gallery still shows, with a note. Visitors and the logged-in
-    // owner get different wording; index.html shows whichever applies, so
-    // "Preview as visitor" swaps it without a re-render.
+    var html = '';
+
+    if (albums.length > 0) {
+      // Render photos grouped by album
+      albums.forEach(function (album) {
+        var albumPhotos = photos.filter(function (p) {
+          return p.album_id === album.id || p.album_title === album.title;
+        });
+        if (albumPhotos.length === 0) return;
+
+        html += '<div class="gallery-album-group">' +
+          '<div class="gallery-album-heading">' +
+            '<span class="gallery-album-heading-icon"><i class="fa-regular fa-folder-open"></i></span>' +
+            '<h3>' + escapeHtml(album.title) + '</h3>' +
+            '<span class="gallery-album-heading-line"></span>' +
+          '</div>' +
+          '<div class="gallery-grid">';
+
+        albumPhotos.forEach(function (photo) {
+          var date = photoDate(photo.photo_date);
+          var idx = gallery.photos.indexOf(photo);
+          html +=
+            '<figure class="gallery-item">' +
+              '<button type="button" class="gallery-thumb" data-gallery-index="' + idx + '" ' +
+                      'aria-label="View photo: ' + escapeHtml(photo.caption) + '">' +
+                '<img src="' + escapeHtml(photo.image_url) + '" alt="' + escapeHtml(photo.caption) + '" ' +
+                     'loading="lazy" decoding="async">' +
+              '</button>' +
+              '<figcaption>' +
+                '<span class="gallery-caption">' + escapeHtml(photo.caption) + '</span>' +
+                (date
+                  ? '<time class="gallery-date" datetime="' + escapeHtml(photo.photo_date) + '">' +
+                      '<i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</time>'
+                  : '') +
+              '</figcaption>' +
+            '</figure>';
+        });
+
+        html += '</div></div>'; // close gallery-grid + gallery-album-group
+      });
+
+      // Photos with no album — show at bottom without heading
+      var unassigned = photos.filter(function (p) { return !p.album_title && !p.album_id; });
+      if (unassigned.length > 0) {
+        html += '<div class="gallery-album-group"><div class="gallery-grid">';
+        unassigned.forEach(function (photo) {
+          var date = photoDate(photo.photo_date);
+          var idx = gallery.photos.indexOf(photo);
+          html +=
+            '<figure class="gallery-item">' +
+              '<button type="button" class="gallery-thumb" data-gallery-index="' + idx + '" ' +
+                      'aria-label="View photo: ' + escapeHtml(photo.caption) + '">' +
+                '<img src="' + escapeHtml(photo.image_url) + '" alt="' + escapeHtml(photo.caption) + '" ' +
+                     'loading="lazy" decoding="async">' +
+              '</button>' +
+              '<figcaption>' +
+                '<span class="gallery-caption">' + escapeHtml(photo.caption) + '</span>' +
+                (date
+                  ? '<time class="gallery-date" datetime="' + escapeHtml(photo.photo_date) + '">' +
+                      '<i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</time>'
+                  : '') +
+              '</figcaption>' +
+            '</figure>';
+        });
+        html += '</div></div>';
+      }
+    } else {
+      // No albums — flat grid
+      html += '<div class="gallery-grid">';
+      photos.forEach(function (photo, i) {
+        var date = photoDate(photo.photo_date);
+        html +=
+          '<figure class="gallery-item">' +
+            '<button type="button" class="gallery-thumb" data-gallery-index="' + i + '" ' +
+                    'aria-label="View photo: ' + escapeHtml(photo.caption) + '">' +
+              '<img src="' + escapeHtml(photo.image_url) + '" alt="' + escapeHtml(photo.caption) + '" ' +
+                   'loading="lazy" decoding="async">' +
+            '</button>' +
+            '<figcaption>' +
+              '<span class="gallery-caption">' + escapeHtml(photo.caption) + '</span>' +
+              (date
+                ? '<time class="gallery-date" datetime="' + escapeHtml(photo.photo_date) + '">' +
+                    '<i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</time>'
+                : '') +
+            '</figcaption>' +
+          '</figure>';
+      });
+      html += '</div>';
+    }
+
+    grid.innerHTML = html;
+
+    // State message for empty gallery
     var state = document.getElementById('galleryState');
     if (state) {
-      state.hidden = filtered.length > 0;
-      if (!filtered.length) {
-        var isFiltered = (gallery.activeAlbum && gallery.activeAlbum !== 'all');
-        var visitorNote = isFiltered
-          ? '<p class="state-visitor">No photos in this album yet.</p>'
-          : '<p class="state-visitor">New photos from our tours and transfers are on their way. Check back soon.</p>';
+      state.hidden = photos.length > 0;
+      if (!photos.length) {
         state.innerHTML = gallery.loading
-          ? '<i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading photos…</p>'
+          ? '<i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading photos\u2026</p>'
           : gallery.failed
-            ? '<i class="fa-regular fa-images"></i>' + visitorNote +
+            ? '<i class="fa-regular fa-images"></i>' +
+              '<p class="state-visitor">New photos from our tours and transfers are on their way. Check back soon.</p>' +
               '<p class="state-owner">The gallery could not be loaded. If you have not yet, run ' +
               '<code>supabase/gallery-albums-schema.sql</code> in Supabase.</p>'
-            : '<i class="fa-regular fa-images"></i>' + visitorNote +
-              '<p class="state-owner">' + (isFiltered ? 'No photos in this album yet.' : 'No photos yet. Add the first one from <strong>Editor → Gallery</strong>.') + '</p>';
+            : '<i class="fa-regular fa-images"></i>' +
+              '<p class="state-visitor">New photos from our tours and transfers are on their way. Check back soon.</p>' +
+              '<p class="state-owner">No photos yet. Add the first one from <strong>Editor \u2192 Gallery</strong>.</p>';
       }
     }
 
     renderGalleryMore();
-    emit('gallery-rendered', filtered);
+    emit('gallery-rendered', photos);
   }
 
   function renderGalleryMore() {
@@ -655,14 +714,12 @@
     var btn = document.getElementById('galleryMoreBtn');
     if (!wrap || !btn) return;
 
-    // Only show "View more" on All Photos tab
-    var isFiltered = (gallery.activeAlbum && gallery.activeAlbum !== 'all');
-    wrap.hidden = !gallery.hasMore || isFiltered;
+    wrap.hidden = !gallery.hasMore;
     btn.disabled = gallery.loading;
     btn.innerHTML = gallery.loading
-      ? '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading…'
+      ? '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading\u2026'
       : gallery.moreFailed
-        ? '<i class="fa-solid fa-rotate-right"></i> Could not load — try again'
+        ? '<i class="fa-solid fa-rotate-right"></i> Could not load \u2014 try again'
         : '<i class="fa-regular fa-images"></i> View more photos';
   }
 
