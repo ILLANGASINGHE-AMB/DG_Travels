@@ -2057,9 +2057,17 @@
       transform: translateY(-1px);
     }
 
+    /* Gallery wrapper (holds multiple album groups) */
+    #galleryGrid,
+    .gallery-wrapper {
+      display: block;
+      width: 100%;
+    }
+
     /* Album groups inside the grid container */
     .gallery-album-group {
       margin-bottom: 56px;
+      width: 100%;
     }
 
     .gallery-album-group:last-child {
@@ -4102,7 +4110,7 @@
 
         <div class="gallery-album-nav" id="galleryAlbumNav" data-reveal style="display:none"></div>
 
-        <div class="gallery-grid" id="galleryGrid" data-reveal></div>
+        <div class="gallery-wrapper" id="galleryGrid" data-reveal></div>
 
         <div class="reviews-state gallery-state" id="galleryState">
           <i class="fa-solid fa-circle-notch fa-spin"></i>
