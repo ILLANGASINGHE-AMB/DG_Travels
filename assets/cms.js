@@ -397,8 +397,8 @@
      photos and only asks for more when a visitor wants them, so a
      gallery of hundreds costs a first visit nothing extra.
      --------------------------------------------------------- */
-  var GALLERY_FIRST_PAGE = 4;
-  var GALLERY_PAGE = 8;
+  var GALLERY_FIRST_PAGE = 8;
+  var GALLERY_PAGE = 500;  // Load all remaining photos in one request
   var GALLERY_FOLDER = 'gallery';
 
   var gallery = {
