@@ -548,26 +548,84 @@
       }
     });
 
-    if (albums.length === 0) {
+    // Only keep albums that have photos currently loaded
+    var activeAlbums = albums.filter(function (album) {
+      return gallery.photos.some(function (p) {
+        return p.album_id === album.id || p.album_title === album.title;
+      });
+    });
+
+    if (activeAlbums.length === 0) {
       nav.innerHTML = '';
       nav.style.display = 'none';
       return;
     }
 
-    // Single "Albums" button — clicking scrolls to first album group
     nav.style.display = 'flex';
-    nav.innerHTML =
-      '<button type="button" class="gallery-albums-btn" id="galleryAlbumsScrollBtn">' +
-        '<i class="fa-regular fa-folder-open"></i> Albums' +
-      '</button>';
+    var html =
+      '<div class="gallery-albums-menu-wrap" id="galleryAlbumsMenuWrap">' +
+        '<button type="button" class="gallery-albums-btn" id="galleryAlbumsBtn" aria-expanded="false" aria-haspopup="true">' +
+          '<i class="fa-regular fa-folder-open"></i>' +
+          '<span>Albums</span>' +
+          '<span class="gallery-albums-btn-count">' + activeAlbums.length + '</span>' +
+          '<i class="fa-solid fa-chevron-down albums-chevron"></i>' +
+        '</button>' +
+        '<div class="gallery-albums-dropdown" id="galleryAlbumsDropdown" hidden>' +
+          '<div class="gallery-albums-dropdown-head">' +
+            '<span><i class="fa-solid fa-layer-group"></i> Current Albums</span>' +
+            '<span class="dropdown-badge">' + activeAlbums.length + (activeAlbums.length === 1 ? ' album' : ' albums') + '</span>' +
+          '</div>' +
+          '<div class="gallery-albums-dropdown-list">';
 
-    var scrollBtn = document.getElementById('galleryAlbumsScrollBtn');
-    if (scrollBtn) {
-      scrollBtn.addEventListener('click', function () {
-        var firstGroup = document.querySelector('.gallery-album-group');
-        if (firstGroup) {
-          firstGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    activeAlbums.forEach(function (album, i) {
+      var count = gallery.photos.filter(function (p) {
+        return p.album_id === album.id || p.album_title === album.title;
+      }).length;
+      var anchorId = 'album-group-' + i;
+
+      html +=
+        '<button type="button" class="gallery-albums-dropdown-item" data-album-anchor="' + anchorId + '">' +
+          '<span class="item-icon"><i class="fa-regular fa-folder"></i></span>' +
+          '<div class="item-info">' +
+            '<span class="item-name">' + escapeHtml(album.title) + '</span>' +
+            '<span class="item-meta">' + count + (count === 1 ? ' photo' : ' photos') + '</span>' +
+          '</div>' +
+          '<i class="fa-solid fa-arrow-down-long item-arrow"></i>' +
+        '</button>';
+    });
+
+    html += '</div></div></div>';
+    nav.innerHTML = html;
+
+    var btn = document.getElementById('galleryAlbumsBtn');
+    var dropdown = document.getElementById('galleryAlbumsDropdown');
+
+    if (btn && dropdown) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = !dropdown.hidden;
+        dropdown.hidden = isOpen;
+        btn.setAttribute('aria-expanded', String(!isOpen));
+      });
+
+      dropdown.querySelectorAll('[data-album-anchor]').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.stopPropagation();
+          dropdown.hidden = true;
+          btn.setAttribute('aria-expanded', 'false');
+
+          var targetId = this.getAttribute('data-album-anchor');
+          var target = document.getElementById(targetId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.classList.remove('album-highlight');
+            void target.offsetWidth;
+            target.classList.add('album-highlight');
+            setTimeout(function () {
+              target.classList.remove('album-highlight');
+            }, 1600);
+          }
+        });
       });
     }
   }
@@ -598,6 +656,7 @@
     var html = '';
 
     if (albums.length > 0) {
+      var albumIndex = 0;
       // Render photos grouped by album
       albums.forEach(function (album) {
         var albumPhotos = photos.filter(function (p) {
@@ -605,7 +664,10 @@
         });
         if (albumPhotos.length === 0) return;
 
-        html += '<div class="gallery-album-group">' +
+        var anchorId = 'album-group-' + albumIndex;
+        albumIndex++;
+
+        html += '<div class="gallery-album-group" id="' + anchorId + '">' +
           '<div class="gallery-album-heading">' +
             '<span class="gallery-album-heading-icon"><i class="fa-regular fa-folder-open"></i></span>' +
             '<h3>' + escapeHtml(album.title) + '</h3>' +
@@ -823,6 +885,31 @@
       if (e.key === 'Escape') closeGalleryViewer();
       else if (e.key === 'ArrowLeft') { e.preventDefault(); stepGallery(-1); }
       else if (e.key === 'ArrowRight') { e.preventDefault(); stepGallery(1); }
+    });
+
+    // Close albums dropdown on click outside or Escape
+    document.addEventListener('click', function (e) {
+      var dropdown = document.getElementById('galleryAlbumsDropdown');
+      var wrap = document.getElementById('galleryAlbumsMenuWrap');
+      var btn = document.getElementById('galleryAlbumsBtn');
+      if (dropdown && !dropdown.hidden && wrap && !wrap.contains(e.target)) {
+        dropdown.hidden = true;
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var dropdown = document.getElementById('galleryAlbumsDropdown');
+        var btn = document.getElementById('galleryAlbumsBtn');
+        if (dropdown && !dropdown.hidden) {
+          dropdown.hidden = true;
+          if (btn) {
+            btn.setAttribute('aria-expanded', 'false');
+            btn.focus();
+          }
+        }
+      }
     });
 
     // A sideways swipe moves between photos on a phone
