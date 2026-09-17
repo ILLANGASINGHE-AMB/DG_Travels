@@ -536,6 +536,14 @@
   function renderGalleryAlbumsNav() {
     var nav = document.getElementById('galleryAlbumNav');
     if (!nav) return;
+    // Albums button removed — nav hidden
+    nav.innerHTML = '';
+    nav.style.display = 'none';
+  }
+
+  function _renderGalleryAlbumsNavUnused() {
+    var nav = document.getElementById('galleryAlbumNav');
+    if (!nav) return;
 
     // Use the full album list fetched from DB (gallery.albums), plus any
     // album_title values found in loaded photos that aren't already listed.
